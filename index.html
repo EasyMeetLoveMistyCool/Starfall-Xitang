@@ -33,7 +33,7 @@
     background: rgba(255,255,255,0.3); transition: background 0.3s;
   }
 
-  /* 自定义滑动条样式 - 修复黑色底条 */
+  /* 自定义滑动条样式 - 淡紫色底条 */
   input[type=range] {
     -webkit-appearance: none;
     width: 100%;
@@ -131,7 +131,8 @@
   .input-field:focus { border-color: var(--taro); }
   textarea.input-field { resize: none; height: 60px; line-height: 1.4; }
   
-  .bg-upload-area { width: 100%; height: 100px; border-radius: 12px; background: #EDE9FE; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; margin-bottom: 12px; border: 1px dashed var(--purple-soft); position: relative; }
+  /* 修改点1：预览框变大到 140px */
+  .bg-upload-area { width: 100%; height: 140px; border-radius: 12px; background: #EDE9FE; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; margin-bottom: 12px; border: 1px dashed var(--purple-soft); position: relative; }
   .bg-upload-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; }
   .bg-upload-area span { color: var(--purple); font-size: 14px; z-index: 2; }
   
@@ -414,9 +415,17 @@
   /* 收起面板按钮 */
   .mp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px; font-size: 24px; color: var(--purple-soft); font-weight: bold;}
   
-  /* 关闭音乐按钮 */
-  .mp-close-btn { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; z-index: 5; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(0,0,0,0.1); border-radius: 50%;}
-  .mp-close-btn svg { width: 16px; height: 16px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
+  /* 修改点2：关闭音乐按钮，改成白叉 */
+  .mp-close-btn { 
+    position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; z-index: 5; 
+    display: flex; align-items: center; justify-content: center; cursor: pointer; 
+    background: rgba(0,0,0,0.2); border-radius: 50%;
+  }
+  .mp-close-btn svg { 
+    width: 16px; height: 16px; 
+    stroke: #FFFFFF; /* 纯白叉 */
+    fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  }
 </style>
 </head>
 <body>
@@ -464,7 +473,7 @@
   
   <div class="form-group">
     <div class="form-title">全局背景设置</div>
-    <div class="bg-upload-area" onclick="document.getElementById('globalBgFile').click()" style="height:80px;">
+    <div class="bg-upload-area" onclick="document.getElementById('globalBgFile').click()">
       <img id="globalBgPreview" src="" style="display:none;"><span id="globalBgIcon">点击上传全局背景图</span>
     </div>
     <input type="file" id="globalBgFile" accept="image/*" style="display:none" onchange="uploadGlobalBg(event)">
@@ -489,7 +498,7 @@
 
   <div class="form-group">
     <div class="form-title">音乐面板背景</div>
-    <div class="bg-upload-area" onclick="document.getElementById('mpBgFile').click()" style="height:80px;">
+    <div class="bg-upload-area" onclick="document.getElementById('mpBgFile').click()">
       <img id="mpBgPreview" src="" style="display:none;"><span id="mpBgIcon">点击上传音乐面板背景图</span>
     </div>
     <input type="file" id="mpBgFile" accept="image/*" style="display:none" onchange="uploadMpBg(event)">
@@ -925,7 +934,7 @@
     <div class="mp-bg" id="mpBg"></div>
     <div class="mp-bg-mask" id="mpBgMask"></div>
     
-    <!-- 关闭音乐按钮 -->
+    <!-- 修改点2：关闭音乐按钮，改成白叉 -->
     <div class="mp-close-btn" onclick="stopMusicAndClose()">
       <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </div>
