@@ -16,22 +16,33 @@
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
   body{
-    background: radial-gradient(120% 55% at 50% 0%, #F6E9FF 0%, rgba(246,233,255,0) 60%),
-                linear-gradient(180deg,#F1E9FC 0%,#FBF7FF 320px,#F7F2FC 100%);
+    background: #FBF7FF; /* 默认背景，如果设置了全局背景会被覆盖 */
     font-family:-apple-system,"PingFang SC","HarmonyOS Sans","Noto Sans SC",sans-serif;
     color:var(--text); -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
+  
+  /* 全局背景层 */
+  #globalBg {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2;
+    background: radial-gradient(120% 55% at 50% 0%, #F6E9FF 0%, rgba(246,233,255,0) 60%),
+                linear-gradient(180deg,#F1E9FC 0%,#FBF7FF 320px,#F7F2FC 100%);
+    background-size: cover; background-position: center;
+  }
+  #globalBgMask {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
+    background: rgba(255,255,255,0.3); /* 默认遮罩 */
+  }
 
-  .page{display:none;min-height:100vh;}
+  .page{display:none;min-height:100vh; position:relative; z-index:1;}
   .page.active{display:block;}
 
   /* ================= 桌面 ================= */
   #page-home .inner{ max-width:480px;margin:0 auto; padding:calc(26px + env(safe-area-inset-top)) 16px calc(30px + env(safe-area-inset-bottom)); }
   .brand{text-align:center;}
-  .brand h1{font-size:26px;font-weight:600;letter-spacing:2px;color:#3A2E52;}
-  .brand .en{font-size:11px;color:var(--purple-soft);letter-spacing:3.5px;margin-top:7px;text-transform:uppercase;}
+  .brand h1{font-size:26px;font-weight:600;letter-spacing:2px;color:#3A2E52; text-shadow: 0 1px 3px rgba(255,255,255,0.8);}
+  .brand .en{font-size:11px;color:var(--purple-soft);letter-spacing:3.5px;margin-top:7px;text-transform:uppercase; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
   .slogan-wrap{display:flex;justify-content:center;margin:18px 0 6px;}
-  .slogan{display:inline-block; max-width:88%; padding:4px 10px;font-size:14px;color:#6B5B95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .35s;}
+  .slogan{display:inline-block; max-width:88%; padding:4px 10px;font-size:14px;color:#6B5B95;background:rgba(255,255,255,0.6);border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .35s;}
   .stage-card{margin:18px 0 18px; background:var(--card);border:1px solid var(--line); border-radius:24px;box-shadow:0 8px 24px rgba(139,92,246,.10);padding:8px 0 12px; overflow:hidden;}
   .stage{position:relative;overflow:hidden;touch-action:pan-y;}
   .track{display:flex; transition:transform .4s cubic-bezier(.22,.8,.3,1); will-change:transform;}
@@ -55,11 +66,11 @@
 
   /* ================= 通用顶栏 ================= */
   .header{display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top)) 16px 10px;position:relative; background: transparent; z-index: 10;}
-  .back-btn{position:absolute;left:16px;width: 32px; height: 32px;background: var(--taro-bg);border-radius: 50%;display: flex; align-items: center; justify-content: center;font-size:24px; color:var(--purple); line-height:1;cursor:pointer; font-weight:300;transform: translateY(-2px);}
+  .back-btn{position:absolute;left:16px;width: 32px; height: 32px;background: var(--taro-bg);border-radius: 50%;display: flex; align-items: center; justify-content: center;font-size:24px; color:var(--purple); line-height:1;cursor:pointer; font-weight:300;transform: translateY(-2px); z-index: 2;}
   .header h1{font-size:18px;font-weight:600;color:#3A2E52;}
 
   /* ================= 聊天列表页 ================= */
-  #page-chatlist { background:linear-gradient(180deg,#F1E9FC 0%, #FBF7FF 200px); }
+  #page-chatlist { background: transparent; }
   .chat-list { padding: 16px; display:flex; flex-direction:column; gap:12px; }
   
   .chat-item {
@@ -84,8 +95,8 @@
   .chat-item.pinned .chat-msg { color: rgba(184, 154, 246, 0.7); }
 
   /* ================= 建立羁绊 / 通用设置 / 装饰小屋 ================= */
-  #page-create, #page-settings, #page-decorate { background: #FFFFFF; overflow-y: auto; padding-bottom: 40px; }
-  .form-group { padding: 16px; margin-bottom: 8px; background: #FBF9FE; margin: 16px; border-radius: 16px;}
+  #page-create, #page-settings, #page-decorate { background: transparent; overflow-y: auto; padding-bottom: 40px; }
+  .form-group { padding: 16px; margin-bottom: 8px; background: rgba(251, 249, 254, 0.9); margin: 16px; border-radius: 16px; backdrop-filter: blur(10px);}
   .form-title { font-size: 15px; font-weight: 600; color: var(--purple); margin-bottom: 16px; border-bottom: 1px dashed var(--line); padding-bottom: 8px;}
   .row { display: flex; gap: 16px; margin-bottom: 12px; align-items: flex-start; }
   .avatar-upload { width: 64px; height: 64px; border-radius: 16px; background: #EDE9FE; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; flex-shrink: 0; border: 1px solid var(--line); }
@@ -96,11 +107,11 @@
   .input-field:focus { border-color: var(--taro); }
   textarea.input-field { resize: none; height: 60px; line-height: 1.4; }
   
-  .bg-upload-area { width: 100%; height: 120px; border-radius: 12px; background: #EDE9FE; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; margin-bottom: 12px; border: 1px dashed var(--purple-soft); position: relative; }
+  .bg-upload-area { width: 100%; height: 100px; border-radius: 12px; background: #EDE9FE; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; margin-bottom: 12px; border: 1px dashed var(--purple-soft); position: relative; }
   .bg-upload-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; }
   .bg-upload-area span { color: var(--purple); font-size: 14px; z-index: 2; }
   
-  .slider-row { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--sub); }
+  .slider-row { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--sub); margin-top: 8px;}
   .slider-row input[type="range"] { flex: 1; accent-color: var(--taro); }
   .speed-row { display: flex; align-items: center; gap: 8px; font-size: 14px; }
 
@@ -116,7 +127,7 @@
   .setting-btn.danger { color: #E57373; border-color: #FFCDD2; }
 
   /* ================= 聊天界面 ================= */
-  #page-chat { display: none; flex-direction: column; height: 100vh; position: relative; overflow: hidden;}
+  #page-chat { display: none; flex-direction: column; height: 100vh; position: relative; overflow: hidden; background: transparent;}
   #page-chat.active { display: flex; }
 
   .chat-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
@@ -129,12 +140,12 @@
     border-bottom: 1px solid rgba(236, 229, 248, 0.5);
     min-height: 60px; 
   }
-  .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;}
+  .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; padding-left: 40px; /* 留出返回键空间 */}
   .header-avatar { width: 40px; height: 40px; border-radius: 12px; background: #EDE9FE; overflow: hidden; flex-shrink: 0;}
   .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .header-info { display: flex; flex-direction: column; justify-content: center; overflow: hidden;}
-  .header-name { font-size: 16px; font-weight: 600; color: var(--text); }
-  .header-sign { font-size: 12px; color: var(--sub); white-space: normal; word-break: break-all; line-height: 1.4; margin-top: 2px;}
+  .header-info { display: flex; flex-direction: column; justify-content: center; overflow: hidden; flex: 1;}
+  .header-name { font-size: 16px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+  .header-sign { font-size: 12px; color: var(--sub); white-space: normal; word-break: break-all; line-height: 1.3; margin-top: 2px; max-height: 2.6em; overflow: hidden;}
   
   .phone-btn { width: 36px; height: 36px; background: var(--taro-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;}
   .phone-btn svg { width: 20px; height: 20px; stroke: var(--purple); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;}
@@ -154,11 +165,7 @@
 
   .msg-img { max-width: 150px; max-height: 150px; border-radius: 10px; object-fit: contain; display: block;}
   
-  /* 互动特殊居中样式 */
   .msg-action { width: 100%; text-align: center; font-size: 12px; color: var(--purple-soft); padding: 4px 0; font-style: italic;}
-  
-  /* 气泡内的小标签 */
-  .fav-tag { font-size: 10px; color: var(--purple-soft); margin-bottom: 4px;}
 
   .typing-row { display: flex; gap: 8px; align-items: center; flex: 1; }
   .typing-bubble { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(184, 154, 246, 0.2); border-top-left-radius: 4px; padding: 8px 12px; display: flex; align-items: center; font-size: 13px; color: var(--sub); border-radius: 16px; }
@@ -181,7 +188,7 @@
   .send-btn svg { width: 24px; height: 24px; stroke: var(--purple); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin-right: 2px; margin-top: 2px;}
 
   /* ================= 字匣 / 小互动 / 音乐 / 收藏册 ================= */
-  #page-wordbox, #page-actionmanage, #page-musicmanage, #page-favorites { display:none; flex-direction:column; height:100vh; overflow:hidden; background:linear-gradient(180deg,#F1E9FC 0%, #FBF7FF 200px); }
+  #page-wordbox, #page-actionmanage, #page-musicmanage, #page-favorites { display:none; flex-direction:column; height:100vh; overflow:hidden; background: transparent; }
   #page-wordbox.active, #page-actionmanage.active, #page-musicmanage.active, #page-favorites.active {display:flex;}
   .tabs-wrap{ padding: 10px 16px; }
   .tabs{display:flex; background: var(--taro-bg);border-radius: 999px; padding: 4px; position: relative;}
@@ -243,7 +250,7 @@
   .btn-confirm { background: var(--taro); color: #fff; }
 
   /* ================= 贴图管理页 / 音乐管理页 ================= */
-  #page-sticker, #page-musicmanage { background:linear-gradient(180deg,#F1E9FC 0%, #FBF7FF 200px); display:none; flex-direction:column; height:100vh;}
+  #page-sticker, #page-musicmanage { background: transparent; display:none; flex-direction:column; height:100vh;}
   #page-sticker.active, #page-musicmanage.active { display:flex; }
   
   .sticker-grid { flex:1; overflow-y:auto; padding: 16px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; align-content:start;}
@@ -298,8 +305,8 @@
   .toast { position: fixed; top: calc(20px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%) translateY(-20px); background: rgba(184, 154, 246, 0.9); color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 13px; box-shadow: 0 4px 12px rgba(139,92,246,0.2); opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 9999;}
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .progress-bar { width: 100%; height: 8px; background: #F0EBF8; border-radius: 999px; overflow: hidden; margin-top: 10px;}
-  .progress-inner { height: 100%; background: var(--taro); width: 0%; transition: width 0.2s;}
+  .progress-bar { width: 100%; height: 8px; background: #E6DDF9; border-radius: 999px; overflow: hidden; margin-top: 10px;}
+  .progress-inner { height: 100%; background: var(--purple); width: 0%; transition: width 0.2s;}
   
   .panel-overlay { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(42,36,56,0.3); z-index: 900; display: none; align-items: flex-end; height: 100vh;}
   .panel-overlay.active { display: flex; }
@@ -345,12 +352,18 @@
   .music-player-modal-container.active { display: block; }
   
   .music-player-modal { 
+    position: relative; overflow: hidden;
     background: #FFFFFF; border-radius: 24px; padding: 24px 20px; 
     display: flex; flex-direction: column; align-items: center; gap: 16px; 
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none;
   }
   .music-player-modal:active { cursor: grabbing; }
+  
+  .mp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
+  .mp-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
+  
+  .mp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px;}
   
   /* 封面旋转 */
   .mp-cover { 
@@ -362,20 +375,27 @@
   .mp-cover img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; pointer-events: none;}
   .mp-cover svg { width: 50px; height: 50px; stroke: var(--purple); fill: none; pointer-events: none;}
   
-  .mp-title { font-size: 18px; font-weight: 600; color: var(--text); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; pointer-events: none;}
-  .mp-artist { font-size: 13px; color: var(--sub); margin-top: -8px; pointer-events: none;}
+  .mp-title { font-size: 18px; font-weight: 600; color: var(--text); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; pointer-events: none; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
+  .mp-artist { font-size: 13px; color: var(--sub); margin-top: -8px; pointer-events: none; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
   
   .mp-controls { display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; margin-top: 10px;}
   .mp-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;}
   .mp-btn svg { width: 28px; height: 28px; stroke: var(--purple); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
   .mp-btn.play-pause { width: 56px; height: 56px; background: var(--taro); border-radius: 50%; box-shadow: 0 4px 12px rgba(184,154,246,0.4);}
   .mp-btn.play-pause svg { stroke: #fff; width: 32px; height: 32px; fill: #fff;}
-  .mp-mode { display: flex; align-items: center; justify-content: center; margin-top: 16px; cursor: pointer; width: 40px; height: 40px;}
+  
+  .mp-bottom-controls { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 16px; width: 100%;}
+  .mp-mode { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px;}
   .mp-mode svg { width: 24px; height: 24px; stroke: var(--purple-soft); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;}
+  
+  /* 收起面板按钮 */
+  .mp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px; font-size: 24px; color: var(--purple-soft); font-weight: bold;}
 </style>
 </head>
 <body>
 
+<div id="globalBg"></div>
+<div id="globalBgMask"></div>
 <div class="toast" id="toast"></div>
 
 <!-- 悬浮球 -->
@@ -414,6 +434,20 @@
     <div class="back-btn" onclick="goToPage('page-home')">‹</div>
     <h1>装饰小屋</h1>
   </div>
+  
+  <div class="form-group">
+    <div class="form-title">全局背景设置</div>
+    <div class="bg-upload-area" onclick="document.getElementById('globalBgFile').click()" style="height:80px;">
+      <img id="globalBgPreview" src="" style="display:none;"><span id="globalBgIcon">点击上传全局背景图</span>
+    </div>
+    <input type="file" id="globalBgFile" accept="image/*" style="display:none" onchange="uploadGlobalBg(event)">
+    <div class="slider-row">
+      <span>全局背景雾化度</span>
+      <input type="range" id="globalBgBlur" min="0" max="100" value="30" oninput="updateGlobalBgBlur(this.value)">
+      <span id="globalBgBlurVal">30%</span>
+    </div>
+  </div>
+
   <div class="form-group">
     <div class="form-title">音乐悬浮球图标</div>
     <div class="row" style="align-items:center;">
@@ -422,7 +456,20 @@
         <span id="orbIcon">+</span>
       </div>
       <input type="file" id="orbFile" accept="image/*" style="display:none" onchange="uploadOrbImg(event)">
-      <div style="font-size:13px; color:var(--sub); flex:1;">上传一张圆形图片（如头像），在播放音乐时会化作悬浮球。</div>
+      <div style="font-size:13px; color:var(--sub); flex:1;">上传圆形图片，播放时化作悬浮球。</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-title">音乐面板背景</div>
+    <div class="bg-upload-area" onclick="document.getElementById('mpBgFile').click()" style="height:80px;">
+      <img id="mpBgPreview" src="" style="display:none;"><span id="mpBgIcon">点击上传音乐面板背景图</span>
+    </div>
+    <input type="file" id="mpBgFile" accept="image/*" style="display:none" onchange="uploadMpBg(event)">
+    <div class="slider-row">
+      <span>音乐面板雾化度</span>
+      <input type="range" id="mpBgBlur" min="0" max="100" value="30" oninput="updateMpBgBlur(this.value)">
+      <span id="mpBgBlurVal">30%</span>
     </div>
   </div>
 </div>
@@ -536,8 +583,8 @@
   <div class="chat-bg" id="chatBg"></div>
   <div class="chat-bg-mask" id="chatBgMask"></div>
   <div class="chat-header">
+    <div class="back-btn" onclick="goToPage('page-chatlist')" style="position:absolute; left:16px; transform:translateY(-2px); z-index:10;">‹</div>
     <div class="chat-header-left">
-      <div class="back-btn" onclick="goToPage('page-chatlist')" style="position:static; transform:none; margin-right:4px;">‹</div>
       <div class="header-avatar" id="chatHeaderAvatar"></div>
       <div class="header-info">
         <div class="header-name" id="chatHeaderName"></div>
@@ -552,6 +599,7 @@
     <div class="sticker-btn" onclick="openStickerPanel()">ʕ̯•͡ˑ͓•̯᷅ʔ</div>
     <div class="sticker-btn" onclick="openStarIslandPanel()">づ♡ど</div>
     <div class="send-btn" onclick="sendMessage()">
+      <!-- 重新绘制的纸飞机 SVG -->
       <svg viewBox="0 0 24 24" style="margin-left:2px;">
         <path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -848,22 +896,30 @@
 <!-- 音乐悬浮球控制面板 (可拖拽) -->
 <div class="music-player-modal-container" id="musicPlayerContainer" onclick="closeMusicPlayer(event)">
   <div class="music-player-modal" id="musicPlayerModal" onclick="event.stopPropagation()">
-    <div class="mp-cover" id="mpCover">
-      <svg viewBox="0 0 24 24"><path d="M9 18V6.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
-    </div>
-    <div class="mp-title" id="mpTitle">未知歌名</div>
-    <div class="mp-artist" id="mpArtist">未知歌手</div>
-    
-    <div class="mp-controls">
-      <div class="mp-btn" onclick="playPrev()"><svg viewBox="0 0 24 24"><path d="M19 20 9 12l10-8v16z"/><path d="M5 19V5"/></svg></div>
-      <div class="mp-btn play-pause" id="mpPlayBtn" onclick="togglePlay()">
-        <svg viewBox="0 0 24 24" id="mpPlayIcon"><path d="M5 3l14 9-14 9V3z"/></svg>
+    <div class="mp-bg" id="mpBg"></div>
+    <div class="mp-bg-mask" id="mpBgMask"></div>
+    <div class="mp-content">
+      <div class="mp-cover" id="mpCover">
+        <svg viewBox="0 0 24 24"><path d="M9 18V6.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
       </div>
-      <div class="mp-btn" onclick="playNext()"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg></div>
-    </div>
-    
-    <div class="mp-mode" id="mpModeBtn" onclick="toggleMode()">
-      <svg viewBox="0 0 24 24" id="mpModeIcon"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"/></svg>
+      <div class="mp-title" id="mpTitle">未知歌名</div>
+      <div class="mp-artist" id="mpArtist">未知歌手</div>
+      
+      <div class="mp-controls">
+        <div class="mp-btn" onclick="playPrev()"><svg viewBox="0 0 24 24"><path d="M19 20 9 12l10-8v16z"/><path d="M5 19V5"/></svg></div>
+        <div class="mp-btn play-pause" id="mpPlayBtn" onclick="togglePlay()">
+          <svg viewBox="0 0 24 24" id="mpPlayIcon"><path d="M5 3l14 9-14 9V3z"/></svg>
+        </div>
+        <div class="mp-btn" onclick="playNext()"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg></div>
+      </div>
+      
+      <div class="mp-bottom-controls">
+        <!-- 收起面板按钮 -->
+        <div class="mp-minimize" onclick="closeMusicPlayer({target: document.getElementById('musicPlayerContainer')})">⊙</div>
+        <div class="mp-mode" id="mpModeBtn" onclick="toggleMode()">
+          <svg viewBox="0 0 24 24" id="mpModeIcon"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"/></svg>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -875,7 +931,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 6); // 升级版本，加入收藏表
+const request = indexedDB.open("SunsetFogDB", 7); // 升级版本，加入设置表
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -909,17 +965,34 @@ let targetDeleteStickerId = null;
 let currentMusicTab = "tangdong", musicDeleteMode = false, selectedMusicIds = new Set();
 let currentFavRoomId = null;
 let longPressMsgTarget = null, longPressFavTarget = null;
-let appSettings = { stickerProb: 10, actionProb: 7, listenProb: 5, favProb: 3, carouselMin: 1, carouselMax: 3, orbImage: null };
+
+let appSettings = { 
+  stickerProb: 10, 
+  actionProb: 7, 
+  listenProb: 5, 
+  favProb: 3, 
+  carouselMin: 1, 
+  carouselMax: 3, 
+  orbImage: null,
+  globalBgImage: null,
+  globalBgBlur: 30,
+  mpBgImage: null,
+  mpBgBlur: 30
+};
 
 function initSettings() {
   dbGetAll('settings', data => {
     data.forEach(item => { if(appSettings.hasOwnProperty(item.key)) appSettings[item.key] = item.value; });
+    
+    // 初始化 UI
     document.getElementById('setStickerProb').value = appSettings.stickerProb;
     document.getElementById('setActionProb').value = appSettings.actionProb;
     document.getElementById('setListenProb').value = appSettings.listenProb;
     document.getElementById('setFavProb').value = appSettings.favProb;
     document.getElementById('setCarouselMin').value = appSettings.carouselMin;
     document.getElementById('setCarouselMax').value = appSettings.carouselMax;
+    
+    // 悬浮球
     if(appSettings.orbImage) {
       document.getElementById('orbPreview').src = appSettings.orbImage;
       document.getElementById('orbPreview').style.display = 'block';
@@ -927,6 +1000,29 @@ function initSettings() {
       document.getElementById('mpCover').innerHTML = `<img src="${appSettings.orbImage}">`;
       musicOrb.innerHTML = `<img src="${appSettings.orbImage}">`;
     }
+    
+    // 全局背景
+    if(appSettings.globalBgImage) {
+      document.getElementById('globalBgPreview').src = appSettings.globalBgImage;
+      document.getElementById('globalBgPreview').style.display = 'block';
+      document.getElementById('globalBgIcon').style.display = 'none';
+      document.getElementById('globalBg').style.backgroundImage = `url(${appSettings.globalBgImage})`;
+    }
+    document.getElementById('globalBgBlur').value = appSettings.globalBgBlur;
+    document.getElementById('globalBgBlurVal').innerText = appSettings.globalBgBlur + '%';
+    updateGlobalBgBlur(appSettings.globalBgBlur);
+
+    // 音乐面板背景
+    if(appSettings.mpBgImage) {
+      document.getElementById('mpBgPreview').src = appSettings.mpBgImage;
+      document.getElementById('mpBgPreview').style.display = 'block';
+      document.getElementById('mpBgIcon').style.display = 'none';
+      document.getElementById('mpBg').style.backgroundImage = `url(${appSettings.mpBgImage})`;
+    }
+    document.getElementById('mpBgBlur').value = appSettings.mpBgBlur;
+    document.getElementById('mpBgBlurVal').innerText = appSettings.mpBgBlur + '%';
+    updateMpBgBlur(appSettings.mpBgBlur);
+
     scheduleNextCarousel(); 
   });
 }
@@ -974,7 +1070,7 @@ function renderSlides(){
   }
   allRooms.forEach((r,i)=>{
     const slide = document.createElement('div'); slide.className = 'slide';
-    slide.innerHTML = `<div class="person">${avatarHTML(r.taAvatar,'梦')}<div class="name">${r.taName || '梦角'}</div></div><div class="diamond">◆</div><div class="person">${avatarHTML(r.myAvatar,'我')}<div class="name">${r.myName || '我'}</div></div>`;
+    slide.innerHTML = `<div class="person">${avatarHTML(r.taAvatar,'梦')}<div class="name">${r.taCall || r.taName || '梦角'}</div></div><div class="diamond">◆</div><div class="person">${avatarHTML(r.myAvatar,'我')}<div class="name">${r.myName || '我'}</div></div>`;
     track.appendChild(slide);
     const d = document.createElement('div'); d.className = 'dot' + (i===0?' on':''); dots.appendChild(d);
   });
@@ -1011,7 +1107,10 @@ function renderChatList() {
     const lastMsg = room.lastMsg || '建立羁绊，开始聊天吧';
     const timeStr = room.lastMsg ? formatTime(room.updatedAt) : '';
     
-    div.innerHTML = `<div class="chat-avatar">${taAvatar}</div><div class="chat-info"><div class="chat-top"><div class="chat-name">${room.taName || '未命名'}</div><div class="chat-time">${timeStr}</div></div><div class="chat-msg">${lastMsg}</div></div>`;
+    // 名字优先显示昵称
+    const displayName = room.taCall || room.taName || '未命名';
+    
+    div.innerHTML = `<div class="chat-avatar">${taAvatar}</div><div class="chat-info"><div class="chat-top"><div class="chat-name">${displayName}</div><div class="chat-time">${timeStr}</div></div><div class="chat-msg">${lastMsg}</div></div>`;
     div.onclick = (e) => { if(!e.target.closest('.small-modal')) openChatRoom(room.id); };
     let pressTimer;
     div.addEventListener('touchstart', (e) => { pressTimer = setTimeout(() => { e.preventDefault(); openContextMenu(room.id, room.pinned); }, 500); }, {passive: false});
@@ -1106,11 +1205,14 @@ function submitCreate() {
 /* ================= 聊天界面 ================= */
 function openChatRoom(id) {
   currentRoom = allRooms.find(r=>r.id===id); if(!currentRoom) return;
-  document.getElementById('chatHeaderName').textContent = currentRoom.taName;
+  
+  // 显示昵称
+  const displayName = currentRoom.taCall || currentRoom.taName;
+  document.getElementById('chatHeaderName').textContent = displayName;
   document.getElementById('chatHeaderSign').textContent = currentRoom.taSign || '';
   document.getElementById('chatHeaderAvatar').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span class="ph" style="font-size:20px;color:var(--purple)">梦</span>`;
   const bg = document.getElementById('chatBg'), mask = document.getElementById('chatBgMask');
-  if(currentRoom.bgImage) { bg.style.backgroundImage = `url(${currentRoom.bgImage})`; } else { bg.style.background = `linear-gradient(180deg,#F1E9FC 0%,#FBF7FF 100%)`; }
+  if(currentRoom.bgImage) { bg.style.backgroundImage = `url(${currentRoom.bgImage})`; } else { bg.style.background = `transparent`; }
   mask.style.background = `rgba(255,255,255, ${(currentRoom.bgBlur || 30) / 100 * 0.9})`; 
   
   dbGetAll('messages', msgs => {
@@ -1123,6 +1225,11 @@ function openChatRoom(id) {
 let lastMsgMinute = null;
 function appendMessageToUI(m) {
   const container = document.getElementById('chatContent');
+  
+  // 关键修复：每次追加消息前，先把“正在输入”移除，防止它跑到上方
+  let tRow = document.getElementById('typingIndicator');
+  if(tRow) tRow.remove();
+
   const d = new Date(m.timestamp);
   const minKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
   if (minKey !== lastMsgMinute) {
@@ -1133,7 +1240,6 @@ function appendMessageToUI(m) {
   if (m.type === 'action') {
     const row = document.createElement('div'); row.className = 'msg-action'; row.textContent = m.text;
     row.dataset.id = m.id;
-    // 动作不支持长按菜单（避免逻辑复杂），但为了统一，我们只给真实消息绑定长按
     container.appendChild(row);
   } else {
     const isMe = m.sender === 'me';
@@ -1151,7 +1257,6 @@ function appendMessageToUI(m) {
     }
     row.innerHTML = `<div class="msg-avatar">${avHTML}</div>${inner}`;
     
-    // 绑定长按
     let pressTimer;
     row.addEventListener('touchstart', (e) => { 
       pressTimer = setTimeout(() => { 
@@ -1160,7 +1265,6 @@ function appendMessageToUI(m) {
         const isFav = allFavs.some(f => f.msgId === m.id);
         const favBtn = document.getElementById('msgFavBtn');
         if (m.sender === 'me') {
-          // 自己只能删除
           favBtn.style.display = 'none';
         } else {
           favBtn.style.display = 'block';
@@ -1174,6 +1278,9 @@ function appendMessageToUI(m) {
 
     container.appendChild(row);
   }
+  
+  // 重新把“正在输入”接到底部
+  if(tRow) container.appendChild(tRow);
   scrollToBottom();
 }
 function renderMessages(msgs) {
@@ -1189,7 +1296,6 @@ function sendMessage() {
   dbAdd('messages', msg, () => {
     input.value = ''; currentRoom.lastMsg = text; currentRoom.updatedAt = Date.now();
     dbPut('rooms', currentRoom, () => {
-      // 重新获取带id的msg
       dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = text; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
@@ -1227,9 +1333,6 @@ function sendAction(text) {
 function triggerReply(room) {
   clearTimeout(currentReplyTimer); 
   showTypingIndicator(true);
-  let tRow = document.getElementById('typingIndicator');
-  if(tRow) document.getElementById('chatContent').appendChild(tRow); 
-  scrollToBottom();
   
   const minDelay = (room.speedMin || 8) * 1000;
   const maxDelay = (room.speedMax || 15) * 1000;
@@ -1243,7 +1346,6 @@ function triggerReply(room) {
     const pListen = (appSettings.listenProb || 5) / 100;
     const pFav = (appSettings.favProb || 3) / 100;
 
-    // 判断是否触发一起听
     let doListen = allMusic.length > 0 && Math.random() < pListen;
     if(doListen) {
       const randomMusic = allMusic[Math.floor(Math.random() * allMusic.length)];
@@ -2235,12 +2337,10 @@ playerModal.addEventListener('touchmove', (e) => {
 });
 
 function closeMusicPlayer(e) {
-  if(e.target === playerContainer || e.target === playerContainer.querySelector('.music-player-modal') && !isDraggingPlayer) {
-    // 只有点背景或者未拖动时点面板，才关闭。这里由于事件冒泡，直接点背景关闭
-    if(e.target === playerContainer) {
-      playerContainer.classList.remove('active');
-      musicOrb.style.display = 'flex';
-    }
+  // 只有点背景或者未拖动时点面板，才关闭。这里由于事件冒泡，直接点背景关闭
+  if(e.target === playerContainer) {
+    playerContainer.classList.remove('active');
+    musicOrb.style.display = 'flex';
   }
 }
 
