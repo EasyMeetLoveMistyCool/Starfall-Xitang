@@ -16,7 +16,7 @@
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
   body{
-    background: #FBF7FF; /* 默认背景，如果设置了全局背景会被覆盖 */
+    background: #FBF7FF;
     font-family:-apple-system,"PingFang SC","HarmonyOS Sans","Noto Sans SC",sans-serif;
     color:var(--text); -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
@@ -26,11 +26,35 @@
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2;
     background: radial-gradient(120% 55% at 50% 0%, #F6E9FF 0%, rgba(246,233,255,0) 60%),
                 linear-gradient(180deg,#F1E9FC 0%,#FBF7FF 320px,#F7F2FC 100%);
-    background-size: cover; background-position: center;
+    background-size: cover; background-position: center; transition: background 0.3s;
   }
   #globalBgMask {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
-    background: rgba(255,255,255,0.3); /* 默认遮罩 */
+    background: rgba(255,255,255,0.3); transition: background 0.3s;
+  }
+
+  /* 自定义滑动条样式 - 修复黑色底条 */
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: #E6DDF9; /* 淡淡的香芋紫轨道 */
+    border-radius: 999px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: var(--taro); /* 滑块颜色 */
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -5px; /* 居中对齐 */
+    box-shadow: 0 2px 6px rgba(184,154,246,0.5);
   }
 
   .page{display:none;min-height:100vh; position:relative; z-index:1;}
@@ -112,7 +136,6 @@
   .bg-upload-area span { color: var(--purple); font-size: 14px; z-index: 2; }
   
   .slider-row { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--sub); margin-top: 8px;}
-  .slider-row input[type="range"] { flex: 1; accent-color: var(--taro); }
   .speed-row { display: flex; align-items: center; gap: 8px; font-size: 14px; }
 
   .btn-submit {
@@ -390,6 +413,10 @@
   
   /* 收起面板按钮 */
   .mp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px; font-size: 24px; color: var(--purple-soft); font-weight: bold;}
+  
+  /* 关闭音乐按钮 */
+  .mp-close-btn { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; z-index: 5; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(0,0,0,0.1); border-radius: 50%;}
+  .mp-close-btn svg { width: 16px; height: 16px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
 </style>
 </head>
 <body>
@@ -599,7 +626,6 @@
     <div class="sticker-btn" onclick="openStickerPanel()">ʕ̯•͡ˑ͓•̯᷅ʔ</div>
     <div class="sticker-btn" onclick="openStarIslandPanel()">づ♡ど</div>
     <div class="send-btn" onclick="sendMessage()">
-      <!-- 重新绘制的纸飞机 SVG -->
       <svg viewBox="0 0 24 24" style="margin-left:2px;">
         <path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -898,6 +924,12 @@
   <div class="music-player-modal" id="musicPlayerModal" onclick="event.stopPropagation()">
     <div class="mp-bg" id="mpBg"></div>
     <div class="mp-bg-mask" id="mpBgMask"></div>
+    
+    <!-- 关闭音乐按钮 -->
+    <div class="mp-close-btn" onclick="stopMusicAndClose()">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+
     <div class="mp-content">
       <div class="mp-cover" id="mpCover">
         <svg viewBox="0 0 24 24"><path d="M9 18V6.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
@@ -931,7 +963,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 7); // 升级版本，加入设置表
+const request = indexedDB.open("SunsetFogDB", 8); // 升级版本以应用背景设置
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -1070,7 +1102,9 @@ function renderSlides(){
   }
   allRooms.forEach((r,i)=>{
     const slide = document.createElement('div'); slide.className = 'slide';
-    slide.innerHTML = `<div class="person">${avatarHTML(r.taAvatar,'梦')}<div class="name">${r.taCall || r.taName || '梦角'}</div></div><div class="diamond">◆</div><div class="person">${avatarHTML(r.myAvatar,'我')}<div class="name">${r.myName || '我'}</div></div>`;
+    // 桌面轮播也优先显示昵称
+    const displayName = r.taCall || r.taName || '梦角';
+    slide.innerHTML = `<div class="person">${avatarHTML(r.taAvatar,'梦')}<div class="name">${displayName}</div></div><div class="diamond">◆</div><div class="person">${avatarHTML(r.myAvatar,'我')}<div class="name">${r.myName || '我'}</div></div>`;
     track.appendChild(slide);
     const d = document.createElement('div'); d.className = 'dot' + (i===0?' on':''); dots.appendChild(d);
   });
@@ -1107,8 +1141,8 @@ function renderChatList() {
     const lastMsg = room.lastMsg || '建立羁绊，开始聊天吧';
     const timeStr = room.lastMsg ? formatTime(room.updatedAt) : '';
     
-    // 名字优先显示昵称
-    const displayName = room.taCall || room.taName || '未命名';
+    // 修改点1：聊天室列表是显示名字（不是昵称）
+    const displayName = room.taName || '未命名';
     
     div.innerHTML = `<div class="chat-avatar">${taAvatar}</div><div class="chat-info"><div class="chat-top"><div class="chat-name">${displayName}</div><div class="chat-time">${timeStr}</div></div><div class="chat-msg">${lastMsg}</div></div>`;
     div.onclick = (e) => { if(!e.target.closest('.small-modal')) openChatRoom(room.id); };
@@ -1206,7 +1240,7 @@ function submitCreate() {
 function openChatRoom(id) {
   currentRoom = allRooms.find(r=>r.id===id); if(!currentRoom) return;
   
-  // 显示昵称
+  // 修改点1：点进去聊天页面是显示昵称
   const displayName = currentRoom.taCall || currentRoom.taName;
   document.getElementById('chatHeaderName').textContent = displayName;
   document.getElementById('chatHeaderSign').textContent = currentRoom.taSign || '';
@@ -2344,6 +2378,18 @@ function closeMusicPlayer(e) {
   }
 }
 
+function stopMusicAndClose() {
+  bgAudio.pause();
+  isPlaying = false;
+  musicOrb.classList.remove('orb-spin');
+  document.getElementById('mpPlayIcon').innerHTML = `<path d="M5 3l14 9-14 9V3z"/>`;
+  document.getElementById('mpCover').style.animationPlayState = 'paused';
+  
+  playerContainer.classList.remove('active');
+  musicOrb.style.display = 'none'; // 彻底关闭音乐后，悬浮球也一起消失
+  showToast("已停止播放");
+}
+
 function togglePlay() {
   if(isPlaying) { 
     bgAudio.pause(); 
@@ -2391,6 +2437,7 @@ function toggleMode() {
   showToast(mode.name);
 }
 
+/* ================= 装饰背景上传 ================= */
 function uploadOrbImg(e) {
   const file = e.target.files[0]; if(!file) return;
   const reader = new FileReader();
@@ -2408,6 +2455,52 @@ function uploadOrbImg(e) {
     dbPut('settings', {key: 'orbImage', value: base64}, () => showToast("悬浮球图标已更新"));
   };
   reader.readAsDataURL(file);
+}
+
+function uploadGlobalBg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const base64 = ev.target.result;
+    document.getElementById('globalBgPreview').src = base64;
+    document.getElementById('globalBgPreview').style.display = 'block';
+    document.getElementById('globalBgIcon').style.display = 'none';
+    
+    // 修改点2：立即生效
+    document.getElementById('globalBg').style.backgroundImage = `url(${base64})`;
+    appSettings.globalBgImage = base64;
+    dbPut('settings', {key: 'globalBgImage', value: base64}, () => showToast("全局背景已更新"));
+  };
+  reader.readAsDataURL(file);
+}
+function updateGlobalBgBlur(val) {
+  document.getElementById('globalBgBlurVal').innerText = val + '%';
+  document.getElementById('globalBgMask').style.background = `rgba(255,255,255, ${val / 100 * 0.9})`;
+  appSettings.globalBgBlur = parseInt(val);
+  dbPut('settings', {key: 'globalBgBlur', value: appSettings.globalBgBlur});
+}
+
+function uploadMpBg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const base64 = ev.target.result;
+    document.getElementById('mpBgPreview').src = base64;
+    document.getElementById('mpBgPreview').style.display = 'block';
+    document.getElementById('mpBgIcon').style.display = 'none';
+    
+    // 修改点2：立即生效
+    document.getElementById('mpBg').style.backgroundImage = `url(${base64})`;
+    appSettings.mpBgImage = base64;
+    dbPut('settings', {key: 'mpBgImage', value: base64}, () => showToast("音乐面板背景已更新"));
+  };
+  reader.readAsDataURL(file);
+}
+function updateMpBgBlur(val) {
+  document.getElementById('mpBgBlurVal').innerText = val + '%';
+  document.getElementById('mpBgMask').style.background = `rgba(255,255,255, ${val / 100 * 0.9})`;
+  appSettings.mpBgBlur = parseInt(val);
+  dbPut('settings', {key: 'mpBgBlur', value: appSettings.mpBgBlur});
 }
 
 /* ================= 通用设置 ================= */
