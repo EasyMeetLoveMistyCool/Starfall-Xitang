@@ -415,11 +415,13 @@
   /* 收起面板按钮 */
   .mp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px; font-size: 24px; color: var(--purple-soft); font-weight: bold;}
   
-  /* 修改点2：关闭音乐按钮，改成白叉 */
+  /* 关闭音乐按钮：透明白底 + 纯白叉 */
   .mp-close-btn { 
     position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; z-index: 5; 
     display: flex; align-items: center; justify-content: center; cursor: pointer; 
-    background: rgba(0,0,0,0.2); border-radius: 50%;
+    background: rgba(255,255,255,0.3); /* 透明白底 */
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.5); /* 加一圈淡淡的边显得精致 */
   }
   .mp-close-btn svg { 
     width: 16px; height: 16px; 
@@ -934,7 +936,7 @@
     <div class="mp-bg" id="mpBg"></div>
     <div class="mp-bg-mask" id="mpBgMask"></div>
     
-    <!-- 修改点2：关闭音乐按钮，改成白叉 -->
+    <!-- 修改点2：关闭音乐按钮，透明白底 + 纯白叉 -->
     <div class="mp-close-btn" onclick="stopMusicAndClose()">
       <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </div>
