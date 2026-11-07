@@ -21,7 +21,6 @@
     color:var(--text); -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
   
-  /* 全局背景层 */
   #globalBg {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2;
     background: radial-gradient(120% 55% at 50% 0%, #F6E9FF 0%, rgba(246,233,255,0) 60%),
@@ -33,29 +32,9 @@
     background: rgba(255,255,255,0.3); transition: background 0.3s;
   }
 
-  /* 自定义滑动条样式 - 淡紫色底条 */
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    background: transparent;
-  }
-  input[type=range]::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 6px;
-    cursor: pointer;
-    background: #E6DDF9; /* 淡淡的香芋紫轨道 */
-    border-radius: 999px;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: var(--taro); /* 滑块颜色 */
-    cursor: pointer;
-    -webkit-appearance: none;
-    margin-top: -5px; /* 居中对齐 */
-    box-shadow: 0 2px 6px rgba(184,154,246,0.5);
-  }
+  input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #E6DDF9; border-radius: 999px; }
+  input[type=range]::-webkit-slider-thumb { height: 16px; width: 16px; border-radius: 50%; background: var(--taro); cursor: pointer; -webkit-appearance: none; margin-top: -5px; box-shadow: 0 2px 6px rgba(184,154,246,0.5); }
 
   .page{display:none;min-height:100vh; position:relative; z-index:1;}
   .page.active{display:block;}
@@ -131,7 +110,6 @@
   .input-field:focus { border-color: var(--taro); }
   textarea.input-field { resize: none; height: 60px; line-height: 1.4; }
   
-  /* 修改点1：预览框变大到 140px */
   .bg-upload-area { width: 100%; height: 140px; border-radius: 12px; background: #EDE9FE; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; margin-bottom: 12px; border: 1px dashed var(--purple-soft); position: relative; }
   .bg-upload-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; }
   .bg-upload-area span { color: var(--purple); font-size: 14px; z-index: 2; }
@@ -169,7 +147,8 @@
   .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
   .header-info { display: flex; flex-direction: column; justify-content: center; overflow: hidden; flex: 1;}
   .header-name { font-size: 16px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-  .header-sign { font-size: 12px; color: var(--sub); white-space: normal; word-break: break-all; line-height: 1.3; margin-top: 2px; max-height: 2.6em; overflow: hidden;}
+  /* 签名支持三行 */
+  .header-sign { font-size: 12px; color: var(--sub); white-space: normal; word-break: break-all; line-height: 1.3; margin-top: 2px; max-height: 3.9em; overflow: hidden;}
   
   .phone-btn { width: 36px; height: 36px; background: var(--taro-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;}
   .phone-btn svg { width: 20px; height: 20px; stroke: var(--purple); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;}
@@ -188,6 +167,7 @@
   .msg-row.right .msg-bubble { background: rgba(184, 154, 246, 0.3); border: 1px solid rgba(184, 154, 246, 0.4); border-top-right-radius: 4px; }
 
   .msg-img { max-width: 150px; max-height: 150px; border-radius: 10px; object-fit: contain; display: block;}
+  .msg-video { max-width: 200px; max-height: 200px; border-radius: 10px; object-fit: cover; display: block;}
   
   .msg-action { width: 100%; text-align: center; font-size: 12px; color: var(--purple-soft); padding: 4px 0; font-style: italic;}
 
@@ -211,9 +191,9 @@
   .send-btn:active { transform: scale(0.9); }
   .send-btn svg { width: 24px; height: 24px; stroke: var(--purple); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin-right: 2px; margin-top: 2px;}
 
-  /* ================= 字匣 / 小互动 / 音乐 / 收藏册 ================= */
-  #page-wordbox, #page-actionmanage, #page-musicmanage, #page-favorites { display:none; flex-direction:column; height:100vh; overflow:hidden; background: transparent; }
-  #page-wordbox.active, #page-actionmanage.active, #page-musicmanage.active, #page-favorites.active {display:flex;}
+  /* ================= 字匣 / 小互动 / 音乐 / 收藏册 / LoveDays ================= */
+  #page-wordbox, #page-actionmanage, #page-musicmanage, #page-favorites, #page-lovedays { display:none; flex-direction:column; height:100vh; overflow:hidden; background: transparent; }
+  #page-wordbox.active, #page-actionmanage.active, #page-musicmanage.active, #page-favorites.active, #page-lovedays.active {display:flex;}
   .tabs-wrap{ padding: 10px 16px; }
   .tabs{display:flex; background: var(--taro-bg);border-radius: 999px; padding: 4px; position: relative;}
   .tab{flex: 1; text-align:center; font-size:15px; font-weight:500; color:var(--sub); padding: 8px 0; position:relative; cursor:pointer; z-index: 2; transition: color .3s; display:flex; align-items:center; justify-content:center; gap:6px;}
@@ -307,10 +287,20 @@
   .fav-content img { max-width:100px; border-radius:8px; display:block; margin-top:4px;}
   .fav-content.action { text-align:center; font-size:13px; font-style:italic; color:var(--purple-soft);}
 
+  /* ================= LoveDays ================= */
+  .loveday-card { background: #FFFFFF; border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05); display:flex; flex-direction:column; position:relative; margin-bottom:12px; overflow:hidden; min-height: 120px; justify-content: center;}
+  .ld-bg { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index: 0; }
+  .ld-bg-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.8); z-index: 1; }
+  .ld-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 4px;}
+  .ld-title { font-size: 16px; font-weight: 600; color: var(--text); }
+  .ld-date { font-size: 12px; color: var(--sub); }
+  .ld-days { font-size: 28px; font-weight: 700; color: var(--purple); margin-top: 8px;}
+  .ld-days span { font-size: 14px; font-weight: normal; margin-left: 4px;}
+
   /* ================= 弹窗与提示 ================= */
   .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(42,36,56,0.3); display: none; align-items: center; justify-content: center; z-index: 1000;}
   .modal-overlay.active { display: flex; }
-  .modal-card { width: 88%; max-width: 400px; background: #FFFFFF; border-radius: 20px; box-shadow: 0 10px 40px rgba(139,92,246,0.15); padding: 20px; display: flex; flex-direction: column; gap: 16px; animation: popIn 0.2s ease-out;}
+  .modal-card { width: 88%; max-width: 400px; background: #FFFFFF; border-radius: 20px; box-shadow: 0 10px 40px rgba(139,92,246,0.15); padding: 20px; display: flex; flex-direction: column; gap: 16px; animation: popIn 0.2s ease-out; max-height: 90vh; overflow-y: auto;}
   @keyframes popIn { from{transform: scale(0.95); opacity: 0;} to{transform: scale(1); opacity: 1;} }
   .modal-title { font-size: 16px; font-weight: 600; color: var(--text); text-align: center; }
   .modal-input { width: 100%; height: 200px; background: #FAF7FE; border: none; outline: none; border-radius: 12px; padding: 12px; font-size: 15px; color: var(--text); resize: none; font-family: inherit; line-height: 1.5;}
@@ -368,34 +358,17 @@
   .orb-spin { animation: spin 4s linear infinite; }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
-  /* 音乐面板可拖动容器 */
-  .music-player-modal-container {
-    position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px;
-    z-index: 1001; display: none;
-  }
+  .music-player-modal-container { position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .music-player-modal-container.active { display: block; }
   
-  .music-player-modal { 
-    position: relative; overflow: hidden;
-    background: #FFFFFF; border-radius: 24px; padding: 24px 20px; 
-    display: flex; flex-direction: column; align-items: center; gap: 16px; 
-    box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
-    cursor: grab; user-select: none;
-  }
+  .music-player-modal { position: relative; overflow: hidden; background: #FFFFFF; border-radius: 24px; padding: 24px 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 10px 40px rgba(139,92,246,0.2); cursor: grab; user-select: none; }
   .music-player-modal:active { cursor: grabbing; }
   
   .mp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
   .mp-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
-  
   .mp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px;}
   
-  /* 封面旋转 */
-  .mp-cover { 
-    width: 120px; height: 120px; border-radius: 50%; 
-    background: var(--taro-bg); display:flex; align-items:center; justify-content:center; 
-    border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 8px;
-    animation: spin 4s linear infinite; animation-play-state: paused;
-  }
+  .mp-cover { width: 120px; height: 120px; border-radius: 50%; background: var(--taro-bg); display:flex; align-items:center; justify-content:center; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 8px; animation: spin 4s linear infinite; animation-play-state: paused; }
   .mp-cover img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; pointer-events: none;}
   .mp-cover svg { width: 50px; height: 50px; stroke: var(--purple); fill: none; pointer-events: none;}
   
@@ -412,22 +385,10 @@
   .mp-mode { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px;}
   .mp-mode svg { width: 24px; height: 24px; stroke: var(--purple-soft); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;}
   
-  /* 收起面板按钮 */
   .mp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px; font-size: 24px; color: var(--purple-soft); font-weight: bold;}
   
-  /* 关闭音乐按钮：透明白底 + 纯白叉 */
-  .mp-close-btn { 
-    position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; z-index: 5; 
-    display: flex; align-items: center; justify-content: center; cursor: pointer; 
-    background: rgba(255,255,255,0.3); /* 透明白底 */
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.5); /* 加一圈淡淡的边显得精致 */
-  }
-  .mp-close-btn svg { 
-    width: 16px; height: 16px; 
-    stroke: #FFFFFF; /* 纯白叉 */
-    fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
-  }
+  .mp-close-btn { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; z-index: 5; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(255,255,255,0.3); border-radius: 50%; border: 1px solid rgba(255,255,255,0.5); }
+  .mp-close-btn svg { width: 16px; height: 16px; stroke: #FFFFFF; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 </style>
 </head>
 <body>
@@ -458,7 +419,7 @@
       <div class="card" data-fn="action" onclick="goToPage('page-actionmanage')"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-9.2A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 3.2C19 15.6 12 20 12 20Z" transform="translate(-1 0) scale(0.82)"/><path d="M12 20s-7-4.4-7-9.2A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 3.2C19 15.6 12 20 12 20Z" transform="translate(7 0) scale(0.82)"/></svg><span>小互动</span></div>
       <div class="card" data-fn="music" onclick="goToPage('page-musicmanage')"><svg viewBox="0 0 24 24"><path d="M9 18V6.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg><span>音乐</span></div>
       <div class="card" data-fn="collect" onclick="goToPage('page-favorites')"><svg viewBox="0 0 24 24"><path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-3.6L6 21V4.5a1 1 0 0 1 1-1Z"/></svg><span>收藏册</span></div>
-      <div class="card" data-fn="days"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 3v4M16 3v4"/><path d="M9 15h2.2M14 15h1"/></svg><span>LoveDays</span></div>
+      <div class="card" data-fn="days" onclick="goToPage('page-lovedays')"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 3v4M16 3v4"/><path d="M9 15h2.2M14 15h1"/></svg><span>LoveDays</span></div>
       <div class="card" data-fn="theme" onclick="goToPage('page-decorate')"><svg viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.9 1.8-1.8 0-.6-.3-1.1-.3-1.7 0-.9.7-1.6 1.6-1.6h1.1a4.3 4.3 0 0 0 4.3-4.3c0-4.2-3.8-7.6-8.5-7.6Z"/><circle cx="8" cy="10" r="1.1"/><circle cx="12" cy="7.5" r="1.1"/><circle cx="16" cy="10" r="1.1"/></svg><span>装饰小屋</span></div>
       <div class="card" data-fn="about"><svg viewBox="0 0 24 24"><rect x="4.5" y="4" width="15" height="16" rx="2"/><path d="M8 4v16"/><path d="M15.5 8.5c-2 2-4.5 5-4.5 5l-1.5 2.5 2.5-1.5s3-2.5 5-4.5c1-1 1-2.5 0-3.5s-2.5-1-3.5 0Z"/></svg><span>汐棠小记</span></div>
       <div class="card" data-fn="settings" onclick="openSettings()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6h.09A1.7 1.7 0 0 0 10 3.05V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1Z"/></svg><span>通用设置</span></div>
@@ -629,7 +590,12 @@
         <div class="header-sign" id="chatHeaderSign"></div>
       </div>
     </div>
-    <div class="phone-btn" onclick="showToast('正在拨打语音通话...')"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    <div style="display:flex; gap:8px;">
+      <!-- 电话图标 -->
+      <div class="phone-btn" onclick="showToast('正在拨打语音通话...')"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <!-- 视频图标 -->
+      <div class="phone-btn" onclick="showToast('正在发起视频通话...')"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2.5" /><path d="M15.5 10.5l5-3v9l-5-3" stroke-linejoin="round" /></svg></div>
+    </div>
   </div>
   <div class="chat-content" id="chatContent"></div>
   <div class="chat-footer">
@@ -819,6 +785,16 @@
   <div class="content" id="favListContainer"></div>
 </div>
 
+<!-- ================= LoveDays 纪念日 ================= -->
+<div class="page" id="page-lovedays">
+  <div class="header">
+    <div class="back-btn" onclick="goToPage('page-home')">‹</div>
+    <h1>LoveDays</h1>
+    <div style="position:absolute; right:16px; font-size:20px; color:var(--purple); cursor:pointer;" onclick="openLoveDaysModal()">ʕ •ᴥ•ʔ</div>
+  </div>
+  <div class="content" id="lovedaysListContainer"></div>
+</div>
+
 <!-- 弹窗 -->
 <div class="modal-overlay" id="wordModal" onclick="closeWordModal(event)">
   <div class="modal-card" onclick="event.stopPropagation()">
@@ -842,6 +818,32 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="lovedayModal" onclick="closeLoveDaysModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-title" id="lovedayModalTitle">添加纪念日</div>
+    <input type="text" class="input-field" id="lovedayName" placeholder="纪念日名字" style="margin-bottom:8px;">
+    <input type="date" class="input-field" id="lovedayDate" style="margin-bottom:8px; color:var(--text);">
+    <select class="input-field" id="lovedayRepeat" style="margin-bottom:8px; color:var(--text);">
+      <option value="none">不重复</option>
+      <option value="year">每年</option>
+      <option value="month">每月</option>
+      <option value="week">每周</option>
+      <option value="day">每日</option>
+    </select>
+    <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">关联梦角（可多选或都不选）</div>
+    <div id="lovedayRoomsList" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;"></div>
+    <div class="bg-upload-area" onclick="document.getElementById('lovedayBgFile').click()" style="height:100px; margin-bottom:0;">
+      <img id="lovedayBgPreview" src="" style="display:none;"><span id="lovedayBgIcon">自定义背景</span>
+    </div>
+    <input type="file" id="lovedayBgFile" accept="image/*" style="display:none" onchange="previewLovedayBg(event)">
+    <div class="modal-footer" style="margin-top:10px;">
+      <div></div>
+      <button class="btn-save" onclick="saveLoveDays()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 弹窗 -->
 <div class="modal-overlay" id="wordExportModal" onclick="closeWordExportModal(event)">
   <div class="modal-card" style="padding: 24px 20px; text-align: center;" onclick="event.stopPropagation()">
     <div class="modal-title" style="margin-bottom: 20px;">选择导出格式</div>
@@ -918,6 +920,15 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="loveDaysMenu" onclick="closeLoveDaysMenu(event)">
+  <div class="small-modal" onclick="event.stopPropagation()">
+    <div class="small-modal-item" id="ldPinBtn" onclick="toggleLoveDaysPin()">置顶</div>
+    <div class="small-modal-item" onclick="editLoveDays()">编辑</div>
+    <div class="small-modal-item" onclick="changeLoveDaysBg()">换图</div>
+    <div class="small-modal-item" onclick="deleteLoveDays()">删除</div>
+  </div>
+</div>
+
 <!-- 通用删除确认 -->
 <div class="modal-overlay" id="confirmDeleteModal" onclick="closeConfirm(event)">
   <div class="modal-card" style="width: 260px; padding: 20px;" onclick="event.stopPropagation()">
@@ -974,7 +985,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 8); // 升级版本以应用背景设置
+const request = indexedDB.open("SunsetFogDB", 9); // 升级版本，加入 LoveDays
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -984,6 +995,7 @@ request.onupgradeneeded = e => {
   if (!db.objectStoreNames.contains("stickers")) db.createObjectStore("stickers", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("music")) db.createObjectStore("music", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("favorites")) db.createObjectStore("favorites", { keyPath: "id", autoIncrement: true });
+  if (!db.objectStoreNames.contains("lovedays")) db.createObjectStore("lovedays", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings", { keyPath: "key" });
 };
 request.onsuccess = e => {
@@ -999,7 +1011,7 @@ function dbDelete(storeName, ids, callback) { const tx = db.transaction(storeNam
 function dbClear(storeName) { const tx = db.transaction(storeName, "readwrite"); tx.objectStore(storeName).clear(); }
 
 /* ================= 全局状态 ================= */
-let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [];
+let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [], allLoveDays = [];
 let wordDeleteMode = false, selectedWordIds = new Set();
 let currentActionTab = "tangdong", actionDeleteMode = false, selectedActionIds = new Set();
 let currentRoom = null, editRoomId = null, targetRoomId = null, currentReplyTimer = null, pendingStickerFiles = [];
@@ -1008,6 +1020,7 @@ let targetDeleteStickerId = null;
 let currentMusicTab = "tangdong", musicDeleteMode = false, selectedMusicIds = new Set();
 let currentFavRoomId = null;
 let longPressMsgTarget = null, longPressFavTarget = null;
+let editLoveDaysId = null, targetLoveDaysId = null, currentLovedayBg = null, selectedLoveRooms = [];
 
 let appSettings = { 
   stickerProb: 10, 
@@ -1027,7 +1040,6 @@ function initSettings() {
   dbGetAll('settings', data => {
     data.forEach(item => { if(appSettings.hasOwnProperty(item.key)) appSettings[item.key] = item.value; });
     
-    // 初始化 UI
     document.getElementById('setStickerProb').value = appSettings.stickerProb;
     document.getElementById('setActionProb').value = appSettings.actionProb;
     document.getElementById('setListenProb').value = appSettings.listenProb;
@@ -1035,7 +1047,6 @@ function initSettings() {
     document.getElementById('setCarouselMin').value = appSettings.carouselMin;
     document.getElementById('setCarouselMax').value = appSettings.carouselMax;
     
-    // 悬浮球
     if(appSettings.orbImage) {
       document.getElementById('orbPreview').src = appSettings.orbImage;
       document.getElementById('orbPreview').style.display = 'block';
@@ -1044,7 +1055,6 @@ function initSettings() {
       musicOrb.innerHTML = `<img src="${appSettings.orbImage}">`;
     }
     
-    // 全局背景
     if(appSettings.globalBgImage) {
       document.getElementById('globalBgPreview').src = appSettings.globalBgImage;
       document.getElementById('globalBgPreview').style.display = 'block';
@@ -1055,7 +1065,6 @@ function initSettings() {
     document.getElementById('globalBgBlurVal').innerText = appSettings.globalBgBlur + '%';
     updateGlobalBgBlur(appSettings.globalBgBlur);
 
-    // 音乐面板背景
     if(appSettings.mpBgImage) {
       document.getElementById('mpBgPreview').src = appSettings.mpBgImage;
       document.getElementById('mpBgPreview').style.display = 'block';
@@ -1087,6 +1096,7 @@ function goToPage(pageId) {
   if(pageId === 'page-actionmanage') renderActionList();
   if(pageId === 'page-musicmanage') renderMusicList();
   if(pageId === 'page-favorites') renderFavorites();
+  if(pageId === 'page-lovedays') renderLoveDays();
 }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
 function refreshAllData() {
@@ -1096,6 +1106,7 @@ function refreshAllData() {
   dbGetAll('actions', acts => { allActions = acts; renderActionList(); });
   dbGetAll('music', m => { allMusic = m; renderMusicList(); });
   dbGetAll('favorites', f => { allFavs = f; renderFavorites(); });
+  dbGetAll('lovedays', l => { allLoveDays = l; renderLoveDays(); });
 }
 
 /* ================= 桌面轮播 ================= */
@@ -1113,7 +1124,6 @@ function renderSlides(){
   }
   allRooms.forEach((r,i)=>{
     const slide = document.createElement('div'); slide.className = 'slide';
-    // 桌面轮播也优先显示昵称
     const displayName = r.taCall || r.taName || '梦角';
     slide.innerHTML = `<div class="person">${avatarHTML(r.taAvatar,'梦')}<div class="name">${displayName}</div></div><div class="diamond">◆</div><div class="person">${avatarHTML(r.myAvatar,'我')}<div class="name">${r.myName || '我'}</div></div>`;
     track.appendChild(slide);
@@ -1151,8 +1161,6 @@ function renderChatList() {
     const taAvatar = room.taAvatar ? `<img src="${room.taAvatar}">` : `<span class="ph">梦</span>`;
     const lastMsg = room.lastMsg || '建立羁绊，开始聊天吧';
     const timeStr = room.lastMsg ? formatTime(room.updatedAt) : '';
-    
-    // 修改点1：聊天室列表是显示名字（不是昵称）
     const displayName = room.taName || '未命名';
     
     div.innerHTML = `<div class="chat-avatar">${taAvatar}</div><div class="chat-info"><div class="chat-top"><div class="chat-name">${displayName}</div><div class="chat-time">${timeStr}</div></div><div class="chat-msg">${lastMsg}</div></div>`;
@@ -1251,7 +1259,6 @@ function submitCreate() {
 function openChatRoom(id) {
   currentRoom = allRooms.find(r=>r.id===id); if(!currentRoom) return;
   
-  // 修改点1：点进去聊天页面是显示昵称
   const displayName = currentRoom.taCall || currentRoom.taName;
   document.getElementById('chatHeaderName').textContent = displayName;
   document.getElementById('chatHeaderSign').textContent = currentRoom.taSign || '';
@@ -1271,7 +1278,6 @@ let lastMsgMinute = null;
 function appendMessageToUI(m) {
   const container = document.getElementById('chatContent');
   
-  // 关键修复：每次追加消息前，先把“正在输入”移除，防止它跑到上方
   let tRow = document.getElementById('typingIndicator');
   if(tRow) tRow.remove();
 
@@ -1297,6 +1303,8 @@ function appendMessageToUI(m) {
     let inner = '';
     if (m.type === 'sticker' || m.type === 'photo') {
       inner = `<div class="msg-bubble" style="padding: 6px; background: transparent; border: none;"><img src="${m.text}" class="msg-img"></div>`;
+    } else if (m.type === 'video') {
+      inner = `<div class="msg-bubble" style="padding: 6px; background: transparent; border: none;"><video src="${m.text}" class="msg-video" controls></video></div>`;
     } else {
       inner = `<div class="msg-bubble">${m.text}</div>`;
     }
@@ -1324,7 +1332,6 @@ function appendMessageToUI(m) {
     container.appendChild(row);
   }
   
-  // 重新把“正在输入”接到底部
   if(tRow) container.appendChild(tRow);
   scrollToBottom();
 }
@@ -2232,6 +2239,210 @@ function cancelFav() {
   });
 }
 
+/* ================= LoveDays ================= */
+function renderLoveDays() {
+  const container = document.getElementById('lovedaysListContainer');
+  container.innerHTML = '';
+  
+  if(allLoveDays.length === 0) {
+    container.innerHTML = `<div class="empty-tip">还没有纪念日，点击右上角添加吧</div>`;
+    return;
+  }
+  
+  allLoveDays.sort((a,b) => { if(a.pinned && !b.pinned) return -1; if(!a.pinned && b.pinned) return 1; return b.createdAt - a.createdAt; });
+
+  allLoveDays.forEach(ld => {
+    const div = document.createElement('div');
+    div.className = 'loveday-card';
+    
+    let bgStyle = ld.bgImage ? `background-image: url('${ld.bgImage}');` : '';
+    
+    // 计算天数
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const target = new Date(ld.date);
+    target.setHours(0,0,0,0);
+    let diffDays = Math.floor((today - target) / (1000 * 60 * 60 * 24));
+    let daysStr = "";
+    
+    if (ld.repeat === 'none') {
+      if (diffDays >= 0) daysStr = `已经 ${diffDays} 天`;
+      else daysStr = `还有 ${Math.abs(diffDays)} 天`;
+    } else {
+      // 简单计算下一次
+      let nextDate = new Date(target);
+      while(nextDate < today) {
+        if(ld.repeat === 'year') nextDate.setFullYear(nextDate.getFullYear() + 1);
+        else if(ld.repeat === 'month') nextDate.setMonth(nextDate.getMonth() + 1);
+        else if(ld.repeat === 'week') nextDate.setDate(nextDate.getDate() + 7);
+        else if(ld.repeat === 'day') nextDate.setDate(nextDate.getDate() + 1);
+      }
+      let nextDiff = Math.floor((nextDate - today) / (1000 * 60 * 60 * 24));
+      if(nextDiff === 0) daysStr = `就是今天`;
+      else daysStr = `还有 ${nextDiff} 天`;
+    }
+
+    div.innerHTML = `
+      <div class="ld-bg" style="${bgStyle}"></div>
+      <div class="ld-bg-mask"></div>
+      <div class="ld-content">
+        <div class="ld-title">${ld.name}</div>
+        <div class="ld-date">${ld.date} ${ld.repeat !== 'none' ? '('+({year:'每年',month:'每月',week:'每周',day:'每日'}[ld.repeat])+')' : ''}</div>
+        <div class="ld-days">${daysStr}</div>
+      </div>
+    `;
+    
+    let pressTimer;
+    div.addEventListener('touchstart', (e) => { 
+      pressTimer = setTimeout(() => { 
+        e.preventDefault(); 
+        targetLoveDaysId = ld.id;
+        document.getElementById('ldPinBtn').textContent = ld.pinned ? '取消置顶' : '置顶';
+        document.getElementById('loveDaysMenu').classList.add('active');
+      }, 500); 
+    }, {passive: false});
+    div.addEventListener('touchend', () => clearTimeout(pressTimer));
+    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+    container.appendChild(div);
+  });
+}
+
+function openLoveDaysModal() {
+  editLoveDaysId = null;
+  document.getElementById('lovedayModalTitle').textContent = "添加纪念日";
+  document.getElementById('lovedayName').value = '';
+  document.getElementById('lovedayDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('lovedayRepeat').value = 'none';
+  document.getElementById('lovedayBgPreview').style.display = 'none';
+  document.getElementById('lovedayBgPreview').src = '';
+  document.getElementById('lovedayBgIcon').style.display = 'block';
+  currentLovedayBg = null;
+  selectedLoveRooms = [];
+  
+  // 渲染梦角选择
+  const list = document.getElementById('lovedayRoomsList');
+  list.innerHTML = '';
+  allRooms.forEach(r => {
+    const btn = document.createElement('div');
+    btn.textContent = r.taName;
+    btn.style.cssText = `padding:4px 12px; border-radius:12px; font-size:13px; border:1px solid var(--line); cursor:pointer; background:#fff;`;
+    btn.onclick = () => {
+      if(selectedLoveRooms.includes(r.id)) {
+        selectedLoveRooms = selectedLoveRooms.filter(id => id !== r.id);
+        btn.style.background = '#fff'; btn.style.color = 'var(--text)';
+      } else {
+        selectedLoveRooms.push(r.id);
+        btn.style.background = 'var(--taro)'; btn.style.color = '#fff';
+      }
+    };
+    list.appendChild(btn);
+  });
+
+  document.getElementById('lovedayModal').classList.add('active');
+}
+function closeLoveDaysModal(e) { if(e.target === document.getElementById('lovedayModal')) document.getElementById('lovedayModal').classList.remove('active'); }
+
+function previewLovedayBg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentLovedayBg = ev.target.result;
+    document.getElementById('lovedayBgPreview').src = currentLovedayBg;
+    document.getElementById('lovedayBgPreview').style.display = 'block';
+    document.getElementById('lovedayBgIcon').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveLoveDays() {
+  const name = document.getElementById('lovedayName').value.trim();
+  if(!name) return showToast("请填写纪念日名字");
+  const date = document.getElementById('lovedayDate').value;
+  if(!date) return showToast("请选择日期");
+  const repeat = document.getElementById('lovedayRepeat').value;
+  
+  const data = {
+    name: name, date: date, repeat: repeat,
+    roomIds: selectedLoveRooms, bgImage: currentLovedayBg,
+    createdAt: Date.now()
+  };
+
+  if(editLoveDaysId) {
+    data.id = editLoveDaysId;
+    data.pinned = allLoveDays.find(l => l.id === editLoveDaysId)?.pinned || false;
+    dbPut('lovedays', data, () => { closeLoveDaysModal({target:document.getElementById('lovedayModal')}); showToast("已修改"); refreshAllData(); });
+  } else {
+    data.pinned = false;
+    dbAdd('lovedays', data, () => { closeLoveDaysModal({target:document.getElementById('lovedayModal')}); showToast("已添加"); refreshAllData(); });
+  }
+}
+
+function closeLoveDaysMenu(e) { if(e.target === document.getElementById('loveDaysMenu')) document.getElementById('loveDaysMenu').classList.remove('active'); }
+function toggleLoveDaysPin() {
+  closeLoveDaysMenu({target:document.getElementById('loveDaysMenu')});
+  const ld = allLoveDays.find(l => l.id === targetLoveDaysId);
+  if(ld) { ld.pinned = !ld.pinned; dbPut('lovedays', ld, () => refreshAllData()); }
+}
+function editLoveDays() {
+  closeLoveDaysMenu({target:document.getElementById('loveDaysMenu')});
+  const ld = allLoveDays.find(l => l.id === targetLoveDaysId);
+  if(!ld) return;
+  
+  editLoveDaysId = targetLoveDaysId;
+  document.getElementById('lovedayModalTitle').textContent = "编辑纪念日";
+  document.getElementById('lovedayName').value = ld.name;
+  document.getElementById('lovedayDate').value = ld.date;
+  document.getElementById('lovedayRepeat').value = ld.repeat;
+  currentLovedayBg = ld.bgImage;
+  if(currentLovedayBg) {
+    document.getElementById('lovedayBgPreview').src = currentLovedayBg;
+    document.getElementById('lovedayBgPreview').style.display = 'block';
+    document.getElementById('lovedayBgIcon').style.display = 'none';
+  } else {
+    document.getElementById('lovedayBgPreview').style.display = 'none';
+    document.getElementById('lovedayBgIcon').style.display = 'block';
+  }
+  selectedLoveRooms = ld.roomIds || [];
+
+  const list = document.getElementById('lovedayRoomsList');
+  list.innerHTML = '';
+  allRooms.forEach(r => {
+    const btn = document.createElement('div');
+    btn.textContent = r.taName;
+    const isSel = selectedLoveRooms.includes(r.id);
+    btn.style.cssText = `padding:4px 12px; border-radius:12px; font-size:13px; border:1px solid var(--line); cursor:pointer; background:${isSel ? 'var(--taro)' : '#fff'}; color:${isSel ? '#fff' : 'var(--text)'};`;
+    btn.onclick = () => {
+      if(selectedLoveRooms.includes(r.id)) {
+        selectedLoveRooms = selectedLoveRooms.filter(id => id !== r.id);
+        btn.style.background = '#fff'; btn.style.color = 'var(--text)';
+      } else {
+        selectedLoveRooms.push(r.id);
+        btn.style.background = 'var(--taro)'; btn.style.color = '#fff';
+      }
+    };
+    list.appendChild(btn);
+  });
+
+  document.getElementById('lovedayModal').classList.add('active');
+}
+function changeLoveDaysBg() {
+  closeLoveDaysMenu({target:document.getElementById('loveDaysMenu')});
+  editLoveDays(); // 打开编辑面板直接选图
+}
+function deleteLoveDays() {
+  closeLoveDaysMenu({target:document.getElementById('loveDaysMenu')});
+  document.getElementById('confirmTitle').textContent = '删除纪念日';
+  document.getElementById('confirmDesc').textContent = '确定要删除这个纪念日吗？';
+  document.getElementById('confirmYesBtn').onclick = () => {
+    dbDelete('lovedays', [targetLoveDaysId], () => {
+      closeConfirm({target:document.getElementById('confirmDeleteModal')});
+      refreshAllData(); showToast("已删除");
+    });
+  };
+  document.getElementById('confirmDeleteModal').classList.add('active');
+}
+
 /* ================= 音乐面板与播放 ================= */
 const bgAudio = document.getElementById('bgAudio');
 const musicOrb = document.getElementById('musicOrb');
@@ -2247,7 +2458,7 @@ let playerStartX = 0, playerStartY = 0, playerInitialX = 0, playerInitialY = 0;
 let isPlaying = false;
 let currentPlaylist = [];
 let currentSongIndex = -1;
-let playMode = 0; // 0: 列表循环, 1: 单曲循环, 2: 随机播放, 3: 顺序播放
+let playMode = 0;
 
 const playModes = [
   { id: 0, name: '列表循环', svg: `<path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"/>` },
@@ -2280,7 +2491,6 @@ function openMusicPanel() {
 }
 
 function playMusic(src) {
-  // 被“一起听”调用，随机放一首
   if(allMusic.length === 0) return;
   currentPlaylist = allMusic;
   currentSongIndex = Math.floor(Math.random() * allMusic.length);
@@ -2296,7 +2506,6 @@ function playCurrentSong() {
     document.getElementById('mpTitle').textContent = song.name;
     document.getElementById('mpArtist').textContent = song.artist || '未知歌手';
     
-    // 更新悬浮球和面板封面
     if(appSettings.orbImage) {
       document.getElementById('mpCover').innerHTML = `<img src="${appSettings.orbImage}">`;
       musicOrb.innerHTML = `<img src="${appSettings.orbImage}">`;
@@ -2304,14 +2513,13 @@ function playCurrentSong() {
     
     musicOrb.style.display = 'flex';
     musicOrb.classList.add('orb-spin');
-    document.getElementById('mpPlayIcon').innerHTML = `<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>`; // 暂停图标
+    document.getElementById('mpPlayIcon').innerHTML = `<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>`;
     document.getElementById('mpCover').style.animationPlayState = 'running';
   }).catch(err => {
     showToast("播放失败");
   });
 }
 
-// 悬浮球拖动
 musicOrb.addEventListener('touchstart', (e) => {
   isDraggingOrb = false;
   orbStartX = e.touches[0].clientX;
@@ -2336,27 +2544,23 @@ musicOrb.addEventListener('touchmove', (e) => {
 });
 musicOrb.addEventListener('touchend', (e) => {
   if(!isDraggingOrb) {
-    // 是点击，弹出面板，悬浮球隐身
     musicOrb.style.display = 'none';
     playerContainer.classList.add('active');
-    // 居中显示
     playerContainer.style.left = '50%';
     playerContainer.style.top = '50%';
     playerContainer.style.transform = 'translate(-50%, -50%)';
     playerContainer.style.margin = '0';
-    playerInitialX = 0; playerInitialY = 0; // 重置拖动起点
+    playerInitialX = 0; playerInitialY = 0;
   }
 });
 musicOrb.style.right = '20px';
 musicOrb.style.top = 'auto';
 musicOrb.style.bottom = '100px';
 
-// 音乐控制面板拖动
 playerModal.addEventListener('touchstart', (e) => {
   isDraggingPlayer = false;
   playerStartX = e.touches[0].clientX;
   playerStartY = e.touches[0].clientY;
-  // 获取当前实际的 left/top
   const rect = playerContainer.getBoundingClientRect();
   playerInitialX = rect.left;
   playerInitialY = rect.top;
@@ -2369,11 +2573,9 @@ playerModal.addEventListener('touchmove', (e) => {
   if(isDraggingPlayer) {
     let newX = playerInitialX + dx;
     let newY = playerInitialY + dy;
-    // 边界限制
     newX = Math.max(0, Math.min(newX, window.innerWidth - playerContainer.offsetWidth));
     newY = Math.max(0, Math.min(newY, window.innerHeight - playerContainer.offsetHeight));
     
-    // 切换到绝对像素定位
     playerContainer.style.transform = 'none';
     playerContainer.style.left = newX + 'px';
     playerContainer.style.top = newY + 'px';
@@ -2382,7 +2584,6 @@ playerModal.addEventListener('touchmove', (e) => {
 });
 
 function closeMusicPlayer(e) {
-  // 只有点背景或者未拖动时点面板，才关闭。这里由于事件冒泡，直接点背景关闭
   if(e.target === playerContainer) {
     playerContainer.classList.remove('active');
     musicOrb.style.display = 'flex';
@@ -2397,7 +2598,7 @@ function stopMusicAndClose() {
   document.getElementById('mpCover').style.animationPlayState = 'paused';
   
   playerContainer.classList.remove('active');
-  musicOrb.style.display = 'none'; // 彻底关闭音乐后，悬浮球也一起消失
+  musicOrb.style.display = 'none';
   showToast("已停止播放");
 }
 
@@ -2429,16 +2630,14 @@ function playNext() {
   playCurrentSong();
 }
 
-// 监听播放结束
 bgAudio.addEventListener('ended', () => {
-  if(playMode === 1) { bgAudio.play(); } // 单曲循环
+  if(playMode === 1) { bgAudio.play(); }
   else if(playMode === 3) { 
-    // 顺序播放
     if(currentSongIndex < currentPlaylist.length - 1) { playNext(); }
     else { togglePlay(); showToast("顺序播放结束"); }
   }
-  else if(playMode === 0) { playNext(); } // 列表循环
-  else if(playMode === 2) { playNext(); } // 随机播放
+  else if(playMode === 0) { playNext(); }
+  else if(playMode === 2) { playNext(); }
 });
 
 function toggleMode() {
@@ -2477,7 +2676,6 @@ function uploadGlobalBg(e) {
     document.getElementById('globalBgPreview').style.display = 'block';
     document.getElementById('globalBgIcon').style.display = 'none';
     
-    // 修改点2：立即生效
     document.getElementById('globalBg').style.backgroundImage = `url(${base64})`;
     appSettings.globalBgImage = base64;
     dbPut('settings', {key: 'globalBgImage', value: base64}, () => showToast("全局背景已更新"));
@@ -2500,7 +2698,6 @@ function uploadMpBg(e) {
     document.getElementById('mpBgPreview').style.display = 'block';
     document.getElementById('mpBgIcon').style.display = 'none';
     
-    // 修改点2：立即生效
     document.getElementById('mpBg').style.backgroundImage = `url(${base64})`;
     appSettings.mpBgImage = base64;
     dbPut('settings', {key: 'mpBgImage', value: base64}, () => showToast("音乐面板背景已更新"));
@@ -2533,6 +2730,7 @@ function backupData() {
     actions: allActions,
     music: allMusic,
     favorites: allFavs,
+    lovedays: allLoveDays,
     settings: appSettings
   };
   const content = JSON.stringify(backup, null, 2);
@@ -2550,7 +2748,7 @@ function importBackup(e) {
       if(!data.rooms || !data.wordcards) return showToast("备份文件无效");
       if(!confirm("确认覆盖当前所有数据吗？此操作不可逆！")) return;
       
-      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites');
+      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays');
       
       setTimeout(() => {
         if(data.rooms.length > 0) dbAdd('rooms', data.rooms);
@@ -2559,6 +2757,7 @@ function importBackup(e) {
         if(data.actions && data.actions.length > 0) dbAdd('actions', data.actions);
         if(data.music && data.music.length > 0) dbAdd('music', data.music);
         if(data.favorites && data.favorites.length > 0) dbAdd('favorites', data.favorites);
+        if(data.lovedays && data.lovedays.length > 0) dbAdd('lovedays', data.lovedays);
         setTimeout(() => { showToast("备份已恢复"); refreshAllData(); goToPage('page-home'); }, 500);
       }, 300);
     } catch(err) { showToast("解析失败"); }
@@ -2569,7 +2768,7 @@ function importBackup(e) {
 
 function clearAllData() {
   if(!confirm("确定要清除所有数据吗？包括所有聊天记录和贴图！")) return;
-  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites');
+  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays');
   setTimeout(() => { showToast("数据已清空"); refreshAllData(); goToPage('page-home'); }, 300);
 }
 </script>
