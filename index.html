@@ -110,7 +110,7 @@
   
   /* 修复问题框多出横线，以及增加内边距距离 */
   .input-field { 
-    width: 100%; padding: 14px 16px; border-radius: 10px; 
+    width: 100%; padding: 12px 14px; border-radius: 10px; 
     border: 1px solid var(--line); background: #FFFFFF; 
     font-size: 14px; color: var(--text); outline: none; 
     font-family: inherit; 
@@ -486,7 +486,7 @@
   @keyframes attractTa { 0% { transform: translateX(0px); } 100% { transform: translateX(6px); } }
   @keyframes attractMe { 0% { transform: translateX(0px); } 100% { transform: translateX(-6px); } }
 
-  /* 陪伴大面板 (尺寸完全对齐音乐面板) */
+  /* 陪伴大面板 (完全对齐音乐面板大小与高度) */
   .companion-panel-container { position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .companion-panel-container.active { display: block; }
   
@@ -496,7 +496,7 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; 
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none; 
-    min-height: 360px; /* 强制最小高度对齐音乐面板 */
+    height: 360px; /* 强制写死高度，保证跟音乐面板一样 */
   }
   .companion-modal:active { cursor: grabbing; }
   
@@ -1099,9 +1099,8 @@
       <img id="lovedayBgPreview" src="" style="display:none;"><span id="lovedayBgIcon">自定义背景</span>
     </div>
     <input type="file" id="lovedayBgFile" accept="image/*" style="display:none" onchange="previewLovedayBg(event)">
-    <div class="modal-footer" style="margin-top:10px;">
-      <div></div>
-      <button class="btn-save" onclick="saveLoveDays()">保存</button>
+    <div class="modal-footer" style="margin-top:10px; justify-content: center;">
+      <button class="btn-save" style="padding: 10px 40px;" onclick="saveLoveDays()">保存</button>
     </div>
   </div>
 </div>
@@ -2087,9 +2086,9 @@ function startCompanion() {
   restorePosition('cmpOrb');
   restorePosition('cmpPanel');
 
-  // 显示悬浮窗和面板
+  // 只显示悬浮窗，面板隐藏
   document.getElementById('companionOrb').style.display = 'flex';
-  document.getElementById('companionPanelContainer').classList.add('active');
+  document.getElementById('companionPanelContainer').classList.remove('active');
 
   // 开启计时
   companionStartTime = Date.now();
