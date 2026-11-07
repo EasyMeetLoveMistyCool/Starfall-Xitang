@@ -486,17 +486,18 @@
   @keyframes attractTa { 0% { transform: translateX(0px); } 100% { transform: translateX(6px); } }
   @keyframes attractMe { 0% { transform: translateX(0px); } 100% { transform: translateX(-6px); } }
 
-  /* 陪伴大面板 (完全对齐音乐面板大小与高度) */
+  /* 陪伴大面板 (完全照抄音乐面板的尺寸和外壳) */
   .companion-panel-container { position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .companion-panel-container.active { display: block; }
   
   .companion-modal { 
     position: relative; overflow: hidden; background: #FFFFFF; 
     border-radius: 24px; padding: 24px 20px; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; 
+    display: flex; flex-direction: column; align-items: center; gap: 16px; 
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none; 
-    height: 360px; /* 强制写死高度，保证跟音乐面板一样 */
+    min-height: 360px; /* 保证高度像音乐面板一样被撑起 */
+    justify-content: center;
   }
   .companion-modal:active { cursor: grabbing; }
   
@@ -519,6 +520,11 @@
   .cmp-timer-wrap { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
   .cmp-timer-label { font-size: 13px; color: var(--sub); margin-bottom: 4px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
   .cmp-timer { font-size: 32px; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
+
+  .cmp-minimize-bottom {
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    margin-top: 16px; font-size: 24px; color: var(--purple-soft); font-weight: bold;
+  }
 
 </style>
 </head>
@@ -889,10 +895,7 @@
     <div class="cmp-bg" id="cmpBg"></div>
     <div class="cmp-bg-mask" id="cmpBgMask"></div>
     
-    <div style="position:absolute; top:16px; right:16px; z-index:5; display:flex; gap:8px;">
-      <div class="mp-close-btn" style="position:static; width:28px; height:28px;" onclick="minimizeCompanionPanel()">
-        <span style="color:#fff; font-size:16px; font-weight:bold; line-height:1; margin-top:-2px;">⊙</span>
-      </div>
+    <div style="position:absolute; top:16px; right:16px; z-index:5;">
       <div class="mp-close-btn" style="position:static; width:28px; height:28px;" onclick="stopCompanion()">
         <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
@@ -909,6 +912,9 @@
         <div class="cmp-timer" id="cmpTimer">00:00</div>
       </div>
     </div>
+
+    <!-- 收起按钮移到正下方 -->
+    <div class="cmp-minimize-bottom" onclick="minimizeCompanionPanel()">⊙</div>
   </div>
 </div>
 
