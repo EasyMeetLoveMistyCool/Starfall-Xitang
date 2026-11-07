@@ -486,42 +486,43 @@
   @keyframes attractTa { 0% { transform: translateX(0px); } 100% { transform: translateX(6px); } }
   @keyframes attractMe { 0% { transform: translateX(0px); } 100% { transform: translateX(-6px); } }
 
-  /* 陪伴大面板 (完全照抄音乐面板结构) */
-  .companion-panel-container { position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
+  /* 陪伴大面板 (高度 80vh) */
+  .companion-panel-container { position: fixed; top: 10%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .companion-panel-container.active { display: block; }
   
   .companion-modal { 
     position: relative; overflow: hidden; background: #FFFFFF; 
     border-radius: 24px; padding: 24px 20px; 
-    display: flex; flex-direction: column; align-items: center; gap: 16px; 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; /* 加大间距填补高度 */
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none; 
+    height: 80vh; /* 强制高度占屏幕 80% */
   }
   .companion-modal:active { cursor: grabbing; }
   
   .cmp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
   .cmp-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
   
-  .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px;}
+  .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 30px;}
   
-  .cmp-avatars-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
-  .cmp-avatars-wrap .av { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+  .cmp-avatars-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; margin-top: 40px; }
+  .cmp-avatars-wrap .av { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
   .cmp-avatars-wrap .av img { width: 100%; height: 100%; object-fit: cover; }
   
-  .cmp-avatars-wrap .av-ta { margin-left: -24px; animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
+  .cmp-avatars-wrap .av-ta { margin-left: -30px; animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
   .cmp-avatars-wrap .av-me { animation: attractMePanel 3s infinite alternate ease-in-out; z-index: 1;}
 
-  @keyframes attractTaPanel { 0% { transform: translateX(0px); } 100% { transform: translateX(10px); } }
-  @keyframes attractMePanel { 0% { transform: translateX(0px); } 100% { transform: translateX(-10px); } }
+  @keyframes attractTaPanel { 0% { transform: translateX(0px); } 100% { transform: translateX(15px); } }
+  @keyframes attractMePanel { 0% { transform: translateX(0px); } 100% { transform: translateX(-15px); } }
 
-  .cmp-status { font-size: 18px; font-weight: 600; color: var(--text); text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,0.8); margin-top: -8px;}
+  .cmp-status { font-size: 20px; font-weight: 600; color: var(--text); text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,0.8); margin-top: -8px;}
   .cmp-timer-wrap { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
-  .cmp-timer-label { font-size: 13px; color: var(--sub); margin-bottom: 4px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
-  .cmp-timer { font-size: 36px; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
+  .cmp-timer-label { font-size: 15px; color: var(--sub); margin-bottom: 6px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
+  .cmp-timer { font-size: 48px; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
 
   /* 底部居中的收起按钮 */
-  .cmp-bottom-controls { display: flex; justify-content: center; align-items: center; margin-top: 10px; width: 100%;}
-  .cmp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px; font-size: 24px; color: var(--purple-soft); font-weight: bold;}
+  .cmp-bottom-controls { display: flex; justify-content: center; align-items: center; margin-top: auto; margin-bottom: 20px; width: 100%;}
+  .cmp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 50px; height: 50px; font-size: 32px; color: var(--purple-soft); font-weight: bold;}
 
 </style>
 </head>
@@ -886,7 +887,7 @@
   </div>
 </div>
 
-<!-- 陪伴大面板 (完全照抄音乐面板结构) -->
+<!-- 陪伴大面板 (高度 80vh) -->
 <div class="companion-panel-container" id="companionPanelContainer" onclick="closeCompanionPanel(event)">
   <div class="companion-modal" id="companionModal" onclick="event.stopPropagation()">
     <div class="cmp-bg" id="cmpBg"></div>
