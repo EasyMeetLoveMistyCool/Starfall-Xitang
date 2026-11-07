@@ -486,7 +486,7 @@
   @keyframes attractTa { 0% { transform: translateX(0px); } 100% { transform: translateX(6px); } }
   @keyframes attractMe { 0% { transform: translateX(0px); } 100% { transform: translateX(-6px); } }
 
-  /* 陪伴大面板 (完全照抄音乐面板的尺寸和外壳) */
+  /* 陪伴大面板 (完全照抄音乐面板结构) */
   .companion-panel-container { position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .companion-panel-container.active { display: block; }
   
@@ -496,35 +496,32 @@
     display: flex; flex-direction: column; align-items: center; gap: 16px; 
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none; 
-    min-height: 360px; /* 保证高度像音乐面板一样被撑起 */
-    justify-content: center;
   }
   .companion-modal:active { cursor: grabbing; }
   
   .cmp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
   .cmp-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
-  .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px; margin-top: 10px;}
+  
+  .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px;}
   
   .cmp-avatars-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
   .cmp-avatars-wrap .av { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
   .cmp-avatars-wrap .av img { width: 100%; height: 100%; object-fit: cover; }
   
-  /* 强制用负边距让它们交叠 */
   .cmp-avatars-wrap .av-ta { margin-left: -24px; animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
   .cmp-avatars-wrap .av-me { animation: attractMePanel 3s infinite alternate ease-in-out; z-index: 1;}
 
   @keyframes attractTaPanel { 0% { transform: translateX(0px); } 100% { transform: translateX(10px); } }
   @keyframes attractMePanel { 0% { transform: translateX(0px); } 100% { transform: translateX(-10px); } }
 
-  .cmp-status { font-size: 16px; font-weight: 600; color: var(--text); text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
+  .cmp-status { font-size: 18px; font-weight: 600; color: var(--text); text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,0.8); margin-top: -8px;}
   .cmp-timer-wrap { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
   .cmp-timer-label { font-size: 13px; color: var(--sub); margin-bottom: 4px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
-  .cmp-timer { font-size: 32px; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
+  .cmp-timer { font-size: 36px; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
 
-  .cmp-minimize-bottom {
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-    margin-top: 16px; font-size: 24px; color: var(--purple-soft); font-weight: bold;
-  }
+  /* 底部居中的收起按钮 */
+  .cmp-bottom-controls { display: flex; justify-content: center; align-items: center; margin-top: 10px; width: 100%;}
+  .cmp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 40px; height: 40px; font-size: 24px; color: var(--purple-soft); font-weight: bold;}
 
 </style>
 </head>
@@ -889,13 +886,14 @@
   </div>
 </div>
 
-<!-- 陪伴大面板 -->
+<!-- 陪伴大面板 (完全照抄音乐面板结构) -->
 <div class="companion-panel-container" id="companionPanelContainer" onclick="closeCompanionPanel(event)">
   <div class="companion-modal" id="companionModal" onclick="event.stopPropagation()">
     <div class="cmp-bg" id="cmpBg"></div>
     <div class="cmp-bg-mask" id="cmpBgMask"></div>
     
-    <div style="position:absolute; top:16px; right:16px; z-index:5;">
+    <!-- 右上角只保留关闭按钮 -->
+    <div style="position:absolute; top:16px; right:16px; z-index:5; display:flex; gap:8px;">
       <div class="mp-close-btn" style="position:static; width:28px; height:28px;" onclick="stopCompanion()">
         <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </div>
@@ -911,10 +909,12 @@
         <div class="cmp-timer-label">已陪伴</div>
         <div class="cmp-timer" id="cmpTimer">00:00</div>
       </div>
+      
+      <!-- 正下方的收起按钮 -->
+      <div class="cmp-bottom-controls">
+        <div class="cmp-minimize" onclick="minimizeCompanionPanel()">⊙</div>
+      </div>
     </div>
-
-    <!-- 收起按钮移到正下方 -->
-    <div class="cmp-minimize-bottom" onclick="minimizeCompanionPanel()">⊙</div>
   </div>
 </div>
 
@@ -2092,7 +2092,7 @@ function startCompanion() {
   restorePosition('cmpOrb');
   restorePosition('cmpPanel');
 
-  // 只显示悬浮窗，面板隐藏
+  // 显示悬浮窗，隐藏大面板
   document.getElementById('companionOrb').style.display = 'flex';
   document.getElementById('companionPanelContainer').classList.remove('active');
 
