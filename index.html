@@ -524,6 +524,75 @@
   .cmp-bottom-controls { display: flex; justify-content: center; align-items: center; margin-top: auto; margin-bottom: 20px; width: 100%;}
   .cmp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 50px; height: 50px; font-size: 32px; color: var(--purple-soft); font-weight: bold;}
 
+  /* ================= 通话功能 ================= */
+  .call-panel-container { position: fixed; top: 10%; left: 10%; width: 80%; height: 80vh; z-index: 1005; display: none; }
+  .call-panel-container.active { display: block; }
+
+  .call-modal { 
+    position: relative; width: 100%; height: 100%; border-radius: 24px; overflow: hidden; 
+    background: #FFFFFF; box-shadow: 0 10px 40px rgba(139,92,246,0.3); 
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
+    cursor: grab; user-select: none; padding: 40px 20px;
+  }
+  .call-modal:active { cursor: grabbing; }
+
+  .call-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
+  .call-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
+
+  .call-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; gap: 20px;}
+
+  /* 语音头像框 */
+  .call-avatar-wrap { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;}
+  .call-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; z-index: 2; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+  .call-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  /* 呼吸波纹 */
+  .breath-ripple {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80px; height: 80px; border-radius: 50%; background: rgba(184, 154, 246, 0.4);
+    animation: ripple 2s infinite ease-out; z-index: 1;
+  }
+  @keyframes ripple { 0% { width: 80px; height: 80px; opacity: 1; } 100% { width: 160px; height: 160px; opacity: 0; } }
+
+  .call-name { font-size: 24px; font-weight: 600; color: var(--text); text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
+  .call-status { font-size: 15px; color: var(--sub); text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
+  .call-timer { font-size: 20px; font-weight: 600; color: var(--purple); margin-top: 10px; }
+
+  /* 视频画面 (画中画) */
+  .call-video-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
+  .call-video-pip { position: absolute; bottom: 20px; right: 20px; width: 100px; height: 140px; border-radius: 12px; border: 2px solid #fff; background: #EDE9FE; overflow: hidden; z-index: 3; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .call-video-pip img { width: 100%; height: 100%; object-fit: cover; }
+  
+  /* 视频时的状态文字居中覆盖 */
+  .call-video-overlay-text { position: absolute; top: 40%; left: 0; right: 0; text-align: center; z-index: 2; pointer-events: none;}
+
+  .call-controls { display: flex; justify-content: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; }
+  
+  .call-btn-circle { 
+    width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+    cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: transform 0.15s;
+  }
+  .call-btn-circle:active { transform: scale(0.9); }
+  .call-btn-circle svg { width: 28px; height: 28px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
+  
+  .btn-answer { background: #34C759; } /* 绿色 */
+  .btn-hangup { background: #FF3B30; } /* 红色 */
+  .btn-minimize-call { background: var(--taro); }
+
+  /* 通话悬浮窗 (对方头像) */
+  #callOrb {
+    position: fixed; z-index: 2000; width: 60px; height: 60px;
+    border-radius: 50%; background: var(--taro); border: 2px solid #fff;
+    box-shadow: 0 4px 12px rgba(139,92,246,0.4); 
+    display: none; align-items: center; justify-content: center;
+    cursor: grab; touch-action: none; user-select: none;
+    overflow: hidden;
+  }
+  #callOrb img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  #callOrb svg { width: 28px; height: 28px; stroke: #fff; fill: none; pointer-events: none; }
+  
+  /* 悬浮窗通话中的波纹 */
+  .orb-breath { animation: orbRipple 2s infinite alternate ease-in-out; }
+  @keyframes orbRipple { 0% { box-shadow: 0 0 0 0 rgba(184, 154, 246, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(184, 154, 246, 0); } }
 </style>
 </head>
 <body>
@@ -532,15 +601,80 @@
 <div id="globalBgMask"></div>
 <div class="toast" id="toast"></div>
 
-<!-- 悬浮球 -->
+<!-- 音乐悬浮球 -->
 <div id="musicOrb"><svg viewBox="0 0 24 24"><path d="M9 18V6.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></div>
 <audio id="bgAudio" loop></audio>
 
-<!-- 陪伴悬浮窗 (纯透明/重叠头像) -->
+<!-- 陪伴悬浮窗 -->
 <div id="companionOrb" onclick="openCompanionPanel()">
   <div class="companion-avatars">
     <div class="av av-me" id="cmpOrbMe"><span style="color:var(--purple)">我</span></div>
     <div class="av av-ta" id="cmpOrbTa"><span style="color:var(--purple)">梦</span></div>
+  </div>
+</div>
+
+<!-- 通话悬浮窗 (显示对方头像) -->
+<div id="callOrb" class="orb-breath" onclick="openCallPanel()">
+  <div id="callOrbContent" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#EDE9FE;">
+    <span style="color:var(--purple);font-size:16px;">梦</span>
+  </div>
+</div>
+
+<!-- 通话大面板 -->
+<div class="call-panel-container" id="callPanelContainer" onclick="closeCallPanel(event)">
+  <div class="call-modal" id="callModal" onclick="event.stopPropagation()">
+    <!-- 语音背景 / 视频背景（视频时替换为大背景） -->
+    <div class="call-bg" id="callBg"></div>
+    <div class="call-bg-mask" id="callBgMask"></div>
+
+    <!-- 通话内容 -->
+    <div class="call-content">
+      <!-- 语音专用居中头像 -->
+      <div id="callVoiceView" style="display:flex; flex-direction:column; align-items:center; width:100%; height: 100%; justify-content: center;">
+        <div class="call-avatar-wrap">
+          <div class="breath-ripple"></div>
+          <div class="call-avatar" id="callAvatar">
+            <span style="color:var(--purple); font-size:24px;">梦</span>
+          </div>
+        </div>
+        <div class="call-name" id="callName">TA</div>
+        <div class="call-status" id="callStatusText">正在拨打...</div>
+        <div class="call-timer" id="callTimer" style="display:none;">00:00</div>
+      </div>
+
+      <!-- 视频专用画中画视图 (初始隐藏) -->
+      <div id="callVideoView" style="display:none; width:100%; height:100%; position:absolute; top:0; left:0;">
+        <!-- 视频状态文字（顶部/居中） -->
+        <div class="call-video-overlay-text">
+          <div class="call-name" id="callVideoName">TA</div>
+          <div class="call-status" id="callVideoStatus">正在视频...</div>
+          <div class="call-timer" id="callVideoTimer" style="display:none; color:#fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">00:00</div>
+        </div>
+        <!-- 你的画中画小窗 -->
+        <div class="call-video-pip" id="callVideoPip">
+          <span style="color:var(--purple); font-size:14px;">我</span>
+        </div>
+      </div>
+
+      <!-- 底部按钮组 -->
+      <div class="call-controls" id="callControls">
+        <!-- 来电状态：接听与挂断 -->
+        <div class="call-btn-circle btn-answer" id="btnAnswer" onclick="answerCall()" style="display:none;">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div class="call-btn-circle btn-hangup" id="btnHangup" onclick="hangupCall()">
+          <svg viewBox="0 0 24 24" transform="rotate(135 12 12)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        
+        <!-- 通话中状态：收起与挂断 -->
+        <div class="call-btn-circle btn-minimize-call" id="btnMinimize" onclick="minimizeCall()" style="display:none;">
+          <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        </div>
+        <div class="call-btn-circle btn-hangup" id="btnHangupActive" onclick="hangupCall()" style="display:none;">
+          <svg viewBox="0 0 24 24" transform="rotate(135 12 12)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -640,11 +774,6 @@
       <img id="bgPreview" src="" style="display:none;"><span id="bgIcon">点击上传背景图</span>
     </div>
     <input type="file" id="bgFile" accept="image/*" style="display:none" onchange="previewImg(event, 'bgPreview', 'bgIcon')">
-    <div class="slider-row">
-      <span>背景雾化度</span>
-      <input type="range" id="bgBlur" min="0" max="100" value="30" oninput="document.getElementById('blurVal').innerText = this.value + '%'">
-      <span id="blurVal">30%</span>
-    </div>
   </div>
 
   <!-- 音乐配置 -->
@@ -662,11 +791,6 @@
       <img id="mpBgPreview" src="" style="display:none;"><span id="mpBgIcon">点击上传音乐面板背景图</span>
     </div>
     <input type="file" id="mpBgFile" accept="image/*" style="display:none" onchange="previewImg(event, 'mpBgPreview', 'mpBgIcon')">
-    <div class="slider-row">
-      <span>音乐面板雾化度</span>
-      <input type="range" id="mpBgBlur" min="0" max="100" value="30" oninput="document.getElementById('mpBgBlurVal').innerText = this.value + '%'">
-      <span id="mpBgBlurVal">30%</span>
-    </div>
   </div>
 
   <!-- 陪伴配置 -->
@@ -676,11 +800,15 @@
       <img id="cmpBgPreview" src="" style="display:none;"><span id="cmpBgIcon">点击上传陪伴面板背景图</span>
     </div>
     <input type="file" id="cmpBgFile" accept="image/*" style="display:none" onchange="previewImg(event, 'cmpBgPreview', 'cmpBgIcon')">
-    <div class="slider-row">
-      <span>陪伴面板雾化度</span>
-      <input type="range" id="cmpBgBlur" min="0" max="100" value="30" oninput="document.getElementById('cmpBgBlurVal').innerText = this.value + '%'">
-      <span id="cmpBgBlurVal">30%</span>
+  </div>
+
+  <!-- 通话配置 -->
+  <div class="form-group">
+    <div class="form-title">专属通话设置</div>
+    <div class="bg-upload-area" onclick="document.getElementById('callBgFile').click()">
+      <img id="callBgPreview" src="" style="display:none;"><span id="callBgIcon">点击上传通话背景图</span>
     </div>
+    <input type="file" id="callBgFile" accept="image/*" style="display:none" onchange="previewImg(event, 'callBgPreview', 'callBgIcon')">
   </div>
 
   <div class="form-group">
@@ -717,6 +845,14 @@
       <span>TA收藏概率：</span>
       <input type="number" class="input-field" id="setFavProb" value="3" style="width:60px; text-align:center;" onchange="saveSetting('favProb', this.value)"> %
     </div>
+    <div class="speed-row" style="margin-bottom:12px;">
+      <span>语音来电概率：</span>
+      <input type="number" class="input-field" id="setCallProb" value="2" style="width:60px; text-align:center;" onchange="saveSetting('callProb', this.value)"> %
+    </div>
+    <div class="speed-row" style="margin-bottom:12px;">
+      <span>视频来电概率：</span>
+      <input type="number" class="input-field" id="setVideoProb" value="1" style="width:60px; text-align:center;" onchange="saveSetting('videoProb', this.value)"> %
+    </div>
     <div class="speed-row">
       <span>桌面轮播间隔：</span>
       <input type="number" class="input-field" id="setCarouselMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('carouselMin', this.value)"> ~ 
@@ -747,9 +883,9 @@
     </div>
     <div style="display:flex; gap:8px;">
       <!-- 电话图标 -->
-      <div class="phone-btn" onclick="showToast('正在拨打语音通话...')"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <div class="phone-btn" onclick="startManualCall(false)"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
       <!-- 视频图标 -->
-      <div class="phone-btn" onclick="showToast('正在发起视频通话...')"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2.5" /><path d="M15.5 10.5l5-3v9l-5-3" stroke-linejoin="round" /></svg></div>
+      <div class="phone-btn" onclick="startManualCall(true)"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2.5" /><path d="M15.5 10.5l5-3v9l-5-3" stroke-linejoin="round" /></svg></div>
     </div>
   </div>
   <div class="chat-content" id="chatContent"></div>
@@ -887,7 +1023,7 @@
   </div>
 </div>
 
-<!-- 陪伴大面板 (高度 80vh) -->
+<!-- 陪伴大面板 -->
 <div class="companion-panel-container" id="companionPanelContainer" onclick="closeCompanionPanel(event)">
   <div class="companion-modal" id="companionModal" onclick="event.stopPropagation()">
     <div class="cmp-bg" id="cmpBg"></div>
@@ -1296,6 +1432,8 @@ let appSettings = {
   actionProb: 7, 
   listenProb: 5, 
   favProb: 3, 
+  callProb: 2, 
+  videoProb: 1,
   carouselMin: 1, 
   carouselMax: 3, 
   globalBgImage: null,
@@ -1310,6 +1448,8 @@ function initSettings() {
     document.getElementById('setActionProb').value = appSettings.actionProb;
     document.getElementById('setListenProb').value = appSettings.listenProb;
     document.getElementById('setFavProb').value = appSettings.favProb;
+    document.getElementById('setCallProb').value = appSettings.callProb;
+    document.getElementById('setVideoProb').value = appSettings.videoProb;
     document.getElementById('setCarouselMin').value = appSettings.carouselMin;
     document.getElementById('setCarouselMax').value = appSettings.carouselMax;
     
@@ -1466,15 +1606,13 @@ function openCreateForm() {
   document.getElementById('myName').value = '我'; document.getElementById('myCall').value = '';
   document.getElementById('myAvatarPreview').style.display = 'none'; document.getElementById('myAvatarPreview').src = ''; document.getElementById('myAvatarIcon').style.display = 'block';
   document.getElementById('bgPreview').style.display = 'none'; document.getElementById('bgPreview').src = ''; document.getElementById('bgIcon').style.display = 'block';
-  document.getElementById('bgBlur').value = 30; document.getElementById('blurVal').innerText = '30%';
   document.getElementById('speedMin').value = 8; document.getElementById('speedMax').value = 15;
   
   // 清空音乐和陪伴配置
   document.getElementById('orbPreview').style.display = 'none'; document.getElementById('orbPreview').src = ''; document.getElementById('orbIcon').style.display = 'block';
   document.getElementById('mpBgPreview').style.display = 'none'; document.getElementById('mpBgPreview').src = ''; document.getElementById('mpBgIcon').style.display = 'block';
-  document.getElementById('mpBgBlur').value = 30; document.getElementById('mpBgBlurVal').innerText = '30%';
   document.getElementById('cmpBgPreview').style.display = 'none'; document.getElementById('cmpBgPreview').src = ''; document.getElementById('cmpBgIcon').style.display = 'block';
-  document.getElementById('cmpBgBlur').value = 30; document.getElementById('cmpBgBlurVal').innerText = '30%';
+  document.getElementById('callBgPreview').style.display = 'none'; document.getElementById('callBgPreview').src = ''; document.getElementById('callBgIcon').style.display = 'block';
 
   goToPage('page-create');
 }
@@ -1488,17 +1626,17 @@ function openEditForm() {
   document.getElementById('myName').value = room.myName || ''; document.getElementById('myCall').value = room.myCall || '';
   if(room.myAvatar) { setPreview('myAvatarPreview', 'myAvatarIcon', room.myAvatar); } else { document.getElementById('myAvatarPreview').style.display = 'none'; document.getElementById('myAvatarIcon').style.display = 'block'; }
   if(room.bgImage) { setPreview('bgPreview', 'bgIcon', room.bgImage); } else { document.getElementById('bgPreview').style.display = 'none'; document.getElementById('bgIcon').style.display = 'block'; }
-  document.getElementById('bgBlur').value = room.bgBlur || 30; document.getElementById('blurVal').innerText = (room.bgBlur || 30) + '%';
   document.getElementById('speedMin').value = room.speedMin || 8; document.getElementById('speedMax').value = room.speedMax || 15;
   
   // 恢复音乐配置
   if(room.orbImage) { setPreview('orbPreview', 'orbIcon', room.orbImage); } else { document.getElementById('orbPreview').style.display = 'none'; document.getElementById('orbIcon').style.display = 'block'; }
   if(room.mpBgImage) { setPreview('mpBgPreview', 'mpBgIcon', room.mpBgImage); } else { document.getElementById('mpBgPreview').style.display = 'none'; document.getElementById('mpBgIcon').style.display = 'block'; }
-  document.getElementById('mpBgBlur').value = room.mpBgBlur || 30; document.getElementById('mpBgBlurVal').innerText = (room.mpBgBlur || 30) + '%';
 
   // 恢复陪伴配置
   if(room.cmpBgImage) { setPreview('cmpBgPreview', 'cmpBgIcon', room.cmpBgImage); } else { document.getElementById('cmpBgPreview').style.display = 'none'; document.getElementById('cmpBgIcon').style.display = 'block'; }
-  document.getElementById('cmpBgBlur').value = room.cmpBgBlur || 30; document.getElementById('cmpBgBlurVal').innerText = (room.cmpBgBlur || 30) + '%';
+
+  // 恢复通话配置
+  if(room.callBgImage) { setPreview('callBgPreview', 'callBgIcon', room.callBgImage); } else { document.getElementById('callBgPreview').style.display = 'none'; document.getElementById('callBgIcon').style.display = 'block'; }
 
   goToPage('page-create');
 }
@@ -1509,13 +1647,12 @@ function submitCreate() {
   const roomData = {
     taName: taName, taCall: document.getElementById('taCall').value.trim(), taSign: document.getElementById('taSign').value.trim(), taAvatar: document.getElementById('taAvatarPreview').src || null,
     myName: document.getElementById('myName').value.trim() || '我', myCall: document.getElementById('myCall').value.trim(), myAvatar: document.getElementById('myAvatarPreview').src || null,
-    bgImage: document.getElementById('bgPreview').src || null, bgBlur: parseInt(document.getElementById('bgBlur').value),
+    bgImage: document.getElementById('bgPreview').src || null,
     
     orbImage: document.getElementById('orbPreview').src || null,
     mpBgImage: document.getElementById('mpBgPreview').src || null,
-    mpBgBlur: parseInt(document.getElementById('mpBgBlur').value),
     cmpBgImage: document.getElementById('cmpBgPreview').src || null,
-    cmpBgBlur: parseInt(document.getElementById('cmpBgBlur').value),
+    callBgImage: document.getElementById('callBgPreview').src || null,
 
     speedMin: parseInt(document.getElementById('speedMin').value) || 8, speedMax: parseInt(document.getElementById('speedMax').value) || 15, updatedAt: Date.now()
   };
@@ -1538,7 +1675,7 @@ function openChatRoom(id) {
   document.getElementById('chatHeaderAvatar').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span class="ph" style="font-size:20px;color:var(--purple)">梦</span>`;
   const bg = document.getElementById('chatBg'), mask = document.getElementById('chatBgMask');
   if(currentRoom.bgImage) { bg.style.backgroundImage = `url(${currentRoom.bgImage})`; } else { bg.style.background = `transparent`; }
-  mask.style.background = `rgba(255,255,255, ${(currentRoom.bgBlur || 30) / 100 * 0.9})`; 
+  mask.style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`; 
   
   dbGetAll('messages', msgs => {
     const roomMsgs = msgs.filter(m => m.roomId === id).sort((a,b) => a.timestamp - b.timestamp);
@@ -1703,6 +1840,19 @@ function triggerReply(room) {
   
   currentReplyTimer = setTimeout(() => {
     showTypingIndicator(false);
+    
+    // 判断 TA 是否来电话/视频
+    let doCall = Math.random() < (appSettings.callProb / 100);
+    let doVideo = Math.random() < (appSettings.videoProb / 100);
+    
+    if (doVideo) {
+      triggerIncomingCall(true);
+      return; // 视频优先
+    } else if (doCall) {
+      triggerIncomingCall(false);
+      return;
+    }
+
     const count = Math.floor(1 + Math.random() * 3); 
     const pSticker = (appSettings.stickerProb || 10) / 100;
     const pAction = (appSettings.actionProb || 7) / 100;
@@ -2044,6 +2194,7 @@ const COMPANION_OPTIONS = [
 let selectedCompanionOption = null;
 let companionTimerInterval = null;
 let companionStartTime = 0;
+let companionActive = false;
 
 function openCompanionSelectPanel() {
   closePanel('starIslandPanel');
@@ -2070,16 +2221,13 @@ function startCompanion() {
 
   const taName = currentRoom.taCall || currentRoom.taName;
 
-  // 设置悬浮窗内容 (纯头像重叠)
   document.getElementById('cmpOrbTa').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:16px;">梦</span>`;
   document.getElementById('cmpOrbMe').innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:16px;">我</span>`;
 
-  // 设置大面板内容
   document.getElementById('cmpPanelTa').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:24px;">梦</span>`;
   document.getElementById('cmpPanelMe').innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:24px;">我</span>`;
   document.getElementById('cmpStatusText').textContent = `${taName}正在与你一起${selectedCompanionOption}`;
 
-  // 设置大面板背景
   const cmpBg = document.getElementById('cmpBg');
   const cmpBgMask = document.getElementById('cmpBgMask');
   if (currentRoom.cmpBgImage) {
@@ -2087,17 +2235,15 @@ function startCompanion() {
   } else {
     cmpBg.style.backgroundImage = 'none';
   }
-  cmpBgMask.style.background = `rgba(255,255,255, ${(currentRoom.cmpBgBlur || 30) / 100 * 0.9})`;
+  cmpBgMask.style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`;
 
-  // 恢复位置
   restorePosition('cmpOrb');
   restorePosition('cmpPanel');
 
-  // 显示悬浮窗，隐藏大面板
   document.getElementById('companionOrb').style.display = 'flex';
   document.getElementById('companionPanelContainer').classList.remove('active');
+  companionActive = true;
 
-  // 开启计时
   companionStartTime = Date.now();
   document.getElementById('cmpTimer').textContent = '00:00';
   clearInterval(companionTimerInterval);
@@ -2127,7 +2273,15 @@ function stopCompanion() {
   clearInterval(companionTimerInterval);
   document.getElementById('companionPanelContainer').classList.remove('active');
   document.getElementById('companionOrb').style.display = 'none';
+  companionActive = false;
   showToast("已结束陪伴");
+  
+  const sysMsg = { roomId: currentRoom.id, sender: 'ta', type: 'action', text: `陪伴已结束`, timestamp: Date.now() };
+  dbAdd('messages', sysMsg, () => {
+    if (document.getElementById('page-chat').classList.contains('active')) {
+      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+    }
+  });
 }
 
 function openCompanionPanel() {
@@ -2144,7 +2298,234 @@ function closeCompanionPanel(e) {
   }
 }
 
-// 拖拽与位置记忆逻辑
+// 概率结束陪伴
+setInterval(() => {
+  if (companionActive) {
+    let p = Math.random() * 2 + 1; // 1~3%
+    if (Math.random() * 100 < p) {
+      clearInterval(companionTimerInterval);
+      document.getElementById('companionPanelContainer').classList.remove('active');
+      document.getElementById('companionOrb').style.display = 'none';
+      companionActive = false;
+      
+      const sysMsg = { roomId: currentRoom.id, sender: 'ta', type: 'action', text: `TA 去忙了，陪伴已结束`, timestamp: Date.now() };
+      dbAdd('messages', sysMsg, () => {
+        if (document.getElementById('page-chat').classList.contains('active')) {
+          dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+        }
+      });
+    }
+  }
+}, 60000); // 每分钟判定一次，或者每秒判定也可以，这里为了防抖定一分钟
+
+/* ================= 通话功能 ================= */
+let callActive = false;
+let callTimerInterval = null;
+let callStartTime = 0;
+let isVideoCall = false;
+let callStatus = 'idle'; // 'outgoing', 'incoming', 'active'
+
+function triggerIncomingCall(video) {
+  if (callActive) return;
+  isVideoCall = video;
+  callActive = true;
+  callStatus = 'incoming';
+  
+  openCallUI();
+  document.getElementById('callStatusText').textContent = `${currentRoom.taCall || currentRoom.taName} 想${video ? '看看你' : '听听你的声音'}...`;
+  document.getElementById('btnAnswer').style.display = 'flex';
+  document.getElementById('btnMinimize').style.display = 'none';
+  document.getElementById('btnHangupActive').style.display = 'none';
+  
+  // 15秒不接自动挂断
+  let waitTime = Math.floor(Math.random() * 14) + 1;
+  setTimeout(() => {
+    if (callStatus === 'incoming') {
+      hangupCall(true); // true 表示超时
+    }
+  }, waitTime * 1000);
+}
+
+function startManualCall(video) {
+  if (callActive) return showToast("当前有通话进行中");
+  isVideoCall = video;
+  callActive = true;
+  callStatus = 'outgoing';
+  
+  openCallUI();
+  document.getElementById('callStatusText').textContent = `正在拨打 ${currentRoom.taCall || currentRoom.taName}...`;
+  document.getElementById('btnAnswer').style.display = 'none';
+  document.getElementById('btnMinimize').style.display = 'none';
+  document.getElementById('btnHangupActive').style.display = 'none';
+
+  // 随机 1~15 秒接通或挂断
+  let waitTime = Math.floor(Math.random() * 14) + 1;
+  
+  // 设定概率挂断 (比如 20% 概率不接)
+  let isRejected = Math.random() < 0.2; 
+
+  setTimeout(() => {
+    if (isRejected) {
+      hangupCall(true); // 对方挂断
+    } else {
+      answerCall(); // 接通
+    }
+  }, waitTime * 1000);
+}
+
+function openCallUI() {
+  const container = document.getElementById('callPanelContainer');
+  container.classList.add('active');
+  restorePosition('callPanel');
+  
+  // 设置名字
+  const name = currentRoom.taCall || currentRoom.taName;
+  document.getElementById('callName').textContent = name;
+  document.getElementById('callVideoName').textContent = name;
+
+  // 头像设置
+  const avHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:24px;">梦</span>`;
+  document.getElementById('callAvatar').innerHTML = avHTML;
+  document.getElementById('callOrbContent').innerHTML = avHTML;
+
+  // 背景设置
+  const bg = document.getElementById('callBg');
+  const mask = document.getElementById('callBgMask');
+  if (currentRoom.callBgImage) {
+    bg.style.backgroundImage = `url(${currentRoom.callBgImage})`;
+    bg.style.display = 'block';
+  } else {
+    bg.style.display = 'none';
+  }
+  mask.style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`;
+
+  // 画中画(视频专用)
+  const pip = document.getElementById('callVideoPip');
+  pip.innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:14px;">我</span>`;
+
+  // 视图切换
+  if (isVideoCall) {
+    document.getElementById('callVoiceView').style.display = 'none';
+    document.getElementById('callVideoView').style.display = 'block';
+    document.getElementById('callBg').style.display = 'block';
+  } else {
+    document.getElementById('callVoiceView').style.display = 'flex';
+    document.getElementById('callVideoView').style.display = 'none';
+  }
+}
+
+function answerCall() {
+  if (callStatus === 'active') return;
+  callStatus = 'active';
+  
+  // 切换按钮
+  document.getElementById('btnAnswer').style.display = 'none';
+  document.getElementById('btnMinimize').style.display = 'flex';
+  document.getElementById('btnHangupActive').style.display = 'flex';
+  
+  document.getElementById('callStatusText').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
+  document.getElementById('callVideoStatus').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
+  
+  document.getElementById('callTimer').style.display = 'block';
+  document.getElementById('callVideoTimer').style.display = 'block';
+  
+  callStartTime = Date.now();
+  clearInterval(callTimerInterval);
+  callTimerInterval = setInterval(() => {
+    const diff = Date.now() - callStartTime;
+    const totalSec = Math.floor(diff / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    
+    let timeStr = '';
+    if (h > 0) timeStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    else timeStr = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    
+    document.getElementById('callTimer').textContent = timeStr;
+    document.getElementById('callVideoTimer').textContent = timeStr;
+  }, 1000);
+}
+
+function hangupCall(isTimeout = false) {
+  if (!callActive) return;
+  
+  clearInterval(callTimerInterval);
+  document.getElementById('callPanelContainer').classList.remove('active');
+  document.getElementById('callOrb').style.display = 'none';
+  
+  let msg = '';
+  if (isTimeout) {
+    if (callStatus === 'outgoing') msg = '对方无应答';
+    else if (callStatus === 'incoming') msg = '已取消';
+    else msg = '通话已结束';
+  } else {
+    // 如果是接通状态且不是超时，则是主动挂断
+    msg = `通话已结束`;
+  }
+
+  const sysMsg = { roomId: currentRoom.id, sender: 'me', type: 'action', text: msg, timestamp: Date.now() };
+  dbAdd('messages', sysMsg, () => {
+    if (document.getElementById('page-chat').classList.contains('active')) {
+      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+    }
+  });
+
+  callActive = false;
+  callStatus = 'idle';
+  document.getElementById('callTimer').style.display = 'none';
+  document.getElementById('callVideoTimer').style.display = 'none';
+  document.getElementById('callStatusText').textContent = '';
+  document.getElementById('callVideoStatus').textContent = '';
+}
+
+function minimizeCall() {
+  document.getElementById('callPanelContainer').classList.remove('active');
+  const orb = document.getElementById('callOrb');
+  orb.style.display = 'flex';
+  restorePosition('callOrb');
+}
+
+function openCallPanel() {
+  document.getElementById('callOrb').style.display = 'none';
+  document.getElementById('callPanelContainer').classList.add('active');
+}
+
+function closeCallPanel(e) {
+  if(e.target === document.getElementById('callPanelContainer')) {
+    document.getElementById('callPanelContainer').classList.remove('active');
+    if (callActive) {
+      document.getElementById('callOrb').style.display = 'flex';
+    }
+  }
+}
+
+// 通话概率挂断
+setInterval(() => {
+  if (callActive && callStatus === 'active') {
+    let p = 0;
+    if (isVideoCall) p = Math.random() * 1 + 1; // 视频 1~2%
+    else p = Math.random() * 1 + 2; // 电话 2~3%
+    
+    if (Math.random() * 100 < p) {
+      // TA 主动挂断
+      clearInterval(callTimerInterval);
+      document.getElementById('callPanelContainer').classList.remove('active');
+      document.getElementById('callOrb').style.display = 'none';
+      callActive = false;
+      callStatus = 'idle';
+      
+      const sysMsg = { roomId: currentRoom.id, sender: 'ta', type: 'action', text: `通话已中断`, timestamp: Date.now() };
+      dbAdd('messages', sysMsg, () => {
+        if (document.getElementById('page-chat').classList.contains('active')) {
+          dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+        }
+      });
+    }
+  }
+}, 60000); 
+
+/* 拖拽与位置记忆逻辑 (全局) */
 function savePosition(id, x, y) {
   if(!currentRoom) return;
   if(!currentRoom.positions) currentRoom.positions = {};
@@ -2154,14 +2535,13 @@ function savePosition(id, x, y) {
 function restorePosition(id) {
   if(!currentRoom || !currentRoom.positions || !currentRoom.positions[id]) return;
   const pos = currentRoom.positions[id];
-  if (id === 'cmpOrb') {
-    const el = document.getElementById('companionOrb');
-    el.style.left = pos.x + 'px';
-    el.style.top = pos.y + 'px';
-    el.style.right = 'auto';
-    el.style.bottom = 'auto';
-  } else if (id === 'cmpPanel') {
-    const el = document.getElementById('companionPanelContainer');
+  let el = null;
+  if (id === 'cmpOrb') el = document.getElementById('companionOrb');
+  else if (id === 'cmpPanel') el = document.getElementById('companionPanelContainer');
+  else if (id === 'callOrb') el = document.getElementById('callOrb');
+  else if (id === 'callPanel') el = document.getElementById('callPanelContainer');
+  
+  if(el) {
     el.style.left = pos.x + 'px';
     el.style.top = pos.y + 'px';
     el.style.transform = 'none';
@@ -2169,79 +2549,43 @@ function restorePosition(id) {
   }
 }
 
-// 陪伴悬浮窗拖拽
-let isDraggingCmpOrb = false;
-let cmpOrbStartX = 0, cmpOrbStartY = 0, cmpOrbInitialX = 0, cmpOrbInitialY = 0;
-const companionOrb = document.getElementById('companionOrb');
+// 通用拖拽
+function makeDraggable(el, id) {
+  let isDragging = false, startX = 0, startY = 0, initialX = 0, initialY = 0;
+  el.addEventListener('touchstart', (e) => {
+    isDragging = false;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    const rect = el.getBoundingClientRect();
+    initialX = rect.left;
+    initialY = rect.top;
+  });
+  el.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if(Math.abs(dx) > 5 || Math.abs(dy) > 5) isDragging = true;
+    if(isDragging) {
+      let newX = initialX + dx;
+      let newY = initialY + dy;
+      newX = Math.max(0, Math.min(newX, window.innerWidth - el.offsetWidth));
+      newY = Math.max(0, Math.min(newY, window.innerHeight - el.offsetHeight));
+      el.style.left = newX + 'px';
+      el.style.top = newY + 'px';
+      el.style.transform = 'none';
+      el.style.margin = '0';
+    }
+  }, {passive: false});
+  el.addEventListener('touchend', (e) => {
+    if(isDragging) savePosition(id, el.offsetLeft, el.offsetTop);
+  });
+}
 
-companionOrb.addEventListener('touchstart', (e) => {
-  isDraggingCmpOrb = false;
-  cmpOrbStartX = e.touches[0].clientX;
-  cmpOrbStartY = e.touches[0].clientY;
-  const rect = companionOrb.getBoundingClientRect();
-  cmpOrbInitialX = rect.left;
-  cmpOrbInitialY = rect.top;
-});
-companionOrb.addEventListener('touchmove', (e) => {
-  e.preventDefault();
-  const dx = e.touches[0].clientX - cmpOrbStartX;
-  const dy = e.touches[0].clientY - cmpOrbStartY;
-  if(Math.abs(dx) > 5 || Math.abs(dy) > 5) isDraggingCmpOrb = true;
-  if(isDraggingCmpOrb) {
-    let newX = cmpOrbInitialX + dx;
-    let newY = cmpOrbInitialY + dy;
-    newX = Math.max(0, Math.min(newX, window.innerWidth - 64));
-    newY = Math.max(0, Math.min(newY, window.innerHeight - 64));
-    companionOrb.style.left = newX + 'px';
-    companionOrb.style.top = newY + 'px';
-    companionOrb.style.right = 'auto'; companionOrb.style.bottom = 'auto';
-  }
-});
-companionOrb.addEventListener('touchend', (e) => {
-  if(!isDraggingCmpOrb) {
-    openCompanionPanel();
-  } else {
-    savePosition('cmpOrb', companionOrb.offsetLeft, companionOrb.offsetTop);
-  }
-});
-
-// 陪伴大面板拖拽
-let isDraggingCmpPanel = false;
-let cmpPanelStartX = 0, cmpPanelStartY = 0, cmpPanelInitialX = 0, cmpPanelInitialY = 0;
-const companionModal = document.getElementById('companionModal');
-
-companionModal.addEventListener('touchstart', (e) => {
-  isDraggingCmpPanel = false;
-  cmpPanelStartX = e.touches[0].clientX;
-  cmpPanelStartY = e.touches[0].clientY;
-  const rect = document.getElementById('companionPanelContainer').getBoundingClientRect();
-  cmpPanelInitialX = rect.left;
-  cmpPanelInitialY = rect.top;
-});
-companionModal.addEventListener('touchmove', (e) => {
-  e.preventDefault();
-  const dx = e.touches[0].clientX - cmpPanelStartX;
-  const dy = e.touches[0].clientY - cmpPanelStartY;
-  if(Math.abs(dx) > 5 || Math.abs(dy) > 5) isDraggingCmpPanel = true;
-  if(isDraggingCmpPanel) {
-    let newX = cmpPanelInitialX + dx;
-    let newY = cmpPanelInitialY + dy;
-    const container = document.getElementById('companionPanelContainer');
-    newX = Math.max(0, Math.min(newX, window.innerWidth - container.offsetWidth));
-    newY = Math.max(0, Math.min(newY, window.innerHeight - container.offsetHeight));
-    
-    container.style.transform = 'none';
-    container.style.left = newX + 'px';
-    container.style.top = newY + 'px';
-    container.style.margin = '0';
-  }
-});
-companionModal.addEventListener('touchend', (e) => {
-  if(isDraggingCmpPanel) {
-    const container = document.getElementById('companionPanelContainer');
-    savePosition('cmpPanel', container.offsetLeft, container.offsetTop);
-  }
-});
+makeDraggable(document.getElementById('companionOrb'), 'cmpOrb');
+makeDraggable(document.getElementById('companionModal'), 'cmpPanel');
+makeDraggable(document.getElementById('callOrb'), 'callOrb');
+makeDraggable(document.getElementById('callModal'), 'callPanel');
+// 音乐悬浮球与面板依然用旧逻辑
 
 /* ================= 字匣 ================= */
 function switchTab(index) {
@@ -2392,7 +2736,6 @@ function handleWordImport(e) {
   };
   reader.readAsText(file);
 }
-
 
 /* ================= 小互动管理 ================= */
 function switchActionTab(index) {
@@ -3196,7 +3539,7 @@ function playCurrentSong() {
     } else {
       mpBg.style.backgroundImage = 'none';
     }
-    mpBgMask.style.background = `rgba(255,255,255, ${((currentRoom && currentRoom.mpBgBlur) || 30) / 100 * 0.9})`;
+    mpBgMask.style.background = `rgba(255,255,255, ${((appSettings.globalBgBlur) || 30) / 100 * 0.9})`;
 
     musicOrb.style.display = 'flex';
     musicOrb.classList.add('orb-spin');
@@ -3374,6 +3717,8 @@ function openSettings() {
   document.getElementById('setActionProb').value = appSettings.actionProb;
   document.getElementById('setListenProb').value = appSettings.listenProb;
   document.getElementById('setFavProb').value = appSettings.favProb;
+  document.getElementById('setCallProb').value = appSettings.callProb;
+  document.getElementById('setVideoProb').value = appSettings.videoProb;
   document.getElementById('setCarouselMin').value = appSettings.carouselMin;
   document.getElementById('setCarouselMax').value = appSettings.carouselMax;
   goToPage('page-settings');
