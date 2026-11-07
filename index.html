@@ -108,9 +108,9 @@
   .avatar-upload span { font-size: 24px; color: var(--purple-soft); }
   .input-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
   
-  /* 修复问题框多出横线的终极重置 */
+  /* 修复问题框多出横线，以及增加内边距距离 */
   .input-field { 
-    width: 100%; padding: 10px 12px; border-radius: 10px; 
+    width: 100%; padding: 12px 14px; border-radius: 10px; 
     border: 1px solid var(--line); background: #FFFFFF; 
     font-size: 14px; color: var(--text); outline: none; 
     font-family: inherit; 
@@ -119,7 +119,7 @@
   }
   .input-field:focus { border-color: var(--taro); }
   textarea.input-field { 
-    resize: none; height: 60px; line-height: 1.4; 
+    resize: none; height: 70px; line-height: 1.5; 
     background: #FFFFFF !important; 
     border: 1px solid var(--line) !important;
     box-shadow: none !important; -webkit-box-shadow: none !important;
@@ -460,34 +460,43 @@
     background: var(--taro); color: #fff; border-color: var(--taro);
   }
 
-  /* 陪伴悬浮窗 */
+  /* 陪伴悬浮窗 (完全透明，无边框背景，纯头像) */
   #companionOrb {
-    position: fixed; z-index: 2000; width: 64px; height: 64px;
+    position: fixed; z-index: 2000; width: 76px; height: 60px;
     display: none; align-items: center; justify-content: center;
     cursor: grab; touch-action: none; user-select: none;
+    background: transparent;
   }
   
-  .companion-orb-inner {
-    position: relative; width: 100%; height: 100%; border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(139,92,246,0.3);
-    border: 2px solid #fff; background: #fff; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
+  .companion-avatars { 
+    display: flex; align-items: center; justify-content: center; 
+    width: 100%; height: 100%;
   }
-  
-  .companion-avatars { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-  .companion-avatars .av { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center;}
+  .companion-avatars .av { 
+    width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; 
+    overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
   .companion-avatars .av img { width: 100%; height: 100%; object-fit: cover; }
-  .companion-avatars .av-ta { animation: attractTa 3s infinite alternate ease-in-out; z-index: 2;}
+  
+  /* 强制用负边距让它们交叠 */
+  .companion-avatars .av-ta { margin-left: -18px; animation: attractTa 3s infinite alternate ease-in-out; z-index: 2;}
   .companion-avatars .av-me { animation: attractMe 3s infinite alternate ease-in-out; z-index: 1;}
 
-  @keyframes attractTa { 0% { transform: translateX(6px); } 100% { transform: translateX(0px); } }
-  @keyframes attractMe { 0% { transform: translateX(-6px); } 100% { transform: translateX(0px); } }
+  @keyframes attractTa { 0% { transform: translateX(0px); } 100% { transform: translateX(6px); } }
+  @keyframes attractMe { 0% { transform: translateX(0px); } 100% { transform: translateX(-6px); } }
 
-  /* 陪伴大面板 */
+  /* 陪伴大面板 (尺寸完全对齐音乐面板) */
   .companion-panel-container { position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .companion-panel-container.active { display: block; }
   
-  .companion-modal { position: relative; overflow: hidden; background: #FFFFFF; border-radius: 24px; padding: 24px 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 10px 40px rgba(139,92,246,0.2); cursor: grab; user-select: none; }
+  .companion-modal { 
+    position: relative; overflow: hidden; background: #FFFFFF; 
+    border-radius: 24px; padding: 24px 20px; 
+    display: flex; flex-direction: column; align-items: center; gap: 16px; 
+    box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
+    cursor: grab; user-select: none; 
+  }
   .companion-modal:active { cursor: grabbing; }
   
   .cmp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
@@ -497,11 +506,13 @@
   .cmp-avatars-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
   .cmp-avatars-wrap .av { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
   .cmp-avatars-wrap .av img { width: 100%; height: 100%; object-fit: cover; }
-  .cmp-avatars-wrap .av-ta { animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
+  
+  /* 强制用负边距让它们交叠 */
+  .cmp-avatars-wrap .av-ta { margin-left: -24px; animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
   .cmp-avatars-wrap .av-me { animation: attractMePanel 3s infinite alternate ease-in-out; z-index: 1;}
 
-  @keyframes attractTaPanel { 0% { transform: translateX(12px); } 100% { transform: translateX(2px); } }
-  @keyframes attractMePanel { 0% { transform: translateX(-12px); } 100% { transform: translateX(-2px); } }
+  @keyframes attractTaPanel { 0% { transform: translateX(0px); } 100% { transform: translateX(10px); } }
+  @keyframes attractMePanel { 0% { transform: translateX(0px); } 100% { transform: translateX(-10px); } }
 
   .cmp-status { font-size: 16px; font-weight: 600; color: var(--text); text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
   .cmp-timer-wrap { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
@@ -520,13 +531,11 @@
 <div id="musicOrb"><svg viewBox="0 0 24 24"><path d="M9 18V6.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></div>
 <audio id="bgAudio" loop></audio>
 
-<!-- 陪伴悬浮窗 -->
+<!-- 陪伴悬浮窗 (纯透明/重叠头像) -->
 <div id="companionOrb" onclick="openCompanionPanel()">
-  <div class="companion-orb-inner">
-    <div class="companion-avatars">
-      <div class="av av-me" id="cmpOrbMe"><span style="color:var(--purple)">我</span></div>
-      <div class="av av-ta" id="cmpOrbTa"><span style="color:var(--purple)">梦</span></div>
-    </div>
+  <div class="companion-avatars">
+    <div class="av av-me" id="cmpOrbMe"><span style="color:var(--purple)">我</span></div>
+    <div class="av av-ta" id="cmpOrbTa"><span style="color:var(--purple)">梦</span></div>
   </div>
 </div>
 
@@ -797,7 +806,7 @@
 <div class="panel-overlay" id="starTracePanel" onclick="closePanel('starTracePanel')">
   <div class="panel-content" onclick="event.stopPropagation()">
     <div class="panel-header"><span>星痕</span><div class="panel-close" onclick="closePanel('starTracePanel')">×</div></div>
-    <textarea class="input-field" id="stQuestion" placeholder="填写问题..." style="height: 60px; margin-bottom: 8px;"></textarea>
+    <textarea class="input-field" id="stQuestion" placeholder="填写问题..." style="height: 70px; margin-bottom: 8px; padding: 12px 14px;"></textarea>
     <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">问题附图（选填）</div>
     <div class="bg-upload-area" onclick="document.getElementById('stImgFile').click()" style="height:80px; margin-bottom:12px;">
       <img id="stImgPreview" src="" style="display:none;"><span id="stImgIcon">点击上传附图</span>
@@ -822,7 +831,7 @@
 <div class="panel-overlay" id="heartTracePanel" onclick="closePanel('heartTracePanel')">
   <div class="panel-content" onclick="event.stopPropagation()">
     <div class="panel-header"><span>心迹</span><div class="panel-close" onclick="closePanel('heartTracePanel')">×</div></div>
-    <textarea class="input-field" id="htQuestion" placeholder="填写问题..." style="height: 60px; margin-bottom: 8px;"></textarea>
+    <textarea class="input-field" id="htQuestion" placeholder="填写问题..." style="height: 70px; margin-bottom: 8px; padding: 12px 14px;"></textarea>
     <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">问题附图（选填）</div>
     <div class="bg-upload-area" onclick="document.getElementById('htImgFile').click()" style="height:80px; margin-bottom:12px;">
       <img id="htImgPreview" src="" style="display:none;"><span id="htImgIcon">点击上传附图</span>
@@ -830,7 +839,7 @@
     <input type="file" id="htImgFile" accept="image/*" style="display:none" onchange="previewHtImg(event)">
     
     <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">文字选项</div>
-    <textarea class="input-field" id="htOptions" placeholder="输入选项，一行一个（字数不够会换行）" style="height: 120px; margin-bottom:12px;"></textarea>
+    <textarea class="input-field" id="htOptions" placeholder="输入选项，一行一个（字数不够会换行）" style="height: 120px; margin-bottom:12px; padding: 12px 14px;"></textarea>
     
     <div class="modal-footer" style="justify-content: center; margin-top: 10px;">
       <button class="btn-save" onclick="sendHeartTrace()">寻心</button>
@@ -879,7 +888,6 @@
     <div class="cmp-bg" id="cmpBg"></div>
     <div class="cmp-bg-mask" id="cmpBgMask"></div>
     
-    <!-- 替换为两个按钮：缩小和关闭 -->
     <div style="position:absolute; top:16px; right:16px; z-index:5; display:flex; gap:8px;">
       <div class="mp-close-btn" style="position:static; width:28px; height:28px;" onclick="minimizeCompanionPanel()">
         <span style="color:#fff; font-size:16px; font-weight:bold; line-height:1; margin-top:-2px;">⊙</span>
@@ -2055,9 +2063,9 @@ function startCompanion() {
 
   const taName = currentRoom.taCall || currentRoom.taName;
 
-  // 设置悬浮窗内容
-  document.getElementById('cmpOrbTa').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:14px;">梦</span>`;
-  document.getElementById('cmpOrbMe').innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:14px;">我</span>`;
+  // 设置悬浮窗内容 (纯头像重叠)
+  document.getElementById('cmpOrbTa').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:16px;">梦</span>`;
+  document.getElementById('cmpOrbMe').innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:16px;">我</span>`;
 
   // 设置大面板内容
   document.getElementById('cmpPanelTa').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:24px;">梦</span>`;
