@@ -107,9 +107,23 @@
   .avatar-upload img { width: 100%; height: 100%; object-fit: cover; }
   .avatar-upload span { font-size: 24px; color: var(--purple-soft); }
   .input-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .input-field { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: #FFFFFF; font-size: 14px; color: var(--text); outline: none; font-family: inherit; box-shadow: none; -webkit-appearance: none;}
+  
+  /* 修复问题框多出横线的终极重置 */
+  .input-field { 
+    width: 100%; padding: 10px 12px; border-radius: 10px; 
+    border: 1px solid var(--line); background: #FFFFFF; 
+    font-size: 14px; color: var(--text); outline: none; 
+    font-family: inherit; 
+    box-shadow: none !important; -webkit-box-shadow: none !important;
+    -webkit-appearance: none; appearance: none;
+  }
   .input-field:focus { border-color: var(--taro); }
-  textarea.input-field { resize: none; height: 60px; line-height: 1.4; }
+  textarea.input-field { 
+    resize: none; height: 60px; line-height: 1.4; 
+    background: #FFFFFF !important; 
+    border: 1px solid var(--line) !important;
+    box-shadow: none !important; -webkit-box-shadow: none !important;
+  }
   
   .bg-upload-area { width: 100%; height: 140px; border-radius: 12px; background: #EDE9FE; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; margin-bottom: 12px; border: 1px dashed var(--purple-soft); position: relative; }
   .bg-upload-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; }
@@ -446,27 +460,30 @@
     background: var(--taro); color: #fff; border-color: var(--taro);
   }
 
+  /* 陪伴悬浮窗 */
   #companionOrb {
     position: fixed; z-index: 2000; width: 64px; height: 64px;
     display: none; align-items: center; justify-content: center;
     cursor: grab; touch-action: none; user-select: none;
-    border-radius: 50%;
   }
   
   .companion-orb-inner {
     position: relative; width: 100%; height: 100%; border-radius: 50%;
     box-shadow: 0 4px 12px rgba(139,92,246,0.3);
     border: 2px solid #fff; background: #fff; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
   }
-  .companion-orb-bg { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index:0; }
-  .companion-orb-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.3); z-index:1; }
   
-  .companion-avatars { position: absolute; top:0; left:0; right:0; bottom:0; z-index:2; display:flex; align-items:center; justify-content:center; }
-  .companion-avatars .av { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center;}
+  .companion-avatars { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+  .companion-avatars .av { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center;}
   .companion-avatars .av img { width: 100%; height: 100%; object-fit: cover; }
-  .companion-avatars .av-ta { transform: translateX(6px); z-index: 2;}
-  .companion-avatars .av-me { transform: translateX(-6px); z-index: 1;}
+  .companion-avatars .av-ta { animation: attractTa 3s infinite alternate ease-in-out; z-index: 2;}
+  .companion-avatars .av-me { animation: attractMe 3s infinite alternate ease-in-out; z-index: 1;}
 
+  @keyframes attractTa { 0% { transform: translateX(6px); } 100% { transform: translateX(0px); } }
+  @keyframes attractMe { 0% { transform: translateX(-6px); } 100% { transform: translateX(0px); } }
+
+  /* 陪伴大面板 */
   .companion-panel-container { position: fixed; top: 20%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .companion-panel-container.active { display: block; }
   
@@ -475,13 +492,16 @@
   
   .cmp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
   .cmp-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
-  .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px;}
+  .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px; margin-top: 10px;}
   
-  .cmp-avatars { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
-  .cmp-avatars .av { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-  .cmp-avatars .av img { width: 100%; height: 100%; object-fit: cover; }
-  .cmp-avatars .av-ta { transform: translateX(10px); z-index: 2;}
-  .cmp-avatars .av-me { transform: translateX(-10px); z-index: 1;}
+  .cmp-avatars-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .cmp-avatars-wrap .av { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+  .cmp-avatars-wrap .av img { width: 100%; height: 100%; object-fit: cover; }
+  .cmp-avatars-wrap .av-ta { animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
+  .cmp-avatars-wrap .av-me { animation: attractMePanel 3s infinite alternate ease-in-out; z-index: 1;}
+
+  @keyframes attractTaPanel { 0% { transform: translateX(12px); } 100% { transform: translateX(2px); } }
+  @keyframes attractMePanel { 0% { transform: translateX(-12px); } 100% { transform: translateX(-2px); } }
 
   .cmp-status { font-size: 16px; font-weight: 600; color: var(--text); text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
   .cmp-timer-wrap { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
@@ -503,8 +523,6 @@
 <!-- 陪伴悬浮窗 -->
 <div id="companionOrb" onclick="openCompanionPanel()">
   <div class="companion-orb-inner">
-    <div class="companion-orb-bg" id="cmpOrbBg"></div>
-    <div class="companion-orb-mask" id="cmpOrbMask"></div>
     <div class="companion-avatars">
       <div class="av av-me" id="cmpOrbMe"><span style="color:var(--purple)">我</span></div>
       <div class="av av-ta" id="cmpOrbTa"><span style="color:var(--purple)">梦</span></div>
@@ -640,16 +658,6 @@
   <!-- 陪伴配置 -->
   <div class="form-group">
     <div class="form-title">专属陪伴设置</div>
-    <div class="bg-upload-area" onclick="document.getElementById('cmpOrbBgFile').click()" style="height: 80px; margin-bottom: 8px;">
-      <img id="cmpOrbBgPreview" src="" style="display:none;"><span id="cmpOrbBgIcon">点击上传陪伴悬浮窗背景图</span>
-    </div>
-    <input type="file" id="cmpOrbBgFile" accept="image/*" style="display:none" onchange="previewImg(event, 'cmpOrbBgPreview', 'cmpOrbBgIcon')">
-    <div class="slider-row" style="margin-bottom: 16px;">
-      <span>悬浮窗雾化度</span>
-      <input type="range" id="cmpOrbBgBlur" min="0" max="100" value="30" oninput="document.getElementById('cmpOrbBgBlurVal').innerText = this.value + '%'">
-      <span id="cmpOrbBgBlurVal">30%</span>
-    </div>
-
     <div class="bg-upload-area" onclick="document.getElementById('cmpBgFile').click()">
       <img id="cmpBgPreview" src="" style="display:none;"><span id="cmpBgIcon">点击上传陪伴面板背景图</span>
     </div>
@@ -871,14 +879,20 @@
     <div class="cmp-bg" id="cmpBg"></div>
     <div class="cmp-bg-mask" id="cmpBgMask"></div>
     
-    <div class="mp-close-btn" onclick="stopCompanion()">
-      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    <!-- 替换为两个按钮：缩小和关闭 -->
+    <div style="position:absolute; top:16px; right:16px; z-index:5; display:flex; gap:8px;">
+      <div class="mp-close-btn" style="position:static; width:28px; height:28px;" onclick="minimizeCompanionPanel()">
+        <span style="color:#fff; font-size:16px; font-weight:bold; line-height:1; margin-top:-2px;">⊙</span>
+      </div>
+      <div class="mp-close-btn" style="position:static; width:28px; height:28px;" onclick="stopCompanion()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
     </div>
 
     <div class="cmp-content">
-      <div class="cmp-avatars">
-        <div class="av av-me" id="cmpPanelMe"><span style="color:var(--purple)">我</span></div>
-        <div class="av av-ta" id="cmpPanelTa"><span style="color:var(--purple)">梦</span></div>
+      <div class="cmp-avatars-wrap">
+        <div class="av av-me" id="cmpPanelMe"><span style="color:var(--purple); font-size: 26px;">我</span></div>
+        <div class="av av-ta" id="cmpPanelTa"><span style="color:var(--purple); font-size: 26px;">梦</span></div>
       </div>
       <div class="cmp-status" id="cmpStatusText">TA正在与你一起看书</div>
       <div class="cmp-timer-wrap">
@@ -1444,8 +1458,6 @@ function openCreateForm() {
   document.getElementById('orbPreview').style.display = 'none'; document.getElementById('orbPreview').src = ''; document.getElementById('orbIcon').style.display = 'block';
   document.getElementById('mpBgPreview').style.display = 'none'; document.getElementById('mpBgPreview').src = ''; document.getElementById('mpBgIcon').style.display = 'block';
   document.getElementById('mpBgBlur').value = 30; document.getElementById('mpBgBlurVal').innerText = '30%';
-  document.getElementById('cmpOrbBgPreview').style.display = 'none'; document.getElementById('cmpOrbBgPreview').src = ''; document.getElementById('cmpOrbBgIcon').style.display = 'block';
-  document.getElementById('cmpOrbBgBlur').value = 30; document.getElementById('cmpOrbBgBlurVal').innerText = '30%';
   document.getElementById('cmpBgPreview').style.display = 'none'; document.getElementById('cmpBgPreview').src = ''; document.getElementById('cmpBgIcon').style.display = 'block';
   document.getElementById('cmpBgBlur').value = 30; document.getElementById('cmpBgBlurVal').innerText = '30%';
 
@@ -1470,8 +1482,6 @@ function openEditForm() {
   document.getElementById('mpBgBlur').value = room.mpBgBlur || 30; document.getElementById('mpBgBlurVal').innerText = (room.mpBgBlur || 30) + '%';
 
   // 恢复陪伴配置
-  if(room.cmpOrbBgImage) { setPreview('cmpOrbBgPreview', 'cmpOrbBgIcon', room.cmpOrbBgImage); } else { document.getElementById('cmpOrbBgPreview').style.display = 'none'; document.getElementById('cmpOrbBgIcon').style.display = 'block'; }
-  document.getElementById('cmpOrbBgBlur').value = room.cmpOrbBgBlur || 30; document.getElementById('cmpOrbBgBlurVal').innerText = (room.cmpOrbBgBlur || 30) + '%';
   if(room.cmpBgImage) { setPreview('cmpBgPreview', 'cmpBgIcon', room.cmpBgImage); } else { document.getElementById('cmpBgPreview').style.display = 'none'; document.getElementById('cmpBgIcon').style.display = 'block'; }
   document.getElementById('cmpBgBlur').value = room.cmpBgBlur || 30; document.getElementById('cmpBgBlurVal').innerText = (room.cmpBgBlur || 30) + '%';
 
@@ -1489,8 +1499,6 @@ function submitCreate() {
     orbImage: document.getElementById('orbPreview').src || null,
     mpBgImage: document.getElementById('mpBgPreview').src || null,
     mpBgBlur: parseInt(document.getElementById('mpBgBlur').value),
-    cmpOrbBgImage: document.getElementById('cmpOrbBgPreview').src || null,
-    cmpOrbBgBlur: parseInt(document.getElementById('cmpOrbBgBlur').value),
     cmpBgImage: document.getElementById('cmpBgPreview').src || null,
     cmpBgBlur: parseInt(document.getElementById('cmpBgBlur').value),
 
@@ -2016,7 +2024,7 @@ function openStickerPanel() {
 
 /* ================= 陪伴功能 ================= */
 const COMPANION_OPTIONS = [
-  "听歌", "看书", "发呆", "散步", "睡觉", "看星星", "喝热茶", "看雨", "充电（休息）", "打游戏", "看直播", "刷抖音视频", "观看抖音直播", "刷小红书"
+  "听歌", "看书", "发呆", "散步", "睡觉", "看星星", "喝热茶", "看雨", "充电（休息）", "打游戏", "逛街", "刷抖音视频", "观看抖音直播", "刷小红书"
 ];
 let selectedCompanionOption = null;
 let companionTimerInterval = null;
@@ -2046,22 +2054,10 @@ function startCompanion() {
   closePanel('companionSelectPanel');
 
   const taName = currentRoom.taCall || currentRoom.taName;
-  const meName = currentRoom.myName || '我';
 
   // 设置悬浮窗内容
   document.getElementById('cmpOrbTa').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:14px;">梦</span>`;
   document.getElementById('cmpOrbMe').innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:14px;">我</span>`;
-  
-  // 设置悬浮窗背景
-  const cmpOrbBg = document.getElementById('cmpOrbBg');
-  const cmpOrbMask = document.getElementById('cmpOrbMask');
-  if (currentRoom.cmpOrbBgImage) {
-    cmpOrbBg.style.backgroundImage = `url(${currentRoom.cmpOrbBgImage})`;
-  } else {
-    cmpOrbBg.style.backgroundImage = 'none';
-    cmpOrbBg.style.background = 'var(--taro-bg)';
-  }
-  cmpOrbMask.style.background = `rgba(255,255,255, ${(currentRoom.cmpOrbBgBlur || 30) / 100 * 0.9})`;
 
   // 设置大面板内容
   document.getElementById('cmpPanelTa').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="color:var(--purple);font-size:24px;">梦</span>`;
@@ -2105,6 +2101,11 @@ function startCompanion() {
     }
     document.getElementById('cmpTimer').textContent = timeStr;
   }, 1000);
+}
+
+function minimizeCompanionPanel() {
+  document.getElementById('companionPanelContainer').classList.remove('active');
+  document.getElementById('companionOrb').style.display = 'flex';
 }
 
 function stopCompanion() {
