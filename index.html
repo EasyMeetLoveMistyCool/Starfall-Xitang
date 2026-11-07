@@ -110,7 +110,7 @@
   
   /* 修复问题框多出横线，以及增加内边距距离 */
   .input-field { 
-    width: 100%; padding: 12px 14px; border-radius: 10px; 
+    width: 100%; padding: 14px 16px; border-radius: 10px; 
     border: 1px solid var(--line); background: #FFFFFF; 
     font-size: 14px; color: var(--text); outline: none; 
     font-family: inherit; 
@@ -386,7 +386,7 @@
   .panel-overlay.active { display: flex; }
   .panel-content { width: 100%; background: #FFFFFF; border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; animation: slideUp 0.2s ease-out; max-height: 80vh;}
   @keyframes slideUp { from{transform: translateY(100%);} to{transform: translateY(0);} }
-  .panel-header { display: flex; justify-content: space-between; padding-bottom: 12px; font-size: 14px; color: var(--sub); border-bottom: 1px solid var(--line);}
+  .panel-header { display: flex; justify-content: space-between; padding-bottom: 12px; font-size: 14px; color: var(--sub); border-bottom: 1px solid var(--line); margin-bottom: 16px;}
   .panel-close { cursor: pointer; font-size: 18px; color: var(--purple);}
 
   .grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 0 10px; }
@@ -493,9 +493,10 @@
   .companion-modal { 
     position: relative; overflow: hidden; background: #FFFFFF; 
     border-radius: 24px; padding: 24px 20px; 
-    display: flex; flex-direction: column; align-items: center; gap: 16px; 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; 
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none; 
+    min-height: 360px; /* 强制最小高度对齐音乐面板 */
   }
   .companion-modal:active { cursor: grabbing; }
   
@@ -806,7 +807,7 @@
 <div class="panel-overlay" id="starTracePanel" onclick="closePanel('starTracePanel')">
   <div class="panel-content" onclick="event.stopPropagation()">
     <div class="panel-header"><span>星痕</span><div class="panel-close" onclick="closePanel('starTracePanel')">×</div></div>
-    <textarea class="input-field" id="stQuestion" placeholder="填写问题..." style="height: 70px; margin-bottom: 8px; padding: 12px 14px;"></textarea>
+    <textarea class="input-field" id="stQuestion" placeholder="填写问题..." style="height: 70px; margin-bottom: 8px; padding: 14px 16px;"></textarea>
     <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">问题附图（选填）</div>
     <div class="bg-upload-area" onclick="document.getElementById('stImgFile').click()" style="height:80px; margin-bottom:12px;">
       <img id="stImgPreview" src="" style="display:none;"><span id="stImgIcon">点击上传附图</span>
@@ -831,7 +832,7 @@
 <div class="panel-overlay" id="heartTracePanel" onclick="closePanel('heartTracePanel')">
   <div class="panel-content" onclick="event.stopPropagation()">
     <div class="panel-header"><span>心迹</span><div class="panel-close" onclick="closePanel('heartTracePanel')">×</div></div>
-    <textarea class="input-field" id="htQuestion" placeholder="填写问题..." style="height: 70px; margin-bottom: 8px; padding: 12px 14px;"></textarea>
+    <textarea class="input-field" id="htQuestion" placeholder="填写问题..." style="height: 70px; margin-bottom: 8px; padding: 14px 16px;"></textarea>
     <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">问题附图（选填）</div>
     <div class="bg-upload-area" onclick="document.getElementById('htImgFile').click()" style="height:80px; margin-bottom:12px;">
       <img id="htImgPreview" src="" style="display:none;"><span id="htImgIcon">点击上传附图</span>
@@ -839,7 +840,7 @@
     <input type="file" id="htImgFile" accept="image/*" style="display:none" onchange="previewHtImg(event)">
     
     <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">文字选项</div>
-    <textarea class="input-field" id="htOptions" placeholder="输入选项，一行一个（字数不够会换行）" style="height: 120px; margin-bottom:12px; padding: 12px 14px;"></textarea>
+    <textarea class="input-field" id="htOptions" placeholder="输入选项，一行一个（字数不够会换行）" style="height: 120px; margin-bottom:12px; padding: 14px 16px;"></textarea>
     
     <div class="modal-footer" style="justify-content: center; margin-top: 10px;">
       <button class="btn-save" onclick="sendHeartTrace()">寻心</button>
