@@ -11,6 +11,7 @@
     --card:#FFFFFF; --line:#ECE5F8;
     --purple:#8B5CF6; --purple-soft:#A78BFA;
     --taro:#B89AF6; --taro-bg:rgba(184, 154, 246, 0.15);
+    --honey:#FF8BA7; --honey-bg:#FFF0F4; /* 蜜粉色 */
     --text:#2A2438; --sub:#9A93AE;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -289,13 +290,58 @@
 
   /* ================= LoveDays ================= */
   .loveday-card { background: #FFFFFF; border-radius: 16px; padding: 20px 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05); display:flex; flex-direction:column; position:relative; margin-bottom:12px; overflow:hidden; min-height: 160px; justify-content: center; align-items: center;}
+  .loveday-card.pinned { min-height: 200px; } /* 置顶的卡片变大 */
   .ld-bg { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index: 0; }
   .ld-bg-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.3); z-index: 1; } /* 默认30%遮罩 */
   .ld-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;}
+  
   .ld-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
+  .loveday-card.pinned .ld-title { color: var(--honey); }
+  
   .ld-date { font-size: 13px; color: var(--sub); margin-bottom: 16px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
+  .loveday-card.pinned .ld-date { color: var(--honey); }
+  
   .ld-days { font-size: 24px; font-weight: 700; color: var(--purple); text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
-  .ld-days span { font-size: 16px; font-weight: normal; margin-left: 4px;}
+  .loveday-card.pinned .ld-days { color: var(--honey); font-size: 28px;}
+
+  /* ================= 投问卡片 ================= */
+  .quiz-card {
+    background: #FFFFFF; border: 1.5px solid var(--taro); border-radius: 20px;
+    width: 90%; max-width: 340px; margin: 0 auto; padding: 16px;
+    box-shadow: 0 4px 15px rgba(139,92,246,.08);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .quiz-question { font-size: 15px; font-weight: 600; color: var(--text); text-align: center; white-space: pre-wrap; line-height: 1.4;}
+  .quiz-image { max-width: 100%; border-radius: 12px; margin-bottom: 8px;}
+  
+  .quiz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .quiz-grid-item { aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 2px solid transparent; transition: all 0.3s; position: relative;}
+  .quiz-grid-item img { width: 100%; height: 100%; object-fit: cover; }
+  
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-option { 
+    background: #FBF9FE; border: 1.5px solid var(--line); border-radius: 10px; 
+    padding: 10px 12px; font-size: 14px; color: var(--text); 
+    white-space: pre-wrap; word-break: break-all; transition: all 0.3s;
+  }
+  
+  /* 高亮状态 */
+  .quiz-grid-item.highlight {
+    border-color: var(--honey);
+    box-shadow: 0 0 10px rgba(255, 139, 167, 0.4);
+  }
+  .quiz-grid-item.dim { opacity: 0.5; }
+  
+  .quiz-option.highlight {
+    background: var(--honey-bg);
+    border-color: var(--honey);
+    color: var(--honey);
+    font-weight: 600;
+  }
+  .quiz-option.dim { opacity: 0.5; }
+
+  /* 转圈圈等待符 */
+  .typing-quiz { display: inline-block; animation: spin 1.5s linear infinite; margin-left: 4px; font-weight: bold;}
 
   /* ================= 弹窗与提示 ================= */
   .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(42,36,56,0.3); display: none; align-items: center; justify-content: center; z-index: 1000;}
@@ -324,7 +370,7 @@
   
   .panel-overlay { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(42,36,56,0.3); z-index: 900; display: none; align-items: flex-end; height: 100vh;}
   .panel-overlay.active { display: flex; }
-  .panel-content { width: 100%; background: #FFFFFF; border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; animation: slideUp 0.2s ease-out; max-height: 60vh;}
+  .panel-content { width: 100%; background: #FFFFFF; border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; animation: slideUp 0.2s ease-out; max-height: 80vh;}
   @keyframes slideUp { from{transform: translateY(100%);} to{transform: translateY(0);} }
   .panel-header { display: flex; justify-content: space-between; padding-bottom: 12px; font-size: 14px; color: var(--sub); border-bottom: 1px solid var(--line);}
   .panel-close { cursor: pointer; font-size: 18px; color: var(--purple);}
@@ -618,9 +664,73 @@
       <div class="menu-item" onclick="triggerPhoto()"><div class="menu-icon">📷</div><div class="menu-label">拍照</div></div>
       <div class="menu-item" onclick="triggerAlbum()"><div class="menu-icon">🖼️</div><div class="menu-label">相册</div></div>
       <div class="menu-item" onclick="openTangActionPanel()"><div class="menu-icon">☆</div><div class="menu-label">棠动</div></div>
-      <div class="menu-item" onclick="showToast('投问开发中...')"><div class="menu-icon">🎲</div><div class="menu-label">投问</div></div>
+      <div class="menu-item" onclick="openQuizPanel()"><div class="menu-icon">🎲</div><div class="menu-label">投问</div></div>
       <div class="menu-item" onclick="openMusicPanel()"><div class="menu-icon">🎵</div><div class="menu-label">音乐</div></div>
       <div class="menu-item" onclick="showToast('陪伴开发中...')"><div class="menu-icon">☕</div><div class="menu-label">陪伴</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 投问选择面板 -->
+<div class="panel-overlay" id="quizModePanel" onclick="closePanel('quizModePanel')">
+  <div class="panel-content" onclick="event.stopPropagation()">
+    <div class="panel-header"><span>选择投问模式</span><div class="panel-close" onclick="closePanel('quizModePanel')">×</div></div>
+    <div class="grid-menu" style="grid-template-columns: 1fr 1fr; padding: 20px 10px;">
+      <div class="menu-item" onclick="openStarTracePanel()">
+        <div class="menu-icon" style="font-size:20px; font-weight:bold;">星痕</div>
+        <div class="menu-label">选图作答</div>
+      </div>
+      <div class="menu-item" onclick="openHeartTracePanel()">
+        <div class="menu-icon" style="font-size:20px; font-weight:bold;">心迹</div>
+        <div class="menu-label">选项作答</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 星痕面板 -->
+<div class="panel-overlay" id="starTracePanel" onclick="closePanel('starTracePanel')">
+  <div class="panel-content" onclick="event.stopPropagation()">
+    <div class="panel-header"><span>星痕（选图作答）</span><div class="panel-close" onclick="closePanel('starTracePanel')">×</div></div>
+    <textarea class="input-field" id="stQuestion" placeholder="填写问题..." style="height: 60px; margin-bottom: 8px;"></textarea>
+    <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">问题附图（选填）</div>
+    <div class="bg-upload-area" onclick="document.getElementById('stImgFile').click()" style="height:80px; margin-bottom:12px;">
+      <img id="stImgPreview" src="" style="display:none;"><span id="stImgIcon">点击上传附图</span>
+    </div>
+    <input type="file" id="stImgFile" accept="image/*" style="display:none" onchange="previewStImg(event)">
+    
+    <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">选项图片（最多9张）</div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;" id="stOptionsWrap">
+      <div class="avatar-upload" onclick="document.getElementById('stOptionsFile').click()" style="width:60px; height:60px;">
+        <span>+</span>
+      </div>
+    </div>
+    <input type="file" id="stOptionsFile" accept="image/*" multiple style="display:none" onchange="previewStOptions(event)">
+    
+    <div class="modal-footer">
+      <div></div>
+      <button class="btn-save" onclick="sendStarTrace()">投星</button>
+    </div>
+  </div>
+</div>
+
+<!-- 心迹面板 -->
+<div class="panel-overlay" id="heartTracePanel" onclick="closePanel('heartTracePanel')">
+  <div class="panel-content" onclick="event.stopPropagation()">
+    <div class="panel-header"><span>心迹（选项作答）</span><div class="panel-close" onclick="closePanel('heartTracePanel')">×</div></div>
+    <textarea class="input-field" id="htQuestion" placeholder="填写问题..." style="height: 60px; margin-bottom: 8px;"></textarea>
+    <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">问题附图（选填）</div>
+    <div class="bg-upload-area" onclick="document.getElementById('htImgFile').click()" style="height:80px; margin-bottom:12px;">
+      <img id="htImgPreview" src="" style="display:none;"><span id="htImgIcon">点击上传附图</span>
+    </div>
+    <input type="file" id="htImgFile" accept="image/*" style="display:none" onchange="previewHtImg(event)">
+    
+    <div style="margin-bottom:8px; font-size:13px; color:var(--sub);">文字选项</div>
+    <textarea class="input-field" id="htOptions" placeholder="输入选项，一行一个（字数不够会换行）" style="height: 120px; margin-bottom:12px;"></textarea>
+    
+    <div class="modal-footer">
+      <div></div>
+      <button class="btn-save" onclick="sendHeartTrace()">寻心</button>
     </div>
   </div>
 </div>
@@ -985,7 +1095,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 9); // 升级版本，加入 LoveDays
+const request = indexedDB.open("SunsetFogDB", 10); // 升级版本，加入投问
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -1021,6 +1131,9 @@ let currentMusicTab = "tangdong", musicDeleteMode = false, selectedMusicIds = ne
 let currentFavRoomId = null;
 let longPressMsgTarget = null, longPressFavTarget = null;
 let editLoveDaysId = null, targetLoveDaysId = null, currentLovedayBg = null, selectedLoveRooms = [];
+
+let stImgBase64 = null, stOptionsBase64 = [];
+let htImgBase64 = null;
 
 let appSettings = { 
   stickerProb: 10, 
@@ -1292,6 +1405,44 @@ function appendMessageToUI(m) {
     const row = document.createElement('div'); row.className = 'msg-action'; row.textContent = m.text;
     row.dataset.id = m.id;
     container.appendChild(row);
+  } else if (m.type === 'quiz') {
+    // 渲染投问卡片
+    const data = JSON.parse(m.text);
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.dataset.id = m.id;
+    
+    let innerHTML = `<div class="quiz-question">${data.question}</div>`;
+    if(data.img) innerHTML += `<img src="${data.img}" class="quiz-image">`;
+    
+    if(data.mode === 'trace') { // 星痕
+      innerHTML += `<div class="quiz-grid">`;
+      data.options.forEach((opt, i) => {
+        let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null ? 'dim' : '');
+        innerHTML += `<div class="quiz-grid-item ${hClass}"><img src="${opt}"></div>`;
+      });
+      innerHTML += `</div>`;
+    } else if (data.mode === 'heart') { // 心迹
+      innerHTML += `<div class="quiz-options">`;
+      data.options.forEach((opt, i) => {
+        let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null ? 'dim' : '');
+        innerHTML += `<div class="quiz-option ${hClass}">${opt}</div>`;
+      });
+      innerHTML += `</div>`;
+    }
+    card.innerHTML = innerHTML;
+    
+    if(data.selected === null) {
+      // 如果还没选，给个等待提示
+      let tRow = document.createElement('div'); 
+      tRow.id = 'typingIndicator'; tRow.className = 'msg-row left';
+      const avHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="font-size:16px;color:var(--purple)">梦</span>`;
+      let msgText = data.mode === 'trace' ? '正在翻阅星痕...' : '正在斟酌心迹...';
+      tRow.innerHTML = `<div class="msg-avatar">${avHTML}</div><div class="typing-bubble">${msgText} <div class="typing-quiz">◌</div></div>`;
+      container.appendChild(tRow);
+    }
+    
+    container.appendChild(card);
   } else {
     const isMe = m.sender === 'me';
     const row = document.createElement('div'); row.className = `msg-row ${isMe ? 'right' : 'left'}`;
@@ -1464,6 +1615,157 @@ function showTypingIndicator(show) {
     tRow.innerHTML = `<div class="msg-avatar">${avHTML}</div><div class="typing-bubble">正在输入 <div class="typing-dots"><span></span><span></span><span></span></div></div>`;
     document.getElementById('chatContent').appendChild(tRow); scrollToBottom();
   } else { if(tRow) tRow.remove(); }
+}
+
+/* ================= 投问逻辑 ================= */
+function openQuizPanel() {
+  closePanel('starIslandPanel');
+  document.getElementById('quizModePanel').classList.add('active');
+}
+
+function openStarTracePanel() {
+  closePanel('quizModePanel');
+  document.getElementById('stQuestion').value = '';
+  document.getElementById('stImgPreview').style.display = 'none';
+  document.getElementById('stImgPreview').src = '';
+  document.getElementById('stImgIcon').style.display = 'block';
+  stImgBase64 = null;
+  stOptionsBase64 = [];
+  renderStOptions();
+  document.getElementById('starTracePanel').classList.add('active');
+}
+function previewStImg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { 
+    stImgBase64 = ev.target.result;
+    document.getElementById('stImgPreview').src = stImgBase64;
+    document.getElementById('stImgPreview').style.display = 'block';
+    document.getElementById('stImgIcon').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+function previewStOptions(e) {
+  const files = Array.from(e.target.files);
+  if(files.length === 0) return;
+  
+  if(stOptionsBase64.length + files.length > 9) return showToast("最多只能选9张图");
+
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      stOptionsBase64.push(ev.target.result);
+      loaded++;
+      if(loaded === files.length) renderStOptions();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+function renderStOptions() {
+  const wrap = document.getElementById('stOptionsWrap');
+  wrap.innerHTML = '';
+  stOptionsBase64.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = "width:60px; height:60px; border-radius:8px; background:#eee; position:relative; overflow:hidden;";
+    div.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;">`;
+    // 可以加个删除小叉，这里先略过
+    wrap.appendChild(div);
+  });
+  if(stOptionsBase64.length < 9) {
+    const addBtn = document.createElement('div');
+    addBtn.className = 'avatar-upload';
+    addBtn.style.cssText = "width:60px; height:60px; border-radius:8px;";
+    addBtn.innerHTML = '<span>+</span>';
+    addBtn.onclick = () => document.getElementById('stOptionsFile').click();
+    wrap.appendChild(addBtn);
+  }
+}
+function sendStarTrace() {
+  const q = document.getElementById('stQuestion').value.trim();
+  if(!q) return showToast("请填写问题");
+  if(stOptionsBase64.length === 0) return showToast("请至少上传一张选项图");
+  
+  const data = { mode: 'trace', question: q, img: stImgBase64, options: stOptionsBase64, selected: null };
+  sendQuizCard(data);
+  closePanel('starTracePanel');
+}
+
+function openHeartTracePanel() {
+  closePanel('quizModePanel');
+  document.getElementById('htQuestion').value = '';
+  document.getElementById('htImgPreview').style.display = 'none';
+  document.getElementById('htImgPreview').src = '';
+  document.getElementById('htImgIcon').style.display = 'block';
+  document.getElementById('htOptions').value = '';
+  htImgBase64 = null;
+  document.getElementById('heartTracePanel').classList.add('active');
+}
+function previewHtImg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { 
+    htImgBase64 = ev.target.result;
+    document.getElementById('htImgPreview').src = htImgBase64;
+    document.getElementById('htImgPreview').style.display = 'block';
+    document.getElementById('htImgIcon').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+function sendHeartTrace() {
+  const q = document.getElementById('htQuestion').value.trim();
+  const optsStr = document.getElementById('htOptions').value.trim();
+  if(!q) return showToast("请填写问题");
+  if(!optsStr) return showToast("请填写选项");
+  
+  const opts = optsStr.split('\n').map(l => l.trim()).filter(l => l);
+  if(opts.length === 0) return showToast("请填写选项");
+
+  const data = { mode: 'heart', question: q, img: htImgBase64, options: opts, selected: null };
+  sendQuizCard(data);
+  closePanel('heartTracePanel');
+}
+
+function sendQuizCard(data) {
+  const msg = { roomId: currentRoom.id, sender: 'me', type: 'quiz', text: JSON.stringify(data), timestamp: Date.now() };
+  dbAdd('messages', msg, () => {
+    currentRoom.lastMsg = data.mode === 'trace' ? '[星痕]' : '[心迹]'; 
+    currentRoom.updatedAt = Date.now();
+    dbPut('rooms', currentRoom, () => {
+      dbGetAll('messages', allM => { 
+        const newM = allM[allM.length-1]; 
+        appendMessageToUI(newM); 
+        // 触发梦角回答
+        triggerQuizReply(currentRoom, newM);
+      });
+      const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
+      if(listItem) { listItem.querySelector('.chat-msg').textContent = currentRoom.lastMsg; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
+    });
+  });
+}
+
+function triggerQuizReply(room, quizMsg) {
+  const data = JSON.parse(quizMsg.text);
+  const minDelay = (room.speedMin || 8) * 1000;
+  const maxDelay = (room.speedMax || 15) * 1000;
+  const delay = Math.floor(minDelay + Math.random() * (maxDelay - minDelay));
+
+  setTimeout(() => {
+    // 随机选一个
+    const selectedIdx = Math.floor(Math.random() * data.options.length);
+    data.selected = selectedIdx;
+    
+    // 更新数据库
+    const tx = db.transaction("messages", "readwrite");
+    const store = tx.objectStore("messages");
+    store.put({ id: quizMsg.id, roomId: quizMsg.roomId, sender: quizMsg.sender, type: 'quiz', text: JSON.stringify(data), timestamp: quizMsg.timestamp });
+    tx.oncomplete = () => {
+      if (document.getElementById('page-chat').classList.contains('active') && currentRoom.id === room.id) {
+        openChatRoom(currentRoom.id); // 刷新聊天记录来展现高亮
+      }
+    };
+  }, delay);
 }
 
 /* 长按消息菜单 */
@@ -2249,11 +2551,12 @@ function renderLoveDays() {
     return;
   }
   
+  // 排序：置顶优先，然后按创建时间
   allLoveDays.sort((a,b) => { if(a.pinned && !b.pinned) return -1; if(!a.pinned && b.pinned) return 1; return b.createdAt - a.createdAt; });
 
   allLoveDays.forEach(ld => {
     const div = document.createElement('div');
-    div.className = 'loveday-card';
+    div.className = 'loveday-card' + (ld.pinned ? ' pinned' : '');
     
     let bgStyle = ld.bgImage ? `background-image: url('${ld.bgImage}');` : '';
     
@@ -2381,8 +2684,12 @@ function saveLoveDays() {
 function closeLoveDaysMenu(e) { if(e.target === document.getElementById('loveDaysMenu')) document.getElementById('loveDaysMenu').classList.remove('active'); }
 function toggleLoveDaysPin() {
   closeLoveDaysMenu({target:document.getElementById('loveDaysMenu')});
-  const ld = allLoveDays.find(l => l.id === targetLoveDaysId);
-  if(ld) { ld.pinned = !ld.pinned; dbPut('lovedays', ld, () => refreshAllData()); }
+  // 先取消所有现有的置顶，再置顶当前（唯一置顶逻辑）
+  dbGetAll('lovedays', all => {
+    all.forEach(l => { if(l.pinned) { l.pinned = false; dbPut('lovedays', l); } });
+    const ld = all.find(l => l.id === targetLoveDaysId);
+    if(ld) { ld.pinned = true; dbPut('lovedays', ld, () => refreshAllData()); }
+  });
 }
 function editLoveDays() {
   closeLoveDaysMenu({target:document.getElementById('loveDaysMenu')});
