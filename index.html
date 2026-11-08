@@ -463,8 +463,7 @@
   .letter-closing { text-align: left; margin-bottom: 20px; }
   .letter-signature { text-align: right; line-height:1.4; }
   
-  .letter-replies { display:flex; flex-direction:column; gap:12px; margin-top:10px;}
-  .letter-reply-item { background:rgba(255,255,255,0.8); padding:12px 16px; border-radius:12px; font-size:15px; line-height:1.5; border-left:4px solid var(--taro);}
+  .letter-replies { display:flex; flex-direction:column; gap:20px; margin-top:10px;}
   
   /* 写信界面 */
   .write-letter-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; display:none; flex-direction:column; background:#F8F4FE; transition: background 0.3s;}
@@ -2667,45 +2666,48 @@ function openLetterDetail(id) {
   const taName = room ? (room.taCall || room.taName) : 'TA';
   const myName = room ? (room.myCall || room.myName) : '我';
   
-  let salutation = letter.sender === 'me' ? `致 ${taName}：` : `致 ${myName}：`;
-  let signName = letter.sender === 'me' ? `你的 ${myName}` : `你的 ${taName}`;
-  let dateStr = getLetterDateSuffix(letter.timestamp);
-
-  let paperHTML = `<div class="letter-paper">`;
-  if(letter.bgImage) {
-    paperHTML += `<div class="letter-paper-bg" style="background-image:url('${letter.bgImage}')"></div><div class="letter-paper-mask"></div>`;
-  } else {
-    paperHTML = `<div class="letter-paper" style="background:${letter.bgColor};">`;
-  }
-  
-  let bodyContent = letter.content.replace(/\n/g, '<br>');
-  
-  paperHTML += `
-    <div class="letter-paper-inner">
-      <div class="letter-salutation">${salutation}</div>
-      <div class="letter-body">${bodyContent}</div>
-      <div class="letter-closing">祝好。</div>
-      <div class="letter-signature">
-        ——${signName}<br>
-        ${dateStr}
+  // 核心修复3：每封信单独渲染为一张信纸
+  const renderPaper = (sender, content, timestamp, bgColor, bgImage) => {
+    let salutation = sender === 'me' ? `致 ${taName}：` : `致 ${myName}：`;
+    let signName = sender === 'me' ? `你的 ${myName}` : `你的 ${taName}`;
+    let dateStr = getLetterDateSuffix(timestamp);
+    
+    let paperHTML = `<div class="letter-paper">`;
+    if(bgImage) {
+      paperHTML += `<div class="letter-paper-bg" style="background-image:url('${bgImage}')"></div><div class="letter-paper-mask"></div>`;
+    } else {
+      paperHTML = `<div class="letter-paper" style="background:${bgColor};">`;
+    }
+    
+    let bodyContent = content.replace(/\n/g, '<br>');
+    
+    paperHTML += `
+      <div class="letter-paper-inner">
+        <div class="letter-salutation">${salutation}</div>
+        <div class="letter-body">${bodyContent}</div>
+        <div class="letter-closing">祝好。</div>
+        <div class="letter-signature">
+          ——${signName}<br>
+          ${dateStr}
+        </div>
       </div>
-    </div>
-  </div>`;
+    </div>`;
+    return paperHTML;
+  };
+
+  // 原信件
+  let allPapersHTML = renderPaper(letter.sender, letter.content, letter.timestamp, letter.bgColor, letter.bgImage);
   
-  contentDiv.innerHTML = paperHTML;
-  
+  // 回复信件（独立信纸）
   if(letter.replies && letter.replies.length > 0) {
-    const repDiv = document.createElement('div');
-    repDiv.className = 'letter-replies';
     letter.replies.forEach(r => {
-      const item = document.createElement('div');
-      item.className = 'letter-reply-item';
-      const rDate = getLetterDateSuffix(r.timestamp);
-      item.innerHTML = `<div style="font-size:12px;color:var(--sub);margin-bottom:4px;">${r.sender === 'me' ? myName : taName} 回复于 ${rDate}：</div>${r.text}`;
-      repDiv.appendChild(item);
+      // 回复的信件统一用对应的配色（如果是 TA 回信，随机给个底色，或者用默认的）
+      let rBgColor = r.sender === 'ta' ? LETTER_COLORS[Math.floor(Math.random()*LETTER_COLORS.length)] : letter.bgColor;
+      allPapersHTML += renderPaper(r.sender, r.text, r.timestamp, rBgColor, null);
     });
-    contentDiv.appendChild(repDiv);
   }
+
+  contentDiv.innerHTML = allPapersHTML;
 
   if(letter.sender === 'ta' || letter.replies.length > 0) {
     document.getElementById('letterDetailFooter').style.display = 'flex';
