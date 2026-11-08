@@ -312,8 +312,9 @@
     background: #FFFFFF;
   }
   .note-card:active { transform: scale(0.98); }
-  .note-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
-  .note-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
+  .note-bg-global { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-2;}
+  .note-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-1;}
+  .note-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:0;}
   .note-content-wrap { position:relative; z-index:2; display:flex; flex-direction:column; height:100%; width:100%;}
   
   .note-header { display:flex; justify-content:space-between; font-size:12px; color:var(--sub); margin-bottom:8px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
@@ -1540,7 +1541,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 11);
+const request = indexedDB.open("SunsetFogDB", 11); 
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -2767,11 +2768,16 @@ function renderNoteList() {
     const div = document.createElement('div');
     div.className = 'note-card' + (note.pinned ? ' pinned' : '');
     
-    if(note.bgImage) {
-      div.innerHTML += `<div class="note-bg" style="background-image:url(${note.bgImage})"></div><div class="note-bg-mask"></div>`;
-    } else {
-      div.style.background = note.bgColor;
+    // 修正卡片背景图逻辑：优先专属，否则显示全局
+    if(appSettings.globalBgImage) {
+      div.innerHTML += `<div class="note-bg-global" style="background-image:url(${appSettings.globalBgImage})"></div>`;
     }
+    if(note.bgImage) {
+      div.innerHTML += `<div class="note-bg" style="background-image:url(${note.bgImage})"></div>`;
+    } else if(!appSettings.globalBgImage) {
+      div.style.background = note.bgColor; // 没图才用底色
+    }
+    div.innerHTML += `<div class="note-bg-mask"></div>`;
 
     const d = new Date(note.timestamp);
     const timeStr = `${d.getMonth()+1}-${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
@@ -2830,20 +2836,20 @@ function openNoteDetail(id) {
   if(!note) return;
   currentNoteDetailId = id;
   
-  // 设置全局背景 (如果有)
-  if(appSettings.globalBgImage) {
-    document.getElementById('noteDetailBgGlobal').style.backgroundImage = `url(${appSettings.globalBgImage})`;
-  } else {
-    document.getElementById('noteDetailBgGlobal').style.background = 'transparent';
-  }
-  
-  // 设置专属背景
+  // 专属背景图优先
   if(note.bgImage) {
     document.getElementById('noteDetailBg').style.backgroundImage = `url(${note.bgImage})`;
     document.getElementById('noteDetailBg').style.background = 'transparent';
   } else {
     document.getElementById('noteDetailBg').style.backgroundImage = 'none';
     document.getElementById('noteDetailBg').style.background = note.bgColor;
+  }
+
+  // 底层全局图
+  if(appSettings.globalBgImage) {
+    document.getElementById('noteDetailBgGlobal').style.backgroundImage = `url(${appSettings.globalBgImage})`;
+  } else {
+    document.getElementById('noteDetailBgGlobal').style.background = 'transparent';
   }
   
   // 30% 全局白纱遮罩
@@ -2858,7 +2864,15 @@ function openNoteDetail(id) {
     note.replies.forEach(r => {
       const item = document.createElement('div');
       item.className = 'note-reply-item ' + (r.sender === 'me' ? 'me' : 'ta');
-      item.textContent = r.text;
+      // 如果回复文本没有标点，自动补一下
+      let text = r.text;
+      if (r.sender === 'ta' && text.length > 0) {
+        const lastChar = text.slice(-1);
+        if(!['。', '，', '！', '？', '…', '.', ',', '!', '?'].includes(lastChar)) {
+           text += '。';
+        }
+      }
+      item.textContent = text;
       repDiv.appendChild(item);
     });
     contentDiv.appendChild(repDiv);
