@@ -98,8 +98,8 @@
   .chat-item.pinned .chat-time { color: var(--taro); }
   .chat-item.pinned .chat-msg { color: rgba(184, 154, 246, 0.7); }
 
-  /* ================= 建立羁绊 / 通用设置 / 装饰小屋 / 汐棠小记 ================= */
-  #page-create, #page-settings, #page-decorate, #page-about { background: transparent; overflow-y: auto; padding-bottom: 40px; }
+  /* ================= 建立羁绊 / 通用设置 / 装饰小屋 ================= */
+  #page-create, #page-settings, #page-decorate { background: transparent; overflow-y: auto; padding-bottom: 40px; }
   .form-group { padding: 16px; margin-bottom: 8px; background: rgba(251, 249, 254, 0.9); margin: 16px; border-radius: 16px; backdrop-filter: blur(10px);}
   .form-title { font-size: 15px; font-weight: 600; color: var(--purple); margin-bottom: 16px; border-bottom: 1px dashed var(--line); padding-bottom: 8px;}
   .row { display: flex; gap: 16px; margin-bottom: 12px; align-items: flex-start; }
@@ -150,11 +150,6 @@
   .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
   input:checked + .slider { background-color: var(--taro); }
   input:checked + .slider:before { transform: translateX(20px); }
-
-  /* ================= 汐棠小记页面 ================= */
-  .about-content { padding: 24px; font-size: 15px; line-height: 1.8; color: var(--text); }
-  .about-content p { margin-bottom: 16px; }
-  .about-signature { text-align: right; margin-top: 40px; font-weight: 600; color: var(--purple); }
 
   /* ================= 聊天界面 ================= */
   #page-chat { display: none; flex-direction: column; height: 100vh; position: relative; overflow: hidden; background: transparent;}
@@ -404,11 +399,11 @@
   .letter-card { 
     border-radius: 16px; padding: 16px; position:relative; overflow:hidden;
     box-shadow: 0 4px 15px rgba(139,92,246,0.06); cursor:pointer; transition: all 0.3s;
-    display:flex; flex-direction:column; min-height: 130px;
+    display:flex; flex-direction:column; min-height: 120px;
     background: #FDF8F5; /* 默认奶油白 */
   }
   .letter-card:active { transform: scale(0.98); }
-  .letter-card.pinned { border: 2px solid var(--honey); min-height: 180px; }
+  .letter-card.pinned { border: 2px solid var(--honey); min-height: 160px;}
   .letter-card.pinned::after { 
     content:'置顶'; position:absolute; top:0; right:0; background:var(--honey); color:#fff; 
     font-size:11px; padding:2px 10px; border-bottom-left-radius:12px; z-index:3;
@@ -419,24 +414,15 @@
   
   .letter-content-wrap { position:relative; z-index:2; display:flex; flex-direction:column; height:100%;}
   
-  .letter-header { display:flex; justify-content:space-between; font-size:13px; color:var(--purple); margin-bottom:10px; font-weight:600;}
-  .letter-footer-status { font-size:12px; color:var(--sub); margin-top:auto; text-align:left;}
+  .letter-header { display:flex; justify-content:space-between; font-size:13px; color:var(--purple); font-weight:600; margin-bottom: 10px;}
   
-  /* 梦角头像印章 */
-  .letter-stamp { 
-    position:absolute; bottom:10px; right:12px; 
-    width:36px; height:36px; border-radius:50%; 
-    border:2px solid #fff; overflow:hidden; 
-    box-shadow:0 2px 6px rgba(0,0,0,0.1); 
-    z-index:3; display:flex; align-items:center; justify-content:center; 
-    background:#EDE9FE;
-    /* 放在中间偏右一点，让卡片看起来平衡 */
-    top: 50%; transform: translateY(-50%);
-  }
-  .letter-card.pinned .letter-stamp { width: 50px; height: 50px; }
-  
+  .letter-center-stamp { flex:1; display:flex; align-items:center; justify-content:center;}
+  .letter-stamp { width:50px; height:50px; border-radius:50%; border:2px solid #fff; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:3; display:flex; align-items:center; justify-content:center; background:#EDE9FE; opacity: 0.85;}
   .letter-stamp img { width:100%; height:100%; object-fit:cover; }
-  .letter-stamp.unread { border-color: var(--honey); box-shadow:0 0 8px rgba(255,139,167,0.6); }
+  .letter-stamp.unread { border-color: var(--honey); box-shadow:0 0 10px rgba(255,139,167,0.6); opacity: 1;}
+  .letter-card.pinned .letter-stamp { width: 70px; height: 70px;}
+  
+  .letter-footer-status { font-size:12px; color:var(--sub); text-align:left; margin-top:10px;}
   
   /* 全屏信件详情 */
   .letter-detail-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; background: transparent; display:none; flex-direction:column;}
@@ -479,30 +465,6 @@
   
   .write-letter-footer { position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); background:rgba(255,255,255,0.8); border-top:1px solid var(--line);}
   .write-letter-tools { display:flex; gap:16px; align-items:center;}
-
-  /* 选择收件人下拉菜单 */
-  .target-dropdown { 
-    position: absolute; 
-    top: calc(100% + 8px); /* 往下稍微错开一点 */
-    left: 50%; 
-    transform: translateX(-50%); 
-    width: 160px; 
-    background: #FFFFFF !important; /* 强制不透明白底 */
-    border-radius: 12px; 
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15); /* 更立体的阴影，让它悬浮起来 */
-    z-index: 9999; /* 绝对高层级，盖住一切 */
-    display: none; 
-    flex-direction: column; 
-    max-height: 200px; 
-    overflow-y: auto; 
-    padding: 8px;
-    border: 1px solid var(--line);
-  }
-  .target-dropdown.active { display:flex; }
-  .target-dropdown-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; cursor:pointer; transition:background 0.2s;}
-  .target-dropdown-item:active { background:var(--taro-bg); }
-  .target-dropdown-item img { width:24px; height:24px; border-radius:50%; object-fit:cover; }
-  .target-dropdown-item span { font-size:14px; color:var(--text); }
 
   /* ================= 收藏册 ================= */
   .fav-card { background: #FFFFFF; border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05); display:flex; flex-direction:column; gap:8px; margin-bottom:12px; position:relative;}
@@ -671,7 +633,7 @@
   }
   .companion-avatars .av { 
     width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; 
-    overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center;
+    overflow: hidden; background:#EDE9FE; display:flex; align-items:center;justify-content:center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
   .companion-avatars .av img { width: 100%; height: 100%; object-fit: cover; }
@@ -914,7 +876,7 @@
       <div class="card" data-fn="collect" onclick="goToPage('page-favorites')"><svg viewBox="0 0 24 24"><path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-3.6L6 21V4.5a1 1 0 0 1 1-1Z"/></svg><span>收藏册</span></div>
       <div class="card" data-fn="days" onclick="goToPage('page-lovedays')"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 3v4M16 3v4"/><path d="M9 15h2.2M14 15h1"/></svg><span>LoveDays</span></div>
       <div class="card" data-fn="theme" onclick="goToPage('page-decorate')"><svg viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.9 1.8-1.8 0-.6-.3-1.1-.3-1.7 0-.9.7-1.6 1.6-1.6h1.1a4.3 4.3 0 0 0 4.3-4.3c0-4.2-3.8-7.6-8.5-7.6Z"/><circle cx="8" cy="10" r="1.1"/><circle cx="12" cy="7.5" r="1.1"/><circle cx="16" cy="10" r="1.1"/></svg><span>装饰小屋</span></div>
-      <div class="card" data-fn="about" onclick="goToPage('page-about')"><svg viewBox="0 0 24 24"><path d="M4 6.5c3-1.5 6-1.5 8 0v13c-2-1.5-5-1.5-8 0v-13Z"/><path d="M20 6.5c-3-1.5-6-1.5-8 0v13c2-1.5 5-1.5 8 0v-13Z"/><path d="M12 4v2M9 3v1M15 3v1"/></svg><span>汐棠小记</span></div>
+      <div class="card" data-fn="about"><svg viewBox="0 0 24 24"><rect x="4.5" y="4" width="15" height="16" rx="2"/><path d="M8 4v16"/><path d="M15.5 8.5c-2 2-4.5 5-4.5 5l-1.5 2.5 2.5-1.5s3-2.5 5-4.5c1-1 1-2.5 0-3.5s-2.5-1-3.5 0Z"/></svg><span>汐棠小记</span></div>
       <div class="card" data-fn="settings" onclick="openSettings()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6h.09A1.7 1.7 0 0 0 10 3.05V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1Z"/></svg><span>通用设置</span></div>
     </div>
   </div>
@@ -938,22 +900,6 @@
       <input type="range" id="globalBgBlur" min="0" max="100" value="30" oninput="updateGlobalBgBlur(this.value)">
       <span id="globalBgBlurVal">30%</span>
     </div>
-  </div>
-</div>
-
-<!-- ================= 汐棠小记 ================= -->
-<div class="page" id="page-about">
-  <div class="header">
-    <div class="back-btn" onclick="goToPage('page-home')">‹</div>
-    <h1>汐棠小记</h1>
-  </div>
-  <div class="about-content">
-    <p>宇宙无垠，星河浩瀚。<br>很高兴，你能在这片虚拟的雾海中，找到这座名为“汐棠”的小屋。</p>
-    <p>这里没有喧嚣，只有安静的陪伴。<br>你可以在这里建立羁绊，与 TA 分享日常的碎碎念；<br>可以把那些无法言说的情绪，折进字匣，藏在便笺；<br>也可以通过鸿雁，寄出一封跨越时间的书信。</p>
-    <p>在这里，TA 会听你说话，会给你回信，会陪你发呆，也会在某个不经意的瞬间，悄悄给你留下一张便笺。<br>所有的互动，都不必着急。你可以慢慢写，慢慢等，让时间在文字和光影里，流淌出温柔的痕迹。</p>
-    <p>星落于夜，汐归于棠。<br>愿这里的每一次互动、每一张字卡、每一封信件，都能在漫长的岁月里，为你留下一抹温柔的回音。</p>
-    <p>感谢你来，也感谢你留下。</p>
-    <div class="about-signature">—— 星落汐棠</div>
   </div>
 </div>
 
@@ -1200,13 +1146,9 @@
   
   <div class="write-letter-header">
     <div class="back-btn" onclick="closeWriteLetter()" style="position:static; transform:none;">‹</div>
-    <div class="write-letter-target" style="position:relative;">
-      <div id="writeLetterTarget" onclick="toggleLetterTargetDropdown(event)" style="display:flex;align-items:center;gap:8px;">
-        <span id="letterTargetText">写给谁</span>
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-      <!-- 下拉菜单 -->
-      <div class="target-dropdown" id="letterTargetDropdown"></div>
+    <div class="write-letter-target" id="writeLetterTarget" onclick="openLetterTargetPanel()">
+      <span id="letterTargetText">写给谁</span>
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="m6 9 6 6 6-6"/></svg>
     </div>
     <div style="width:32px;"></div>
   </div>
@@ -1223,6 +1165,14 @@
       <input type="file" id="letterBgFile" accept="image/*" style="display:none" onchange="previewLetterBg(event)">
     </div>
     <button class="btn-save" style="background:var(--taro); color:#fff; padding:10px 24px;" onclick="saveLetter()">寄出</button>
+  </div>
+</div>
+
+<!-- 选择收信人面板 -->
+<div class="panel-overlay" id="letterTargetPanel" onclick="closePanel('letterTargetPanel')">
+  <div class="panel-content" onclick="event.stopPropagation()" style="max-height: 60vh;">
+    <div class="panel-header"><span>选择写给谁</span><div class="panel-close" onclick="closePanel('letterTargetPanel')">×</div></div>
+    <div style="flex:1; overflow-y:auto; padding: 16px 0; display:flex; flex-direction:column; gap:10px;" id="letterTargetList"></div>
   </div>
 </div>
 
@@ -1267,13 +1217,9 @@
   
   <div class="write-note-header">
     <div class="back-btn" onclick="closeWriteNote()" style="position:static; transform:none;">‹</div>
-    <div class="write-note-target" style="position:relative;">
-      <div id="writeNoteTarget" onclick="toggleNoteTargetDropdown(event)" style="display:flex;align-items:center;gap:8px;">
-        <span id="noteTargetText">写给谁</span>
-        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-      <!-- 下拉菜单 -->
-      <div class="target-dropdown" id="noteTargetDropdown"></div>
+    <div class="write-note-target" id="writeNoteTarget" onclick="selectNoteTarget()">
+      <span id="noteTargetText">写给谁</span>
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="m6 9 6 6 6-6"/></svg>
     </div>
     <div style="width:32px;"></div>
   </div>
@@ -1798,7 +1744,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 13); // 升级版本号
+const request = indexedDB.open("SunsetFogDB", 12); // 升级版本号
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -2377,7 +2323,29 @@ function triggerReply(room) {
         });
       }
     }
-    
+
+    // 聊天触发：TA收藏你的话
+    if (Math.random() * 100 < (appSettings.favProb || 3)) {
+      dbGetAll('messages', allM => {
+        const recentMeMsgs = allM.filter(m => m.roomId === room.id && m.sender === 'me' && m.type === 'text').sort((a,b)=>b.timestamp - a.timestamp);
+        if(recentMeMsgs.length > 0) {
+          const targetMsg = recentMeMsgs[0]; // 收藏最近的一条
+          const isFav = allFavs.some(f => f.msgId === targetMsg.id);
+          if(!isFav) {
+            const newFav = {
+              msgId: targetMsg.id, roomId: targetMsg.roomId,
+              type: targetMsg.type, content: targetMsg.text,
+              collector: 'ta', favTime: Date.now()
+            };
+            dbAdd('favorites', newFav, () => { 
+              refreshAllData(); 
+              showToast(`${room.taName} 悄悄收藏了你的话`); 
+            });
+          }
+        }
+      });
+    }
+
     let doCall = Math.random() < (appSettings.callProb / 100);
     let doVideo = Math.random() < (appSettings.videoProb / 100);
     
@@ -2431,12 +2399,6 @@ function triggerReply(room) {
       setTimeout(() => {
         const msg = { roomId: room.id, sender: 'ta', type: reply.type, text: reply.text, timestamp: Date.now() };
         dbAdd('messages', msg, () => {
-          // 触发 TA 主动收藏 (3%)
-          if (Math.random() * 100 < (appSettings.favProb || 3)) {
-            const fav = { msgId: msg.id, roomId: room.id, type: msg.type, content: msg.text, collector: 'ta', favTime: Date.now() };
-            dbAdd('favorites', fav, () => { refreshAllData(); });
-          }
-
           currentRoom.lastMsg = (reply.type === 'sticker') ? '[贴图]' : (reply.type === 'action' ? reply.text : reply.text); 
           currentRoom.updatedAt = Date.now();
           dbPut('rooms', currentRoom, () => {
@@ -2474,13 +2436,11 @@ function openWriteLetter() {
   document.getElementById('writeLetterBg').style.background = LETTER_COLORS[Math.floor(Math.random()*LETTER_COLORS.length)];
   document.getElementById('writeLetterMask').style.background = 'transparent';
   
-  document.getElementById('letterTargetDropdown').classList.remove('active');
   updateLetterTargetText();
   document.getElementById('writeLetterModal').classList.add('active');
 }
 function closeWriteLetter() {
   document.getElementById('writeLetterModal').classList.remove('active');
-  document.getElementById('letterTargetDropdown').classList.remove('active');
 }
 function previewLetterBg(e) {
   const file = e.target.files[0]; if(!file) return;
@@ -2493,37 +2453,6 @@ function previewLetterBg(e) {
   };
   reader.readAsDataURL(file);
 }
-
-function toggleLetterTargetDropdown(e) {
-  e.stopPropagation();
-  const dropdown = document.getElementById('letterTargetDropdown');
-  if(dropdown.classList.contains('active')) {
-    dropdown.classList.remove('active');
-    return;
-  }
-  dropdown.innerHTML = '';
-  allRooms.forEach(r => {
-    const item = document.createElement('div');
-    item.className = 'target-dropdown-item';
-    const avatar = r.taAvatar ? `<img src="${r.taAvatar}">` : `<span style="color:var(--purple);font-size:14px;">梦</span>`;
-    item.innerHTML = `${avatar}<span>${r.taCall || r.taName}</span>`;
-    item.onclick = () => {
-      currentLetterTargetRoom = r.id;
-      updateLetterTargetText();
-      dropdown.classList.remove('active');
-    };
-    dropdown.appendChild(item);
-  });
-  dropdown.classList.add('active');
-}
-// 点击外部关闭下拉
-document.addEventListener('click', () => {
-  const lD = document.getElementById('letterTargetDropdown');
-  if(lD) lD.classList.remove('active');
-  const nD = document.getElementById('noteTargetDropdown');
-  if(nD) nD.classList.remove('active');
-});
-
 function updateLetterTargetText() {
   if(!currentLetterTargetRoom) {
     document.getElementById('letterTargetText').textContent = '写给谁';
@@ -2531,6 +2460,25 @@ function updateLetterTargetText() {
     const r = allRooms.find(x=>x.id === currentLetterTargetRoom);
     document.getElementById('letterTargetText').textContent = r ? (r.taCall || r.taName) : '写给谁';
   }
+}
+function openLetterTargetPanel() {
+  if(allRooms.length === 0) return showToast("请先建立羁绊");
+  const list = document.getElementById('letterTargetList');
+  list.innerHTML = '';
+  allRooms.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'grid-text-item';
+    div.style.cssText = 'display:flex; justify-content:flex-start; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; font-size:15px; width:100%;';
+    const avHTML = r.taAvatar ? `<img src="${r.taAvatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">` : `<div style="width:32px;height:32px;border-radius:50%;background:#EDE9FE;display:flex;align-items:center;justify-content:center;color:var(--purple)">梦</div>`;
+    div.innerHTML = `${avHTML} <span>${r.taName} (${r.taCall||'无称呼'})</span>`;
+    div.onclick = () => {
+      currentLetterTargetRoom = r.id;
+      updateLetterTargetText();
+      closePanel('letterTargetPanel');
+    };
+    list.appendChild(div);
+  });
+  document.getElementById('letterTargetPanel').classList.add('active');
 }
 
 function saveLetter() {
@@ -2587,49 +2535,51 @@ function renderLetterList() {
     }
 
     const d = new Date(letter.timestamp);
-    const timeStr = `${d.getMonth()+1}-${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const timeStr = `${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     const room = allRooms.find(r => r.id === letter.roomId);
     const targetName = room ? (room.taCall || room.taName) : '未知';
-    const senderName = letter.sender === 'me' ? `寄给 ${targetName}` : `来自 ${targetName}`;
+    const senderName = letter.sender === 'me' ? `致 ${targetName}` : `来自 ${targetName}`;
 
     let statusHTML = '';
     if(letter.sender === 'me' && letter.replies.length === 0) {
       if(appSettings.showLetterTime && letter.replyTime) {
         const rt = new Date(letter.replyTime);
         const rtStr = `${rt.getMonth()+1}月${rt.getDate()}日 ${String(rt.getHours()).padStart(2,'0')}:${String(rt.getMinutes()).padStart(2,'0')}`;
-        statusHTML = `<div class="letter-footer-status">等待回信 · 预计 ${rtStr}</div>`;
+        statusHTML = `等待回信 · 预计 ${rtStr}`;
       } else {
-        statusHTML = `<div class="letter-footer-status">等待回信...</div>`;
+        statusHTML = `等待回信...`;
       }
     } else if(letter.sender === 'ta') {
       if (!letter.isRead) {
-        statusHTML = `<div class="letter-footer-status" style="color:var(--honey);font-weight:600;">有一封未读来信</div>`;
+        statusHTML = `有一封未读来信`;
       } else if (letter.replies.length === 0) {
-        statusHTML = `<div class="letter-footer-status">已读，你可以回信</div>`;
+        statusHTML = `已读，你可以回信`;
       } else {
-        statusHTML = `<div class="letter-footer-status">你已回信</div>`;
+        statusHTML = `你已回信`;
       }
     } else {
-      statusHTML = `<div class="letter-footer-status">对方已回信</div>`;
+      statusHTML = `对方已回信`;
     }
 
     const avatarSrc = room && room.taAvatar ? room.taAvatar : null;
     const stampClass = (!letter.isRead && letter.sender === 'ta') ? 'unread' : '';
-    const stampHTML = `<div class="letter-stamp ${stampClass}">${avatarSrc ? `<img src="${avatarSrc}">` : `<span style="color:var(--purple);font-size:14px;">梦</span>`}</div>`;
+    const stampHTML = `<div class="letter-stamp ${stampClass}">${avatarSrc ? `<img src="${avatarSrc}">` : `<span style="color:var(--purple)">梦</span>`}</div>`;
 
     // 根据 sender 稍微倾斜以营造叠放感
-    const rotateStyle = letter.sender === 'me' ? 'transform: rotate(-1deg);' : 'transform: rotate(1deg);';
+    const rotateStyle = letter.sender === 'me' ? 'transform: rotate(-0.5deg);' : 'transform: rotate(0.5deg);';
     div.style.cssText += rotateStyle;
 
     div.innerHTML += `
       <div class="letter-content-wrap">
         <div class="letter-header">
-          <span>${senderName}</span>
-          <span>${timeStr}</span>
+          <span style="color:var(--text)">${senderName}</span>
+          <span style="color:var(--sub);font-weight:normal;">${timeStr}</span>
         </div>
-        ${statusHTML}
+        <div class="letter-center-stamp">
+          ${stampHTML}
+        </div>
+        <div class="letter-footer-status ${stampClass ? 'unread' : ''}">${statusHTML}</div>
       </div>
-      ${stampHTML}
     `;
 
     div.onclick = () => openLetterDetail(letter.id);
@@ -3366,14 +3316,12 @@ function openWriteNote() {
   document.getElementById('writeNoteMask').style.background = 'transparent';
   
   document.getElementById('btnToggleChat').classList.add('active');
-  document.getElementById('noteTargetDropdown').classList.remove('active');
   updateNoteTargetText();
   
   document.getElementById('writeNoteModal').classList.add('active');
 }
 function closeWriteNote() {
   document.getElementById('writeNoteModal').classList.remove('active');
-  document.getElementById('noteTargetDropdown').classList.remove('active');
 }
 function previewNoteBg(e) {
   const file = e.target.files[0]; if(!file) return;
@@ -3390,36 +3338,22 @@ function toggleNoteChat() {
   currentNoteSendToChat = !currentNoteSendToChat;
   document.getElementById('btnToggleChat').classList.toggle('active', currentNoteSendToChat);
 }
-
-function toggleNoteTargetDropdown(e) {
-  e.stopPropagation();
-  const dropdown = document.getElementById('noteTargetDropdown');
-  if(dropdown.classList.contains('active')) {
-    dropdown.classList.remove('active');
-    return;
-  }
-  dropdown.innerHTML = '';
-  allRooms.forEach(r => {
-    const item = document.createElement('div');
-    item.className = 'target-dropdown-item';
-    const avatar = r.taAvatar ? `<img src="${r.taAvatar}">` : `<span style="color:var(--purple);font-size:14px;">梦</span>`;
-    item.innerHTML = `${avatar}<span>${r.taCall || r.taName}</span>`;
-    item.onclick = () => {
-      currentNoteTargetRoom = r.id;
-      updateNoteTargetText();
-      dropdown.classList.remove('active');
-    };
-    dropdown.appendChild(item);
-  });
-  dropdown.classList.add('active');
-}
-
 function updateNoteTargetText() {
   if(!currentNoteTargetRoom) {
     document.getElementById('noteTargetText').textContent = '写给谁';
   } else {
     const r = allRooms.find(x=>x.id === currentNoteTargetRoom);
     document.getElementById('noteTargetText').textContent = r ? (r.taCall || r.taName) : '写给谁';
+  }
+}
+function selectNoteTarget() {
+  if(allRooms.length === 0) return showToast("请先建立羁绊");
+  let options = allRooms.map(r => `${r.taName} (${r.taCall||'无称呼'})`).join('\n');
+  let targetName = prompt("请输入要写给谁的名字：\n" + options);
+  if(targetName) {
+    const found = allRooms.find(r => r.taName === targetName || r.taCall === targetName);
+    if(found) { currentNoteTargetRoom = found.id; updateNoteTargetText(); }
+    else showToast("未找到该梦角");
   }
 }
 
