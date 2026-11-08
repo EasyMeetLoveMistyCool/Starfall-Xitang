@@ -1437,7 +1437,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 10); // 版本号未变，仅更新逻辑
+const request = indexedDB.open("SunsetFogDB", 11); // 版本号未变，仅更新逻辑
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
