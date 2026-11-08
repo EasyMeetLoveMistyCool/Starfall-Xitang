@@ -312,9 +312,8 @@
     background: #FFFFFF;
   }
   .note-card:active { transform: scale(0.98); }
-  .note-bg-global { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-2;}
-  .note-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-1;}
-  .note-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:0;}
+  .note-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
+  .note-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
   .note-content-wrap { position:relative; z-index:2; display:flex; flex-direction:column; height:100%; width:100%;}
   
   .note-header { display:flex; justify-content:space-between; font-size:12px; color:var(--sub); margin-bottom:8px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
@@ -341,12 +340,14 @@
   .note-detail-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; background: transparent; display:none; flex-direction:column;}
   .note-detail-modal.active { display:flex; }
   .note-detail-bg-global { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-2;}
-  .note-detail-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-1;}
-  .note-detail-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:0;}
+  .note-detail-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:-1;}
   
   .note-detail-header { position:relative; z-index:2; display:flex; align-items:center; padding: calc(16px + env(safe-area-inset-top)) 16px 10px;}
   .note-detail-content { position:relative; z-index:2; flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:20px;}
-  .note-main-text { font-size:18px; line-height:1.6; color:var(--text); white-space:pre-wrap; word-break:break-all; padding:20px; background:rgba(255,255,255,0.6); border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05);}
+  .note-main-text { font-size:18px; line-height:1.6; color:var(--text); white-space:pre-wrap; word-break:break-all; padding:20px; background:rgba(255,255,255,0.6); border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;}
+  .note-main-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
+  .note-main-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
+  .note-main-inner { position:relative; z-index:2;}
   
   .note-replies { display:flex; flex-direction:column; gap:12px; margin-top:20px;}
   .note-reply-item { background:rgba(255,255,255,0.8); padding:12px 16px; border-radius:12px; font-size:15px; line-height:1.5;}
@@ -1002,7 +1003,6 @@
 <!-- 全屏便笺详情 -->
 <div class="note-detail-modal" id="noteDetailModal">
   <div class="note-detail-bg-global" id="noteDetailBgGlobal"></div>
-  <div class="note-detail-bg" id="noteDetailBg"></div>
   <div class="note-detail-bg-mask" id="noteDetailMask"></div>
   <div class="note-detail-header">
     <div class="back-btn" onclick="closeNoteDetail()" style="position:static;transform:none;">‹</div>
@@ -1541,7 +1541,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 11); 
+const request = indexedDB.open("SunsetFogDB", 11);
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -1623,7 +1623,7 @@ function initSettings() {
       document.getElementById('globalBgPreview').src = appSettings.globalBgImage;
       document.getElementById('globalBgPreview').style.display = 'block';
       document.getElementById('globalBgIcon').style.display = 'none';
-      document.getElementById('globalBg').style.backgroundImage = `url(${appSettings.globalBgImage})`;
+      document.getElementById('globalBg').style.backgroundImage = `url("${appSettings.globalBgImage}")`;
     }
     document.getElementById('globalBgBlur').value = appSettings.globalBgBlur;
     document.getElementById('globalBgBlurVal').innerText = appSettings.globalBgBlur + '%';
@@ -1836,7 +1836,7 @@ function openChatRoom(id) {
   document.getElementById('chatHeaderSign').textContent = currentRoom.taSign || '';
   document.getElementById('chatHeaderAvatar').innerHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span class="ph" style="font-size:20px;color:var(--purple)">梦</span>`;
   const bg = document.getElementById('chatBg'), mask = document.getElementById('chatBgMask');
-  if(currentRoom.bgImage) { bg.style.backgroundImage = `url(${currentRoom.bgImage})`; } else { bg.style.background = `transparent`; }
+  if(currentRoom.bgImage) { bg.style.backgroundImage = `url("${currentRoom.bgImage}")`; } else { bg.style.background = `transparent`; }
   mask.style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`; 
   
   dbGetAll('messages', msgs => {
@@ -1875,7 +1875,7 @@ function appendMessageToUI(m) {
     const card = document.createElement('div');
     card.className = 'chat-note-card';
     if(noteData.bgImage) {
-      card.innerHTML += `<div class="chat-note-card-bg" style="background-image:url(${noteData.bgImage})"></div><div class="chat-note-card-mask"></div>`;
+      card.innerHTML += `<div class="chat-note-card-bg" style="background-image:url("${noteData.bgImage}")"></div><div class="chat-note-card-mask"></div>`;
     } else {
       card.style.background = noteData.bgColor;
     }
@@ -2387,7 +2387,7 @@ function startCompanion() {
   const cmpBg = document.getElementById('cmpBg');
   const cmpBgMask = document.getElementById('cmpBgMask');
   if (currentRoom.cmpBgImage) {
-    cmpBg.style.backgroundImage = `url(${currentRoom.cmpBgImage})`;
+    cmpBg.style.backgroundImage = `url("${currentRoom.cmpBgImage}")`;
   } else {
     cmpBg.style.backgroundImage = 'none';
   }
@@ -2529,7 +2529,7 @@ function openCallUI() {
   const bg = document.getElementById('callBg');
   const mask = document.getElementById('callBgMask');
   if (currentRoom.callBgImage) {
-    bg.style.backgroundImage = `url(${currentRoom.callBgImage})`;
+    bg.style.backgroundImage = `url("${currentRoom.callBgImage}")`;
     bg.style.display = 'block';
   } else {
     bg.style.display = 'none';
@@ -2538,6 +2538,12 @@ function openCallUI() {
 
   const pip = document.getElementById('callVideoPip');
   pip.innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:14px;">我</span>`;
+
+  // 强制重置计时器隐藏，接通前绝对不显示
+  document.getElementById('callTimer').style.display = 'none';
+  document.getElementById('callVideoTimer').style.display = 'none';
+  document.getElementById('callTimer').textContent = '00:00';
+  document.getElementById('callVideoTimer').textContent = '00:00';
 
   if (isVideoCall) {
     document.getElementById('callVoiceView').style.display = 'none';
@@ -2681,8 +2687,8 @@ function previewNoteBg(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     currentNoteBg = ev.target.result;
-    document.getElementById('writeNoteBg').style.backgroundImage = `url(${currentNoteBg})`;
-    document.getElementById('writeNoteBg').style.background = 'transparent';
+    document.getElementById('writeNoteBg').style.background = 'transparent'; // 先清空 background 简写
+    document.getElementById('writeNoteBg').style.backgroundImage = `url("${currentNoteBg}")`; // 再设置图片
     document.getElementById('writeNoteMask').style.background = 'rgba(255,255,255,0.3)';
   };
   reader.readAsDataURL(file);
@@ -2716,7 +2722,9 @@ function saveNote() {
   if(!currentNoteTargetRoom) return showToast("请选择写给谁");
   
   let bgColor = '#FFFFFF';
-  if(!currentNoteBg) bgColor = document.getElementById('writeNoteBg').style.background;
+  if(!currentNoteBg) {
+    bgColor = document.getElementById('writeNoteBg').style.background || noteColors[0];
+  }
   
   const newNote = {
     roomId: currentNoteTargetRoom,
@@ -2768,16 +2776,11 @@ function renderNoteList() {
     const div = document.createElement('div');
     div.className = 'note-card' + (note.pinned ? ' pinned' : '');
     
-    // 修正卡片背景图逻辑：优先专属，否则显示全局
-    if(appSettings.globalBgImage) {
-      div.innerHTML += `<div class="note-bg-global" style="background-image:url(${appSettings.globalBgImage})"></div>`;
-    }
     if(note.bgImage) {
-      div.innerHTML += `<div class="note-bg" style="background-image:url(${note.bgImage})"></div>`;
-    } else if(!appSettings.globalBgImage) {
-      div.style.background = note.bgColor; // 没图才用底色
+      div.innerHTML += `<div class="note-bg" style="background-image:url("${note.bgImage}")"></div><div class="note-bg-mask"></div>`;
+    } else {
+      div.style.background = note.bgColor;
     }
-    div.innerHTML += `<div class="note-bg-mask"></div>`;
 
     const d = new Date(note.timestamp);
     const timeStr = `${d.getMonth()+1}-${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
@@ -2836,18 +2839,9 @@ function openNoteDetail(id) {
   if(!note) return;
   currentNoteDetailId = id;
   
-  // 专属背景图优先
-  if(note.bgImage) {
-    document.getElementById('noteDetailBg').style.backgroundImage = `url(${note.bgImage})`;
-    document.getElementById('noteDetailBg').style.background = 'transparent';
-  } else {
-    document.getElementById('noteDetailBg').style.backgroundImage = 'none';
-    document.getElementById('noteDetailBg').style.background = note.bgColor;
-  }
-
-  // 底层全局图
+  // 设置全局背景 (如果有)
   if(appSettings.globalBgImage) {
-    document.getElementById('noteDetailBgGlobal').style.backgroundImage = `url(${appSettings.globalBgImage})`;
+    document.getElementById('noteDetailBgGlobal').style.backgroundImage = `url("${appSettings.globalBgImage}")`;
   } else {
     document.getElementById('noteDetailBgGlobal').style.background = 'transparent';
   }
@@ -2856,7 +2850,16 @@ function openNoteDetail(id) {
   document.getElementById('noteDetailMask').style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`;
 
   const contentDiv = document.getElementById('noteDetailContent');
-  contentDiv.innerHTML = `<div class="note-main-text">${note.content}</div>`;
+  
+  // 修复：全屏背景用全局，但内部承载正文的卡片用便笺自己的背景
+  let noteCardHTML = `<div class="note-main-text">`;
+  if (note.bgImage) {
+    noteCardHTML += `<div class="note-main-bg" style="background-image:url("${note.bgImage}")"></div><div class="note-main-mask"></div>`;
+  } else if (note.bgColor) {
+    noteCardHTML = `<div class="note-main-text" style="background:${note.bgColor}">`;
+  }
+  noteCardHTML += `<div class="note-main-inner">${note.content}</div></div>`;
+  contentDiv.innerHTML = noteCardHTML;
   
   if(note.replies && note.replies.length > 0) {
     const repDiv = document.createElement('div');
@@ -2864,15 +2867,7 @@ function openNoteDetail(id) {
     note.replies.forEach(r => {
       const item = document.createElement('div');
       item.className = 'note-reply-item ' + (r.sender === 'me' ? 'me' : 'ta');
-      // 如果回复文本没有标点，自动补一下
-      let text = r.text;
-      if (r.sender === 'ta' && text.length > 0) {
-        const lastChar = text.slice(-1);
-        if(!['。', '，', '！', '？', '…', '.', ',', '!', '?'].includes(lastChar)) {
-           text += '。';
-        }
-      }
-      item.textContent = text;
+      item.textContent = r.text;
       repDiv.appendChild(item);
     });
     contentDiv.appendChild(repDiv);
@@ -3720,7 +3715,7 @@ function renderLoveDays() {
     const div = document.createElement('div');
     div.className = 'loveday-card' + (ld.pinned ? ' pinned' : '');
     
-    let bgStyle = ld.bgImage ? `background-image: url('${ld.bgImage}');` : '';
+    let bgStyle = ld.bgImage ? `background-image: url("${ld.bgImage}");` : '';
     
     const today = new Date();
     today.setHours(0,0,0,0);
@@ -3983,7 +3978,7 @@ function playCurrentSong() {
     const mpBg = document.getElementById('mpBg');
     const mpBgMask = document.getElementById('mpBgMask');
     if(currentRoom && currentRoom.mpBgImage) {
-      mpBg.style.backgroundImage = `url(${currentRoom.mpBgImage})`;
+      mpBg.style.backgroundImage = `url("${currentRoom.mpBgImage}")`;
     } else {
       mpBg.style.backgroundImage = 'none';
     }
@@ -4146,7 +4141,7 @@ function uploadGlobalBg(e) {
     document.getElementById('globalBgPreview').style.display = 'block';
     document.getElementById('globalBgIcon').style.display = 'none';
     
-    document.getElementById('globalBg').style.backgroundImage = `url(${base64})`;
+    document.getElementById('globalBg').style.backgroundImage = `url("${base64}")`;
     appSettings.globalBgImage = base64;
     dbPut('settings', {key: 'globalBgImage', value: base64}, () => showToast("全局背景已更新"));
   };
