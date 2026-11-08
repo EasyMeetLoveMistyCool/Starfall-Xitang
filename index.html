@@ -756,13 +756,21 @@
     left: 20%;
     display: none;
   }
+  
+  /* 接听状态（来电时） */
   #btnAnswer {
-    left: 50%;
-    transform: translate(-50%, -50%);
+    left: 20%;
     display: none;
   }
 
-  /* 接通后，挂断靠右，收起靠左（定位和视频一样） */
+  /* 特殊状态：当有接听按钮显示时，挂断靠右 */
+  .call-controls.incoming-call #btnHangupMain {
+    left: auto;
+    right: 20%;
+    transform: translateY(-50%);
+  }
+
+  /* 接通后，挂断靠右，收起靠左 */
   .call-controls.active-call #btnHangupMain {
     left: auto;
     right: 20%;
@@ -2114,6 +2122,9 @@ let lastMsgMinute = null;
 function appendMessageToUI(m) {
   const container = document.getElementById('chatContent');
   
+  // 核心修复1：防止同一条消息重复插入（解决一起听歌等并发情况）
+  if (document.querySelector(`.msg-row[data-id="${m.id}"]`) || document.querySelector(`.msg-action[data-id="${m.id}"]`)) return;
+
   let tRow = document.getElementById('typingIndicator');
   if(tRow) tRow.remove();
 
@@ -2130,7 +2141,7 @@ function appendMessageToUI(m) {
     container.appendChild(row);
   } else if (m.type === 'note') {
     const isMe = m.sender === 'me';
-    const row = document.createElement('div'); row.className = `msg-row ${isMe ? 'right' : 'left'}`;
+    const row = document.createElement('div'); row.className = `msg-row ${isMe ? 'right' : 'left'}`; row.dataset.id = m.id;
     const noteData = JSON.parse(m.text);
     
     const avatarSrc = isMe ? currentRoom.myAvatar : currentRoom.taAvatar;
@@ -2667,7 +2678,6 @@ function openLetterDetail(id) {
     paperHTML = `<div class="letter-paper" style="background:${letter.bgColor};">`;
   }
   
-  // 替换原文字段落格式
   let bodyContent = letter.content.replace(/\n/g, '<br>');
   
   paperHTML += `
@@ -3150,6 +3160,12 @@ function triggerIncomingCall(video) {
   
   openCallUI();
   document.getElementById('callStatusText').textContent = `${currentRoom.taCall || currentRoom.taName} 想${video ? '看看你' : '听听你的声音'}...`;
+  
+  // 核心修复2：来电时，按钮分开显示
+  const controls = document.getElementById('callControls');
+  controls.classList.remove('active-call');
+  controls.classList.add('incoming-call');
+  
   document.getElementById('btnAnswer').style.display = 'flex';
   document.getElementById('btnMinimize').style.display = 'none';
   
@@ -3169,6 +3185,11 @@ function startManualCall(video) {
   
   openCallUI();
   document.getElementById('callStatusText').textContent = `正在拨打 ${currentRoom.taCall || currentRoom.taName}...`;
+  
+  const controls = document.getElementById('callControls');
+  controls.classList.remove('active-call');
+  controls.classList.remove('incoming-call');
+  
   document.getElementById('btnAnswer').style.display = 'none';
   document.getElementById('btnMinimize').style.display = 'none';
 
@@ -3208,7 +3229,8 @@ function openCallUI() {
   pip.innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:14px;">我</span>`;
 
   const controls = document.getElementById('callControls');
-  controls.classList.remove('active-call'); // 默认移除接通后的状态
+  controls.classList.remove('active-call');
+  controls.classList.remove('incoming-call');
 
   if (isVideoCall) {
     document.getElementById('callVoiceView').style.display = 'none';
@@ -3238,8 +3260,8 @@ function answerCall() {
   document.getElementById('btnAnswer').style.display = 'none';
   document.getElementById('btnMinimize').style.display = 'flex';
   
-  // 添加接通后的类，让按钮布局变成左收起、右挂断
   const controls = document.getElementById('callControls');
+  controls.classList.remove('incoming-call');
   controls.classList.add('active-call');
 
   document.getElementById('callStatusText').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
