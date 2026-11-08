@@ -11,7 +11,7 @@
     --card:#FFFFFF; --line:#ECE5F8;
     --purple:#8B5CF6; --purple-soft:#A78BFA;
     --taro:#B89AF6; --taro-bg:rgba(184, 154, 246, 0.15);
-    --honey:#FF8BA7; --honey-bg:#FFF0F4;
+    --honey:#FF8BA7; --honey-bg:#FFF0F4; /* 蜜粉色 */
     --text:#2A2438; --sub:#9A93AE;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -205,8 +205,8 @@
   .send-btn svg { width: 24px; height: 24px; stroke: var(--purple); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin-right: 2px; margin-top: 2px;}
 
   /* ================= 字匣 / 小互动 / 音乐 / 收藏册 / LoveDays ================= */
-  #page-wordbox, #page-actionmanage, #page-musicmanage, #page-favorites, #page-lovedays { display:none; flex-direction:column; height:100vh; overflow:hidden; background: transparent; }
-  #page-wordbox.active, #page-actionmanage.active, #page-musicmanage.active, #page-favorites.active, #page-lovedays.active {display:flex;}
+  #page-wordbox, #page-actionmanage, #page-musicmanage, #page-favorites, #page-lovedays, #page-note { display:none; flex-direction:column; height:100vh; overflow:hidden; background: transparent; }
+  #page-wordbox.active, #page-actionmanage.active, #page-musicmanage.active, #page-favorites.active, #page-lovedays.active, #page-note.active {display:flex;}
   .tabs-wrap{ padding: 10px 16px; }
   .tabs{display:flex; background: var(--taro-bg);border-radius: 999px; padding: 4px; position: relative;}
   .tab{flex: 1; text-align:center; font-size:15px; font-weight:500; color:var(--sub); padding: 8px 0; position:relative; cursor:pointer; z-index: 2; transition: color .3s; display:flex; align-items:center; justify-content:center; gap:6px;}
@@ -266,130 +266,120 @@
   .btn-cancel { background: #F0EBF8; color: var(--sub); }
   .btn-confirm { background: var(--taro); color: #fff; }
 
-  /* ================= 贴图管理页 / 音乐管理页 ================= */
-  #page-sticker, #page-musicmanage { background: transparent; display:none; flex-direction:column; height:100vh;}
-  #page-sticker.active, #page-musicmanage.active { display:flex; }
-  
-  .sticker-grid { flex:1; overflow-y:auto; padding: 16px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; align-content:start;}
-  
-  .sticker-item { 
-    position: relative; aspect-ratio: 1/1; 
-    background: transparent !important; border: none !important; box-shadow: none !important;
-    overflow: visible; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  /* ================= 小便笺 ================= */
+  .note-list { flex:1; overflow-y:auto; padding: 16px; display:flex; flex-direction:column; gap:12px;}
+  .note-card { 
+    border-radius: 16px; padding: 16px; display:flex; flex-direction:column; gap:8px; position:relative; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03); cursor:pointer; overflow:hidden;
   }
-  .sticker-item img { 
-    width: 100%; height: 100%; object-fit: contain;
-    border-radius: 12px; display: block; background: transparent !important;
+  .note-card-header { display:flex; justify-content:space-between; font-size:12px; color:rgba(0,0,0,0.4); z-index:2;}
+  .note-card-content { font-size:15px; color:var(--text); line-height:1.5; word-break:break-all; white-space:pre-wrap; z-index:2;}
+  .note-card.pinned { min-height: 150px; justify-content: center;}
+  
+  /* 全屏阅读便笺面板 */
+  .note-read-panel { position: fixed; top:0; left:0; right:0; bottom:0; z-index: 1000; display:none; flex-direction: column; }
+  .note-read-panel.active { display: flex; }
+  .note-read-bg { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index: 0; }
+  .note-read-mask { position: absolute; top:0; left:0; right:0; bottom:0; z-index: 1; }
+  
+  .note-read-header { position: relative; z-index: 2; padding: calc(16px + env(safe-area-inset-top)) 16px 16px; display:flex; justify-content:space-between; align-items:center; }
+  .note-read-back { width: 32px; height: 32px; background: rgba(255,255,255,0.5); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-size:24px; color:var(--text); cursor:pointer; }
+  
+  .note-read-body { position: relative; z-index: 2; flex:1; overflow-y:auto; padding: 20px; }
+  .note-read-content { font-size: 18px; line-height: 1.6; color: var(--text); white-space: pre-wrap; word-break: break-all; margin-bottom: 30px;}
+  
+  .note-replies { display:flex; flex-direction:column; gap:12px; margin-top: 20px; border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 20px;}
+  .note-reply-item { background: rgba(255,255,255,0.6); padding: 12px; border-radius: 12px; font-size: 15px; line-height: 1.5;}
+  .note-reply-item.ta { background: rgba(184,154,246,0.15); color: var(--purple); }
+  
+  .note-read-footer { position: relative; z-index: 2; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); display:flex; gap:8px; background: rgba(255,255,255,0.3); backdrop-filter: blur(10px);}
+  
+  /* 写便笺面板 */
+  .note-write-panel { position: fixed; top:0; left:0; right:0; bottom:0; z-index: 1001; display:none; flex-direction: column; }
+  .note-write-panel.active { display: flex; }
+  .note-write-bg { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index: 0; }
+  .note-write-mask { position: absolute; top:0; left:0; right:0; bottom:0; z-index: 1; }
+  
+  .note-write-header { position: relative; z-index: 2; padding: calc(16px + env(safe-area-inset-top)) 16px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed rgba(0,0,0,0.1);}
+  .note-write-body { position: relative; z-index: 2; flex:1; display:flex; flex-direction:column; padding: 16px;}
+  .note-write-textarea { flex:1; background: transparent; border:none; outline:none; font-size: 18px; line-height: 1.6; color: var(--text); font-family: inherit; resize: none;}
+  
+  .note-write-footer { position: relative; z-index: 2; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:12px; background: rgba(255,255,255,0.3); backdrop-filter: blur(10px);}
+  .note-option-row { display:flex; justify-content:space-between; align-items:center; font-size:14px; color:var(--text);}
+  
+  /* 卷轴图标 */
+  .scroll-icon { width: 28px; height: 28px; stroke: var(--purple); fill:none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ================= 通话功能 ================= */
+  .call-panel-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 360px; height: 80vh; z-index: 1005; display: none; }
+  .call-panel-container.active { display: block; }
+
+  .call-modal { 
+    position: relative; width: 100%; height: 100%; border-radius: 24px; overflow: hidden; 
+    background: #FFFFFF; box-shadow: 0 10px 40px rgba(139,92,246,0.3); 
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
+    cursor: grab; user-select: none; padding: 40px 20px;
   }
-  .sticker-item.selected { border: 2px solid var(--taro) !important; border-radius: 12px;}
+  .call-modal:active { cursor: grabbing; }
 
-  /* 音乐列表 */
-  .music-list { flex:1; overflow-y:auto; padding: 0 16px 16px; display:flex; flex-direction:column; gap:10px;}
-  .music-item { display:flex; align-items:center; gap:12px; padding:12px; background:#FFFFFF; border-radius:16px; box-shadow:0 2px 8px rgba(139,92,246,.05); cursor:pointer; position:relative;}
-  .music-cover { width:44px; height:44px; border-radius:10px; background:var(--taro-bg); display:flex; align-items:center; justify-content:center; color:var(--purple); flex-shrink:0;}
-  .music-info { flex:1; overflow:hidden; }
-  .music-title { font-size:15px; color:var(--text); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px;}
-  .music-artist { font-size:12px; color:var(--sub);}
-  .music-del { width:20px; height:20px; stroke:var(--purple-soft); fill:none; stroke-width:1.5; cursor:pointer; flex-shrink:0;}
-  .music-item.selected { border:2px solid var(--taro); }
+  .call-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
+  .call-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
 
-  /* ================= 收藏册 ================= */
-  .fav-card { background: #FFFFFF; border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05); display:flex; flex-direction:column; gap:8px; margin-bottom:12px; position:relative;}
-  .fav-header { display:flex; justify-content:space-between; font-size:12px; color:var(--purple-soft);}
-  .fav-content { font-size:15px; color:var(--text); line-height:1.5; word-break:break-all;}
-  .fav-content img { max-width:100px; border-radius:8px; display:block; margin-top:4px;}
-  .fav-content.action { text-align:center; font-size:13px; font-style:italic; color:var(--purple-soft);}
+  .call-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; gap: 20px;}
 
-  /* ================= LoveDays ================= */
-  .loveday-card { background: #FFFFFF; border-radius: 16px; padding: 20px 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05); display:flex; flex-direction:column; position:relative; margin-bottom:12px; overflow:hidden; min-height: 160px; justify-content: center; align-items: center;}
-  .loveday-card.pinned { min-height: 200px; }
-  .ld-bg { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index: 0; }
-  .ld-bg-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.3); z-index: 1; }
-  .ld-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;}
-  
-  .ld-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
-  .loveday-card.pinned .ld-title { color: var(--honey); }
-  
-  .ld-date { font-size: 13px; color: var(--sub); margin-bottom: 16px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
-  .loveday-card.pinned .ld-date { color: var(--honey); }
-  
-  .ld-days { font-size: 24px; font-weight: 700; color: var(--purple); text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
-  .loveday-card.pinned .ld-days { color: var(--honey); font-size: 28px;}
-
-  /* ================= 投问卡片 ================= */
-  .quiz-card {
-    background: #FFFFFF; border: 1.5px solid var(--taro); border-radius: 20px;
-    width: 90%; max-width: 340px; margin: 0 auto; padding: 16px;
-    box-shadow: 0 4px 15px rgba(139,92,246,.08);
-    display: flex; flex-direction: column; gap: 12px;
+  /* 语音头像框 */
+  .call-avatar-wrap { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;}
+  .call-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; z-index: 2; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+  .call-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  /* 呼吸波纹 */
+  .breath-ripple {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80px; height: 80px; border-radius: 50%; background: rgba(184, 154, 246, 0.4);
+    animation: ripple 2s infinite ease-out; z-index: 1;
   }
-  .quiz-question { font-size: 15px; font-weight: 600; color: var(--text); text-align: center; white-space: pre-wrap; line-height: 1.4;}
-  .quiz-image { max-width: 100%; border-radius: 12px; margin-bottom: 8px;}
+  @keyframes ripple { 0% { width: 80px; height: 80px; opacity: 1; } 100% { width: 160px; height: 160px; opacity: 0; } }
+
+  .call-name { font-size: 24px; font-weight: 600; color: var(--text); text-shadow: 0 1px 3px rgba(255,255,255,0.9), 0 0 6px rgba(255,255,255,0.7); }
+  .call-status { font-size: 15px; color: var(--sub); text-shadow: 0 1px 3px rgba(255,255,255,0.9), 0 0 6px rgba(255,255,255,0.7); }
+  .call-timer { font-size: 20px; font-weight: 600; color: var(--purple); margin-top: 10px; text-shadow: 0 1px 3px rgba(255,255,255,0.9); }
+
+  /* 视频画面 (画中画) */
+  .call-video-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
+  .call-video-pip { position: absolute; top: 15%; right: 20px; width: 100px; height: 140px; border-radius: 12px; border: 2px solid #fff; background: #EDE9FE; overflow: hidden; z-index: 3; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .call-video-pip img { width: 100%; height: 100%; object-fit: cover; }
   
-  .quiz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .quiz-grid-item { aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 2px solid transparent; transition: all 0.3s; position: relative;}
-  .quiz-grid-item img { width: 100%; height: 100%; object-fit: cover; }
+  /* 视频时的状态文字居中覆盖 */
+  .call-video-overlay-text { position: absolute; top: 45%; left: 0; right: 0; text-align: center; z-index: 2; pointer-events: none;}
+
+  .call-controls { display: flex; justify-content: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; }
   
-  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
-  .quiz-option { 
-    background: #FBF9FE; border: 1.5px solid var(--line); border-radius: 10px; 
-    padding: 10px 12px; font-size: 14px; color: var(--text); 
-    white-space: pre-wrap; word-break: break-all; transition: all 0.3s;
+  /* 去底色，只用大图标 */
+  .call-btn-icon { 
+    width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; 
+    cursor: pointer; transition: transform 0.15s;
   }
+  .call-btn-icon:active { transform: scale(0.9); }
+  .call-btn-icon svg { width: 45px; height: 45px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));}
   
-  .quiz-grid-item.highlight { border-color: var(--honey); box-shadow: 0 0 10px rgba(255, 139, 167, 0.4); }
-  .quiz-grid-item.dim { opacity: 0.5; }
-  .quiz-option.highlight { background: var(--honey-bg); border-color: var(--honey); color: var(--honey); font-weight: 600; }
-  .quiz-option.dim { opacity: 0.5; }
+  .btn-icon-answer { stroke: #34C759; } /* 绿色 */
+  .btn-icon-hangup { stroke: #FF3B30; } /* 红色 */
+  .btn-icon-minimize { stroke: var(--purple); }
 
-  .typing-quiz-icon { display: inline-block; animation: spin 1.5s linear infinite; margin-right: 4px; font-weight: bold; font-size: 16px;}
-
-  /* ================= 弹窗与提示 ================= */
-  .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(42,36,56,0.3); display: none; align-items: center; justify-content: center; z-index: 1000;}
-  .modal-overlay.active { display: flex; }
-  .modal-card { width: 88%; max-width: 400px; background: #FFFFFF; border-radius: 20px; box-shadow: 0 10px 40px rgba(139,92,246,0.15); padding: 20px; display: flex; flex-direction: column; gap: 16px; animation: popIn 0.2s ease-out; max-height: 90vh; overflow-y: auto;}
-  @keyframes popIn { from{transform: scale(0.95); opacity: 0;} to{transform: scale(1); opacity: 1;} }
-  .modal-title { font-size: 16px; font-weight: 600; color: var(--text); text-align: center; }
-  .modal-input { width: 100%; height: 200px; background: #FAF7FE; border: none; outline: none; border-radius: 12px; padding: 12px; font-size: 15px; color: var(--text); resize: none; font-family: inherit; line-height: 1.5;}
-  .modal-input::placeholder { color: var(--purple-soft); }
-  .modal-footer { display: flex; justify-content: space-between; align-items: center; }
-  .modal-count { font-size: 13px; color: var(--sub); }
-  .modal-count span { color: var(--purple); }
-  .btn-save { background: var(--taro-bg); color: var(--purple); padding: 8px 24px; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer; border: none;}
-  .btn-save:active { background: var(--taro); color: #fff; }
-
-  .small-modal { width: 200px; background: #FFFFFF; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(139,92,246,0.15); animation: popIn 0.2s ease-out;}
-  .small-modal-item { padding: 14px; text-align: center; font-size: 15px; color: var(--text); border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.2s;}
-  .small-modal-item:last-child { border-bottom: none; color: #E57373; font-weight: 500;}
-  .small-modal-item:active { background: #F8F4FE; }
-
-  .toast { position: fixed; top: calc(20px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%) translateY(-20px); background: rgba(184, 154, 246, 0.9); color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 13px; box-shadow: 0 4px 12px rgba(139,92,246,0.2); opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 9999;}
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  .progress-bar { width: 100%; height: 8px; background: #E6DDF9; border-radius: 999px; overflow: hidden; margin-top: 10px;}
-  .progress-inner { height: 100%; background: var(--purple); width: 0%; transition: width 0.2s;}
-  
-  .panel-overlay { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(42,36,56,0.3); z-index: 900; display: none; align-items: flex-end; height: 100vh;}
-  .panel-overlay.active { display: flex; }
-  .panel-content { width: 100%; background: #FFFFFF; border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; animation: slideUp 0.2s ease-out; max-height: 80vh;}
-  @keyframes slideUp { from{transform: translateY(100%);} to{transform: translateY(0);} }
-  .panel-header { display: flex; justify-content: space-between; padding-bottom: 12px; font-size: 14px; color: var(--sub); border-bottom: 1px solid var(--line); margin-bottom: 16px;}
-  .panel-close { cursor: pointer; font-size: 18px; color: var(--purple);}
-
-  .grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 0 10px; }
-  .menu-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;}
-  .menu-icon { width: 56px; height: 56px; background: var(--taro-bg); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--purple);}
-  .menu-label { font-size: 13px; color: var(--text);}
-
-  .list-grid { flex: 1; overflow-y: auto; padding: 16px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-content: start;}
-  .grid-img-item { aspect-ratio: 1/1; cursor: pointer; display: flex; align-items: center; justify-content: center;}
-  .grid-img-item img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
-  .grid-text-item { 
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 14px; color: var(--text); padding: 8px 16px; border-radius: 999px; 
-    background: #FBF9FE; border: 1px solid var(--line); cursor: pointer; text-align: center;
-    white-space: nowrap;
+  /* 通话悬浮窗 (对方头像) */
+  #callOrb {
+    position: fixed; z-index: 2000; width: 60px; height: 60px;
+    border-radius: 50%; background: var(--taro); border: 2px solid #fff;
+    box-shadow: 0 4px 12px rgba(139,92,246,0.4); 
+    display: none; align-items: center; justify-content: center;
+    cursor: grab; touch-action: none; user-select: none;
+    overflow: hidden;
   }
+  #callOrb img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  #callOrb svg { width: 28px; height: 28px; stroke: #fff; fill: none; pointer-events: none; }
+  
+  /* 悬浮窗通话中的波纹 */
+  .orb-breath { animation: orbRipple 2s infinite alternate ease-in-out; }
+  @keyframes orbRipple { 0% { box-shadow: 0 0 0 0 rgba(184, 154, 246, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(184, 154, 246, 0); } }
 
   /* ================= 悬浮球与音乐面板 ================= */
   #musicOrb {
@@ -438,15 +428,36 @@
   .mp-close-btn svg { width: 16px; height: 16px; stroke: #FFFFFF; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
   /* ================= 陪伴功能 ================= */
-  .companion-option { padding: 10px 12px; border-radius: 12px; font-size: 14px; background: #FBF9FE; border: 1px solid var(--line); color: var(--text); cursor: pointer; text-align: center; transition: all 0.2s;}
-  .companion-option.selected { background: var(--taro); color: #fff; border-color: var(--taro); }
+  .companion-option {
+    padding: 10px 12px; border-radius: 12px; font-size: 14px;
+    background: #FBF9FE; border: 1px solid var(--line); color: var(--text);
+    cursor: pointer; text-align: center; transition: all 0.2s;
+  }
+  .companion-option.selected {
+    background: var(--taro); color: #fff; border-color: var(--taro);
+  }
 
-  #companionOrb { position: fixed; z-index: 2000; width: 76px; height: 60px; display: none; align-items: center; justify-content: center; cursor: grab; touch-action: none; user-select: none; background: transparent;}
-  .companion-avatars { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;}
-  .companion-avatars .av { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 8px rgba(0,0,0,0.15);}
+  #companionOrb {
+    position: fixed; z-index: 2000; width: 76px; height: 60px;
+    display: none; align-items: center; justify-content: center;
+    cursor: grab; touch-action: none; user-select: none;
+    background: transparent;
+  }
+  
+  .companion-avatars { 
+    display: flex; align-items: center; justify-content: center; 
+    width: 100%; height: 100%;
+  }
+  .companion-avatars .av { 
+    width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; 
+    overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
   .companion-avatars .av img { width: 100%; height: 100%; object-fit: cover; }
+  
   .companion-avatars .av-ta { margin-left: -18px; animation: attractTa 3s infinite alternate ease-in-out; z-index: 2;}
   .companion-avatars .av-me { animation: attractMe 3s infinite alternate ease-in-out; z-index: 1;}
+
   @keyframes attractTa { 0% { transform: translateX(0px); } 100% { transform: translateX(6px); } }
   @keyframes attractMe { 0% { transform: translateX(0px); } 100% { transform: translateX(-6px); } }
 
@@ -456,7 +467,7 @@
   .companion-modal { 
     position: relative; overflow: hidden; background: #FFFFFF; 
     border-radius: 24px; padding: 24px 20px; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; 
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none; 
     height: 80vh; 
@@ -465,13 +476,16 @@
   
   .cmp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
   .cmp-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
+  
   .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 30px;}
   
   .cmp-avatars-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; margin-top: 40px; }
   .cmp-avatars-wrap .av { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
   .cmp-avatars-wrap .av img { width: 100%; height: 100%; object-fit: cover; }
+  
   .cmp-avatars-wrap .av-ta { margin-left: -30px; animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
   .cmp-avatars-wrap .av-me { animation: attractMePanel 3s infinite alternate ease-in-out; z-index: 1;}
+
   @keyframes attractTaPanel { 0% { transform: translateX(0px); } 100% { transform: translateX(15px); } }
   @keyframes attractMePanel { 0% { transform: translateX(0px); } 100% { transform: translateX(-15px); } }
 
@@ -479,125 +493,9 @@
   .cmp-timer-wrap { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
   .cmp-timer-label { font-size: 15px; color: var(--sub); margin-bottom: 6px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
   .cmp-timer { font-size: 48px; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
+
   .cmp-bottom-controls { display: flex; justify-content: center; align-items: center; margin-top: auto; margin-bottom: 20px; width: 100%;}
   .cmp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 50px; height: 50px; font-size: 32px; color: var(--purple-soft); font-weight: bold;}
-
-  /* ================= 通话功能 ================= */
-  .call-panel-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80vh; z-index: 1005; display: none; }
-  .call-panel-container.active { display: block; }
-
-  .call-modal { 
-    position: relative; width: 100%; height: 100%; border-radius: 24px; overflow: hidden; 
-    background: #FFFFFF; box-shadow: 0 10px 40px rgba(139,92,246,0.3); 
-    display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
-    cursor: grab; user-select: none; padding: 40px 20px;
-  }
-  .call-modal:active { cursor: grabbing; }
-
-  .call-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
-  .call-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
-
-  .call-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; gap: 20px;}
-
-  .call-avatar-wrap { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;}
-  .call-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; z-index: 2; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-  .call-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  
-  .breath-ripple {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80px; height: 80px; border-radius: 50%; background: rgba(184, 154, 246, 0.4);
-    animation: ripple 2s infinite ease-out; z-index: 1;
-  }
-  @keyframes ripple { 0% { width: 80px; height: 80px; opacity: 1; } 100% { width: 160px; height: 160px; opacity: 0; } }
-
-  .call-name { font-size: 24px; font-weight: 600; color: var(--text); text-shadow: 0 1px 3px rgba(255,255,255,0.9); }
-  .call-status { font-size: 15px; color: var(--sub); text-shadow: 0 1px 3px rgba(255,255,255,0.9); }
-  .call-timer { font-size: 20px; font-weight: 600; color: var(--purple); margin-top: 10px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
-
-  .call-video-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
-  .call-video-pip { position: absolute; bottom: 110px; right: 20px; width: 90px; height: 120px; border-radius: 12px; border: 2px solid #fff; background: #EDE9FE; overflow: hidden; z-index: 3; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-  .call-video-pip img { width: 100%; height: 100%; object-fit: cover; }
-  
-  .call-video-overlay-text { position: absolute; top: 15%; left: 0; right: 0; text-align: center; z-index: 2; pointer-events: none;}
-  .call-video-overlay-text .call-name, .call-video-overlay-text .call-status, .call-video-overlay-text .call-timer { text-shadow: 0 1px 4px rgba(255,255,255,1), 0 1px 2px rgba(255,255,255,1);}
-
-  .call-controls { display: flex; justify-content: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; align-items: center;}
-  
-  .call-btn-icon { 
-    display: flex; align-items: center; justify-content: center; 
-    cursor: pointer; transition: transform 0.15s;
-    background: transparent;
-  }
-  .call-btn-icon:active { transform: scale(0.9); }
-  .call-btn-icon svg { width: 46px; height: 46px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
-  
-  .btn-answer { }
-  .btn-answer svg { stroke: #34C759; filter: drop-shadow(0 2px 4px rgba(52,199,89,0.4)); }
-  
-  .btn-hangup { }
-  .btn-hangup svg { stroke: #FF3B30; filter: drop-shadow(0 2px 4px rgba(255,59,48,0.4)); }
-
-  .btn-minimize-call { }
-  .btn-minimize-call svg { stroke: var(--purple); filter: drop-shadow(0 2px 4px rgba(139,92,246,0.4)); }
-
-  #callOrb {
-    position: fixed; z-index: 2000; width: 60px; height: 60px;
-    border-radius: 50%; background: var(--taro); border: 2px solid #fff;
-    box-shadow: 0 4px 12px rgba(139,92,246,0.4); 
-    display: none; align-items: center; justify-content: center;
-    cursor: grab; touch-action: none; user-select: none;
-    overflow: hidden;
-  }
-  #callOrb img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-  #callOrb svg { width: 28px; height: 28px; stroke: #fff; fill: none; pointer-events: none; }
-  .orb-breath { animation: orbRipple 2s infinite alternate ease-in-out; }
-  @keyframes orbRipple { 0% { box-shadow: 0 0 0 0 rgba(184, 154, 246, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(184, 154, 246, 0); } }
-
-  /* ================= 小便笺 ================= */
-  .notepad-card {
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: all 0.3s;
-    background-size: cover;
-    background-position: center;
-    overflow: hidden;
-  }
-  .notepad-card.pinned {
-    transform: scale(1.02);
-    margin: 10px 0 20px 0;
-    box-shadow: 0 6px 20px rgba(255, 139, 167, 0.25);
-    background-color: var(--honey-bg) !important;
-    border: 1.5px solid var(--honey);
-  }
-  .notepad-card-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.7); z-index: 1; pointer-events: none;}
-  .notepad-card-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 8px;}
-  .notepad-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--purple-soft); font-weight: 500; }
-  .notepad-card.pinned .notepad-header { color: var(--honey); }
-  .notepad-text { font-size: 15px; line-height: 1.6; color: var(--text); white-space: pre-wrap; word-break: break-all;}
-  .notepad-reply-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--text); background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px;}
-  .notepad-reply-time { font-size: 11px; color: var(--sub); margin-bottom: 4px;}
-
-  .full-notepad-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(42,36,56,0.5); z-index: 2000; display: none; flex-direction: column; backdrop-filter: blur(5px); }
-  .full-notepad-modal.active { display: flex; }
-  .full-notepad-content { 
-    flex: 1; margin: 40px 20px 80px; border-radius: 20px; padding: 24px; 
-    background-size: cover; background-position: center; position: relative; overflow-y: auto; display: flex; flex-direction: column;
-  }
-  .full-notepad-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.8); z-index: 1; pointer-events: none; border-radius: 20px;}
-  .full-notepad-inner { position: relative; z-index: 2; display: flex; flex-direction: column; flex: 1;}
-  .full-notepad-main-text { font-size: 18px; line-height: 1.8; color: var(--text); white-space: pre-wrap; word-break: break-all; margin-bottom: 20px;}
-  .full-notepad-replies { flex: 1; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;}
-  .reply-item { background: #FFFFFF; padding: 12px; border-radius: 12px; font-size: 15px; color: var(--text); box-shadow: 0 2px 6px rgba(0,0,0,0.05);}
-  .full-notepad-close { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; z-index: 10; color: var(--purple);}
-  
-  .notepad-input-area { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px calc(16px + env(safe-area-inset-bottom)); display: flex; gap: 8px; align-items: center; z-index: 10; background: #FFFFFF; border-top: 1px solid var(--line);}
-  .notepad-input { flex: 1; height: 40px; border: 1px solid var(--line); border-radius: 20px; padding: 0 16px; font-size: 15px; outline: none;}
 
 </style>
 </head>
@@ -633,7 +531,7 @@
     <div class="call-bg-mask" id="callBgMask"></div>
 
     <div class="call-content">
-      <!-- 语音视图 -->
+      <!-- 语音专用 -->
       <div id="callVoiceView" style="display:flex; flex-direction:column; align-items:center; width:100%; height: 100%; justify-content: center;">
         <div class="call-avatar-wrap">
           <div class="breath-ripple"></div>
@@ -646,7 +544,7 @@
         <div class="call-timer" id="callTimer" style="display:none;">00:00</div>
       </div>
 
-      <!-- 视频视图 -->
+      <!-- 视频专用 -->
       <div id="callVideoView" style="display:none; width:100%; height:100%; position:absolute; top:0; left:0;">
         <div class="call-video-overlay-text">
           <div class="call-name" id="callVideoName">TA</div>
@@ -658,18 +556,16 @@
         </div>
       </div>
 
-      <!-- 按钮组 -->
+      <!-- 底部按钮组（去底色，纯图标） -->
       <div class="call-controls" id="callControls">
-        <!-- 接听与挂断 -->
-        <div class="call-btn-icon btn-answer" id="btnAnswer" onclick="answerCall()" style="display:none;">
+        <div class="call-btn-icon btn-icon-answer" id="btnAnswer" onclick="answerCall()" style="display:none;">
           <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
-        <div class="call-btn-icon btn-hangup" id="btnHangup" onclick="hangupCall()">
+        <div class="call-btn-icon btn-icon-hangup" id="btnHangup" onclick="hangupCall()">
           <svg viewBox="0 0 24 24" transform="rotate(135 12 12)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
         
-        <!-- 收起与挂断 -->
-        <div class="call-btn-icon btn-minimize-call" id="btnMinimize" onclick="minimizeCall()" style="display:none;">
+        <div class="call-btn-icon btn-icon-minimize" id="btnMinimize" onclick="minimizeCall()" style="display:none;">
           <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
         </div>
       </div>
@@ -689,7 +585,7 @@
     <div class="grid-home">
       <div class="card" data-fn="chat" onclick="goToPage('page-chatlist')"><svg viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>汐棠小屋</span></div>
       <div class="card" data-fn="mail"><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.8 6.8 8.2 6 8.2-6"/></svg><span>鸿雁传书</span></div>
-      <div class="card" data-fn="notepad" onclick="goToPage('page-notepad')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>小便笺</span></div>
+      <div class="card" data-fn="note" onclick="goToPage('page-note')"><svg viewBox="0 0 24 24"><rect x="5.5" y="3.5" width="13" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span>小便笺</span></div>
       <div class="card" data-fn="wordcard" onclick="goToPage('page-wordbox')"><svg viewBox="0 0 24 24"><rect x="6.5" y="4" width="14" height="14" rx="2"/><path d="M3.5 7v11.5A2.5 2.5 0 0 0 6 21h11"/></svg><span>字匣</span></div>
       <div class="card" data-fn="sticker" onclick="goToPage('page-sticker')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m4 17 5-5 4 4 3-3 4 4"/></svg><span>贴图</span></div>
       <div class="card" data-fn="action" onclick="goToPage('page-actionmanage')"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-9.2A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 3.2C19 15.6 12 20 12 20Z" transform="translate(-1 0) scale(0.82)"/><path d="M12 20s-7-4.4-7-9.2A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 3.2C19 15.6 12 20 12 20Z" transform="translate(7 0) scale(0.82)"/></svg><span>小互动</span></div>
@@ -717,7 +613,7 @@
     </div>
     <input type="file" id="globalBgFile" accept="image/*" style="display:none" onchange="uploadGlobalBg(event)">
     <div class="slider-row">
-      <span>全局雾化度（全场景统一）</span>
+      <span>全局背景雾化度</span>
       <input type="range" id="globalBgBlur" min="0" max="100" value="30" oninput="updateGlobalBgBlur(this.value)">
       <span id="globalBgBlurVal">30%</span>
     </div>
@@ -732,6 +628,83 @@
     <div style="position:absolute; right:16px; font-size:20px; font-weight:bold; color:var(--purple); cursor:pointer;" onclick="openCreateForm()">ฅ●ω●ฅ</div>
   </div>
   <div class="chat-list" id="chatListContainer"></div>
+</div>
+
+<!-- ================= 小便笺 ================= -->
+<div class="page" id="page-note">
+  <div class="header">
+    <div class="back-btn" onclick="goToPage('page-home')">‹</div>
+    <h1>小便笺</h1>
+    <div style="position:absolute; right:16px; top:50%; transform:translateY(-50%); cursor:pointer;" onclick="openWriteNote()">
+      <svg class="scroll-icon" viewBox="0 0 24 24">
+        <rect x="7" y="3" width="10" height="3" rx="1.5" />
+        <rect x="7" y="18" width="10" height="3" rx="1.5" />
+        <path d="M8 6v12" />
+        <path d="M16 6v12" />
+        <path d="M11 10h2.5" />
+        <path d="M11 13h2.5" />
+      </svg>
+    </div>
+  </div>
+  <div class="note-list" id="noteListContainer"></div>
+</div>
+
+<!-- 全屏阅读便笺 -->
+<div class="note-read-panel" id="noteReadPanel">
+  <div class="note-read-bg" id="noteReadBg"></div>
+  <div class="note-read-mask" id="noteReadMask"></div>
+  
+  <div class="note-read-header">
+    <div class="note-read-back" onclick="closeNoteRead()">‹</div>
+    <div style="font-size:14px; font-weight:500;" id="noteReadFrom">来自: </div>
+    <div style="width:32px;"></div> <!-- 占位平衡 -->
+  </div>
+  
+  <div class="note-read-body">
+    <div class="note-read-content" id="noteReadContent"></div>
+    <div class="note-replies" id="noteReadReplies"></div>
+  </div>
+  
+  <div class="note-read-footer">
+    <input type="text" class="chat-input" id="noteReplyInput" placeholder="回复 TA...">
+    <div class="send-btn" onclick="sendNoteReply()">
+      <svg viewBox="0 0 24 24" style="margin-left:2px;"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- 写便笺 -->
+<div class="note-write-panel" id="noteWritePanel">
+  <div class="note-write-bg" id="noteWriteBg"></div>
+  <div class="note-write-mask" id="noteWriteMask"></div>
+  
+  <div class="note-write-header">
+    <div class="note-read-back" onclick="closeWriteNote()">×</div>
+    <div style="font-size:16px; font-weight:600;">写便笺</div>
+    <div style="width:32px;"></div>
+  </div>
+  
+  <div class="note-write-body">
+    <textarea class="note-write-textarea" id="noteWriteText" placeholder="写下想说的话..."></textarea>
+  </div>
+  
+  <div class="note-write-footer">
+    <div class="note-option-row">
+      <span>发给：</span>
+      <select class="input-field" id="noteWriteRoom" style="width:120px; padding:4px 8px; height:32px; border-radius:8px;"></select>
+    </div>
+    <div class="note-option-row">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input type="file" id="noteBgFile" accept="image/*" style="display:none" onchange="previewNoteBg(event)">
+        <span style="color:var(--purple); cursor:pointer; font-size:14px;" onclick="document.getElementById('noteBgFile').click()">换背景图</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="noteSendToChat" style="accent-color:var(--purple);"> 
+        <label for="noteSendToChat" style="font-size:14px;">发送到聊天</label>
+      </div>
+    </div>
+    <button class="btn-save" style="width:100%; padding:12px; font-size:16px;" onclick="saveNote()">贴上</button>
+  </div>
 </div>
 
 <!-- ================= 建立羁绊 ================= -->
@@ -854,17 +827,17 @@
     </div>
     <div class="speed-row" style="margin-bottom:12px;">
       <span>TA写便笺概率：</span>
-      <input type="number" class="input-field" id="setNotepadProb" value="5" style="width:60px; text-align:center;" onchange="saveSetting('notepadProb', this.value)"> %
+      <input type="number" class="input-field" id="setNoteProb" value="5" style="width:60px; text-align:center;" onchange="saveSetting('noteProb', this.value)"> %
     </div>
     <div class="speed-row" style="margin-bottom:12px;">
-      <span>便笺回复速度(小时)：</span>
-      <input type="number" class="input-field" id="setNotepadReplyMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('notepadReplyMin', this.value)"> ~ 
-      <input type="number" class="input-field" id="setNotepadReplyMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('notepadReplyMax', this.value)">
+      <span>便笺回复间隔：</span>
+      <input type="number" class="input-field" id="setNoteSpeedMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('noteSpeedMin', this.value)"> ~ 
+      <input type="number" class="input-field" id="setNoteSpeedMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('noteSpeedMax', this.value)"> 小时
     </div>
     <div class="speed-row">
-      <span>桌面轮播间隔(小时)：</span>
+      <span>桌面轮播间隔：</span>
       <input type="number" class="input-field" id="setCarouselMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('carouselMin', this.value)"> ~ 
-      <input type="number" class="input-field" id="setCarouselMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('carouselMax', this.value)">
+      <input type="number" class="input-field" id="setCarouselMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('carouselMax', this.value)"> 小时
     </div>
   </div>
   <div class="form-group">
@@ -890,9 +863,7 @@
       </div>
     </div>
     <div style="display:flex; gap:8px;">
-      <!-- 电话图标 -->
       <div class="phone-btn" onclick="startManualCall(false)"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-      <!-- 视频图标 -->
       <div class="phone-btn" onclick="startManualCall(true)"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2.5" /><path d="M15.5 10.5l5-3v9l-5-3" stroke-linejoin="round" /></svg></div>
     </div>
   </div>
@@ -1099,66 +1070,6 @@
   </div>
 </div>
 <input type="file" id="wordImportFile" accept=".txt,.json" style="display:none" onchange="handleWordImport(event)">
-
-<!-- ================= 小便笺 ================= -->
-<div class="page" id="page-notepad">
-  <div class="header">
-    <div class="back-btn" onclick="goToPage('page-home')">‹</div>
-    <h1>小便笺</h1>
-    <div style="position:absolute; right:16px; font-size:20px; font-weight:bold; color:var(--purple); cursor:pointer;" onclick="openWriteNotepad()">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--purple)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="7" y="3" width="10" height="3" rx="1.5" />
-        <rect x="7" y="18" width="10" height="3" rx="1.5" />
-        <path d="M8 6v12" />
-        <path d="M16 6v12" />
-        <path d="M11 10h2.5" />
-        <path d="M11 13h2.5" />
-      </svg>
-    </div>
-  </div>
-  <div class="content" id="notepadListContainer"></div>
-</div>
-
-<!-- 写便笺大面板 -->
-<div class="page" id="page-write-notepad" style="background:#FFFFFF; z-index: 1500;">
-  <div class="header">
-    <div class="back-btn" onclick="goToPage('page-notepad')">‹</div>
-    <h1>写下留言</h1>
-  </div>
-  <div class="content" style="padding: 16px; display:flex; flex-direction:column; gap:16px;">
-    <div class="speed-row">
-      <span>写给：</span>
-      <select class="input-field" id="notepadToRoom" style="flex:1; padding: 8px;"></select>
-    </div>
-    <textarea class="input-field" id="notepadContent" placeholder="写下你想说的话..." style="height: 200px; font-size: 16px; line-height: 1.6; padding: 16px;"></textarea>
-    <div class="bg-upload-area" onclick="document.getElementById('notepadBgFile').click()" style="height: 80px; margin-bottom: 0;">
-      <img id="notepadBgPreview" src="" style="display:none;"><span id="notepadBgIcon">点击上传自定义便笺背景</span>
-    </div>
-    <input type="file" id="notepadBgFile" accept="image/*" style="display:none" onchange="previewNotepadBg(event)">
-    <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
-      <input type="checkbox" id="notepadSendToChat" style="width:16px; height:16px;">
-      <label for="notepadSendToChat" style="color:var(--text);">将留言同步发送到聊天</label>
-    </div>
-    <button class="btn-submit" style="margin-top: 10px;" onclick="saveNotepad()">贴上</button>
-  </div>
-</div>
-
-<!-- 便笺全屏查看与回复面板 -->
-<div class="full-notepad-modal" id="fullNotepadModal">
-  <div class="full-notepad-content" id="fullNotepadContent">
-    <div class="full-notepad-mask"></div>
-    <div class="full-notepad-close" onclick="closeFullNotepad()">×</div>
-    <div class="full-notepad-inner">
-      <div class="notepad-header" id="fullNotepadHeader"></div>
-      <div class="full-notepad-main-text" id="fullNotepadMainText"></div>
-      <div class="full-notepad-replies" id="fullNotepadReplies"></div>
-    </div>
-  </div>
-  <div class="notepad-input-area" id="notepadInputArea" style="display:none;">
-    <input type="text" class="notepad-input" id="notepadReplyInput" placeholder="回复 TA 的留言...">
-    <button class="btn-save" onclick="sendNotepadReply()">发送</button>
-  </div>
-</div>
 
 <!-- ================= 小互动管理 ================= -->
 <div class="page" id="page-actionmanage">
@@ -1376,6 +1287,14 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="noteMenu" onclick="closeNoteMenu(event)">
+  <div class="small-modal" onclick="event.stopPropagation()">
+    <div class="small-modal-item" id="notePinBtn" onclick="toggleNotePin()">置顶</div>
+    <div class="small-modal-item" onclick="changeNoteBg()">换图</div>
+    <div class="small-modal-item" onclick="deleteNote()">删除</div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="chatMsgMenu" onclick="closeChatMenu(event)">
   <div class="small-modal" onclick="event.stopPropagation()">
     <div class="small-modal-item" id="msgFavBtn" onclick="toggleMsgFav()">收藏</div>
@@ -1395,14 +1314,6 @@
     <div class="small-modal-item" onclick="editLoveDays()">编辑</div>
     <div class="small-modal-item" onclick="changeLoveDaysBg()">换图</div>
     <div class="small-modal-item" onclick="deleteLoveDays()">删除</div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="notepadMenu" onclick="closeNotepadMenu(event)">
-  <div class="small-modal" onclick="event.stopPropagation()">
-    <div class="small-modal-item" id="npPinBtn" onclick="toggleNotepadPin()">置顶</div>
-    <div class="small-modal-item" onclick="changeNotepadBg()">换图</div>
-    <div class="small-modal-item" onclick="deleteNotepad()">删除</div>
   </div>
 </div>
 
@@ -1460,7 +1371,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 11); // 升级版本，加入小便笺
+const request = indexedDB.open("SunsetFogDB", 10);
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -1472,7 +1383,7 @@ request.onupgradeneeded = e => {
   if (!db.objectStoreNames.contains("favorites")) db.createObjectStore("favorites", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("lovedays")) db.createObjectStore("lovedays", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings", { keyPath: "key" });
-  if (!db.objectStoreNames.contains("notepads")) db.createObjectStore("notepads", { keyPath: "id", autoIncrement: true });
+  if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", { keyPath: "id", autoIncrement: true });
 };
 request.onsuccess = e => {
   db = e.target.result;
@@ -1487,7 +1398,7 @@ function dbDelete(storeName, ids, callback) { const tx = db.transaction(storeNam
 function dbClear(storeName) { const tx = db.transaction(storeName, "readwrite"); tx.objectStore(storeName).clear(); }
 
 /* ================= 全局状态 ================= */
-let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [], allLoveDays = [], allNotepads = [];
+let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [], allLoveDays = [], allNotes = [];
 let wordDeleteMode = false, selectedWordIds = new Set();
 let currentActionTab = "tangdong", actionDeleteMode = false, selectedActionIds = new Set();
 let currentRoom = null, editRoomId = null, targetRoomId = null, currentReplyTimer = null, pendingStickerFiles = [];
@@ -1502,20 +1413,20 @@ let stImgBase64 = null, stOptionsBase64 = [];
 let htImgBase64 = null;
 
 // 便笺状态
-let currentNotepadBg = null;
-let targetNotepadId = null;
-let currentViewingNotepad = null;
+let currentNoteBg = null, currentReadNote = null;
+let targetNoteId = null;
+let noteDeleteMode = false; // 备用
 
 let appSettings = { 
   stickerProb: 10, 
   actionProb: 7, 
   listenProb: 5, 
   favProb: 3, 
-  callProb: 2, 
+  callProb: 2,
   videoProb: 1,
-  notepadProb: 5,
-  notepadReplyMin: 1,
-  notepadReplyMax: 3,
+  noteProb: 5,
+  noteSpeedMin: 1,
+  noteSpeedMax: 3,
   carouselMin: 1, 
   carouselMax: 3, 
   globalBgImage: null,
@@ -1532,9 +1443,9 @@ function initSettings() {
     document.getElementById('setFavProb').value = appSettings.favProb;
     document.getElementById('setCallProb').value = appSettings.callProb;
     document.getElementById('setVideoProb').value = appSettings.videoProb;
-    document.getElementById('setNotepadProb').value = appSettings.notepadProb;
-    document.getElementById('setNotepadReplyMin').value = appSettings.notepadReplyMin;
-    document.getElementById('setNotepadReplyMax').value = appSettings.notepadReplyMax;
+    document.getElementById('setNoteProb').value = appSettings.noteProb;
+    document.getElementById('setNoteSpeedMin').value = appSettings.noteSpeedMin;
+    document.getElementById('setNoteSpeedMax').value = appSettings.noteSpeedMax;
     document.getElementById('setCarouselMin').value = appSettings.carouselMin;
     document.getElementById('setCarouselMax').value = appSettings.carouselMax;
     
@@ -1570,7 +1481,7 @@ function goToPage(pageId) {
   if(pageId === 'page-musicmanage') renderMusicList();
   if(pageId === 'page-favorites') renderFavorites();
   if(pageId === 'page-lovedays') renderLoveDays();
-  if(pageId === 'page-notepad') renderNotepads();
+  if(pageId === 'page-note') { renderNotes(); checkRandomTaNote(); }
 }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
 function refreshAllData() {
@@ -1581,7 +1492,7 @@ function refreshAllData() {
   dbGetAll('music', m => { allMusic = m; renderMusicList(); });
   dbGetAll('favorites', f => { allFavs = f; renderFavorites(); });
   dbGetAll('lovedays', l => { allLoveDays = l; renderLoveDays(); });
-  dbGetAll('notepads', n => { allNotepads = n; renderNotepads(); });
+  dbGetAll('notes', n => { allNotes = n; renderNotes(); });
 }
 
 /* ================= 桌面轮播 ================= */
@@ -1696,7 +1607,6 @@ function openCreateForm() {
   document.getElementById('bgPreview').style.display = 'none'; document.getElementById('bgPreview').src = ''; document.getElementById('bgIcon').style.display = 'block';
   document.getElementById('speedMin').value = 8; document.getElementById('speedMax').value = 15;
   
-  // 清空音乐和陪伴配置
   document.getElementById('orbPreview').style.display = 'none'; document.getElementById('orbPreview').src = ''; document.getElementById('orbIcon').style.display = 'block';
   document.getElementById('mpBgPreview').style.display = 'none'; document.getElementById('mpBgPreview').src = ''; document.getElementById('mpBgIcon').style.display = 'block';
   document.getElementById('cmpBgPreview').style.display = 'none'; document.getElementById('cmpBgPreview').src = ''; document.getElementById('cmpBgIcon').style.display = 'block';
@@ -1731,12 +1641,10 @@ function submitCreate() {
     taName: taName, taCall: document.getElementById('taCall').value.trim(), taSign: document.getElementById('taSign').value.trim(), taAvatar: document.getElementById('taAvatarPreview').src || null,
     myName: document.getElementById('myName').value.trim() || '我', myCall: document.getElementById('myCall').value.trim(), myAvatar: document.getElementById('myAvatarPreview').src || null,
     bgImage: document.getElementById('bgPreview').src || null,
-    
     orbImage: document.getElementById('orbPreview').src || null,
     mpBgImage: document.getElementById('mpBgPreview').src || null,
     cmpBgImage: document.getElementById('cmpBgPreview').src || null,
     callBgImage: document.getElementById('callBgPreview').src || null,
-
     speedMin: parseInt(document.getElementById('speedMin').value) || 8, speedMax: parseInt(document.getElementById('speedMax').value) || 15, updatedAt: Date.now()
   };
   if (editRoomId) {
@@ -1747,6 +1655,367 @@ function submitCreate() {
     dbAdd('rooms', roomData, () => { showToast("羁绊建立成功"); refreshAllData(); goToPage('page-chatlist'); });
   }
 }
+
+/* ================= 小便笺 ================= */
+const NOTE_COLORS = ["#FFF9E6", "#E6F7F1", "#F3E8FF"]; // 米黄，薄荷绿，薰衣草紫
+const NOTE_PIN_COLOR = "#FFF0F4"; // 蜜粉
+let currentNoteReplyTarget = null;
+
+function renderNotes() {
+  const container = document.getElementById('noteListContainer');
+  container.innerHTML = '';
+  
+  if (!allNotes || allNotes.length === 0) {
+    container.innerHTML = `<div class="empty-tip">还没有便笺，点击右上角写一张吧</div>`;
+    return;
+  }
+
+  // 排序：置顶优先，然后时间倒序
+  allNotes.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return b.createdAt - a.createdAt;
+  });
+
+  allNotes.forEach(note => {
+    const div = document.createElement('div');
+    div.className = 'note-card' + (note.pinned ? ' pinned' : '');
+    
+    // 颜色
+    if (note.pinned) {
+      div.style.background = NOTE_PIN_COLOR;
+    } else if (note.bgImage) {
+      div.style.backgroundImage = `url(${note.bgImage})`;
+      div.style.backgroundSize = 'cover';
+      div.style.backgroundPosition = 'center';
+    } else {
+      div.style.background = note.color || NOTE_COLORS[0];
+    }
+
+    // 获取发件人信息
+    let fromName = '我';
+    if (note.sender === 'ta') {
+      const room = allRooms.find(r => r.id === note.roomId);
+      fromName = room ? (room.taCall || room.taName) : 'TA';
+    } else {
+      fromName = '我';
+    }
+
+    const timeStr = formatTime(note.createdAt);
+    const replyCount = note.replies ? note.replies.length : 0;
+    
+    div.innerHTML = `
+      <div class="note-card-header" style="color:${note.pinned ? 'rgba(255,139,167,0.8)' : 'rgba(0,0,0,0.4)'}">
+        <span>${fromName}</span>
+        <span>${timeStr}</span>
+      </div>
+      <div class="note-card-content" style="color:${note.pinned ? 'var(--honey)' : 'var(--text)'}; font-size: ${note.pinned ? '18px' : '15px'}; font-weight: ${note.pinned ? '600' : 'normal'};">${note.content}</div>
+    `;
+
+    div.onclick = () => openNoteRead(note);
+    
+    let pressTimer;
+    div.addEventListener('touchstart', (e) => { 
+      pressTimer = setTimeout(() => { 
+        e.preventDefault(); 
+        targetNoteId = note.id;
+        document.getElementById('notePinBtn').textContent = note.pinned ? '取消置顶' : '置顶';
+        document.getElementById('noteMenu').classList.add('active');
+      }, 500); 
+    }, {passive: false});
+    div.addEventListener('touchend', () => clearTimeout(pressTimer));
+    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+    container.appendChild(div);
+  });
+}
+
+function openWriteNote() {
+  if (allRooms.length === 0) return showToast("请先建立至少一个羁绊");
+  
+  document.getElementById('noteWriteText').value = '';
+  currentNoteBg = null;
+  
+  // 随机颜色
+  const randomColor = NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)];
+  document.getElementById('noteWriteBg').style.background = randomColor;
+  document.getElementById('noteWriteMask').style.background = 'transparent';
+  
+  // 填充发给谁
+  const select = document.getElementById('noteWriteRoom');
+  select.innerHTML = '';
+  allRooms.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.id;
+    opt.textContent = r.taCall || r.taName;
+    select.appendChild(opt);
+  });
+  
+  document.getElementById('noteSendToChat').checked = false;
+  document.getElementById('noteWritePanel').classList.add('active');
+}
+
+function closeWriteNote() {
+  document.getElementById('noteWritePanel').classList.remove('active');
+}
+
+function previewNoteBg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentNoteBg = ev.target.result;
+    document.getElementById('noteWriteBg').style.backgroundImage = `url(${currentNoteBg})`;
+    document.getElementById('noteWriteBg').style.backgroundSize = 'cover';
+    document.getElementById('noteWriteBg').style.backgroundPosition = 'center';
+    document.getElementById('noteWriteMask').style.background = `rgba(255,255,255, 0.3)`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveNote() {
+  const text = document.getElementById('noteWriteText').value.trim();
+  if(!text) return showToast("写下内容再贴哦");
+  const roomId = parseInt(document.getElementById('noteWriteRoom').value);
+  const sendToChat = document.getElementById('noteSendToChat').checked;
+  
+  const newNote = {
+    sender: 'me',
+    roomId: roomId,
+    content: text,
+    bgImage: currentNoteBg,
+    color: currentNoteBg ? null : document.getElementById('noteWriteBg').style.background,
+    pinned: false,
+    createdAt: Date.now(),
+    replies: [],
+    nextReplyTime: null
+  };
+
+  // 计算 TA 回复时间 (1~3小时)
+  const minH = appSettings.noteSpeedMin || 1;
+  const maxH = appSettings.noteSpeedMax || 3;
+  const delayH = minH + Math.random() * (maxH - minH);
+  newNote.nextReplyTime = Date.now() + delayH * 60 * 60 * 1000;
+
+  dbAdd('notes', newNote, () => {
+    closeWriteNote();
+    showToast("便笺已贴上");
+    renderNotes();
+    
+    if (sendToChat) {
+      const msg = { roomId: roomId, sender: 'me', type: 'action', text: `我给你留了一张便笺：\n“${text}”`, timestamp: Date.now() };
+      dbAdd('messages', msg);
+    }
+    
+    checkAndTriggerNoteReply(newNote);
+  });
+}
+
+// 全屏阅读
+function openNoteRead(note) {
+  currentReadNote = note;
+  
+  const bg = document.getElementById('noteReadBg');
+  const mask = document.getElementById('noteReadMask');
+  
+  if (note.pinned) {
+    bg.style.background = NOTE_PIN_COLOR;
+    mask.style.background = 'transparent';
+  } else if (note.bgImage) {
+    bg.style.backgroundImage = `url(${note.bgImage})`;
+    bg.style.backgroundSize = 'cover';
+    bg.style.backgroundPosition = 'center';
+    mask.style.background = 'rgba(255,255,255,0.3)';
+  } else {
+    bg.style.background = note.color || NOTE_COLORS[0];
+    mask.style.background = 'transparent';
+  }
+
+  const room = allRooms.find(r => r.id === note.roomId);
+  const fromName = note.sender === 'ta' ? (room ? (room.taCall || room.taName) : 'TA') : '我';
+  document.getElementById('noteReadFrom').textContent = `来自: ${fromName}`;
+  document.getElementById('noteReadContent').textContent = note.content;
+
+  const repliesWrap = document.getElementById('noteReadReplies');
+  repliesWrap.innerHTML = '';
+  if (note.replies && note.replies.length > 0) {
+    note.replies.forEach(r => {
+      const rDiv = document.createElement('div');
+      rDiv.className = 'note-reply-item ' + (r.sender === 'ta' ? 'ta' : '');
+      rDiv.textContent = r.content;
+      repliesWrap.appendChild(rDiv);
+    });
+  }
+
+  const footer = document.querySelector('.note-read-footer');
+  const replyInput = document.getElementById('noteReplyInput');
+  
+  if (note.sender === 'ta') {
+    footer.style.display = 'flex';
+    replyInput.value = '';
+    replyInput.focus();
+  } else {
+    footer.style.display = 'none';
+  }
+
+  document.getElementById('noteReadPanel').classList.add('active');
+}
+
+function closeNoteRead() {
+  document.getElementById('noteReadPanel').classList.remove('active');
+  currentReadNote = null;
+}
+
+function sendNoteReply() {
+  if(!currentReadNote) return;
+  const text = document.getElementById('noteReplyInput').value.trim();
+  if(!text) return;
+  
+  const note = currentReadNote;
+  if(!note.replies) note.replies = [];
+  note.replies.push({ sender: 'me', content: text, time: Date.now() });
+  
+  dbPut('notes', note, () => {
+    document.getElementById('noteReplyInput').value = '';
+    openNoteRead(note);
+    renderNotes();
+  });
+}
+
+// 菜单操作
+function closeNoteMenu(e) { if(e.target === document.getElementById('noteMenu')) document.getElementById('noteMenu').classList.remove('active'); }
+function toggleNotePin() {
+  closeNoteMenu({target:document.getElementById('noteMenu')});
+  const note = allNotes.find(n => n.id === targetNoteId);
+  if(!note) return;
+  note.pinned = !note.pinned;
+  dbPut('notes', note, () => { renderNotes(); showToast(note.pinned ? '已置顶' : '已取消置顶'); });
+}
+function changeNoteBg() {
+  closeNoteMenu({target:document.getElementById('noteMenu')});
+  const note = allNotes.find(n => n.id === targetNoteId);
+  if(!note) return;
+  
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      note.bgImage = ev.target.result;
+      dbPut('notes', note, () => { renderNotes(); showToast('换图成功'); });
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+function deleteNote() {
+  closeNoteMenu({target:document.getElementById('noteMenu')});
+  if(!targetNoteId) return;
+  document.getElementById('confirmTitle').textContent = '删除便笺';
+  document.getElementById('confirmDesc').textContent = '确定要丢掉这张便笺吗？';
+  document.getElementById('confirmYesBtn').onclick = () => {
+    dbDelete('notes', [targetNoteId], () => {
+      closeConfirm({target:document.getElementById('confirmDeleteModal')});
+      refreshAllData(); showToast("已删除");
+    });
+  };
+  document.getElementById('confirmDeleteModal').classList.add('active');
+}
+
+// 后台定时检查 (轮询)
+function checkAndTriggerNoteReply(note) {
+  if(!note || !note.nextReplyTime) return;
+  const now = Date.now();
+  const wait = note.nextReplyTime - now;
+  
+  if (wait <= 0) {
+    // 立即触发
+    generateTaNoteReply(note);
+  } else {
+    // 延迟触发 (如果页面没关)
+    setTimeout(() => {
+      generateTaNoteReply(note);
+    }, wait);
+  }
+}
+
+function generateTaNoteReply(note) {
+  const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === note.roomId));
+  if(pool.length === 0) return;
+  
+  const count = Math.floor(Math.random() * 3) + 3; // 3~5 张
+  let replyText = '';
+  for(let i=0; i<count; i++) {
+    const card = pool[Math.floor(Math.random() * pool.length)];
+    replyText += card.text + '，';
+  }
+  replyText = replyText.slice(0, -1) + '。';
+  
+  if(!note.replies) note.replies = [];
+  note.replies.push({ sender: 'ta', content: replyText, time: Date.now() });
+  note.nextReplyTime = null; // 清除定时
+  
+  dbPut('notes', note, () => {
+    if (document.getElementById('page-note').classList.contains('active')) renderNotes();
+    // 发送系统提示
+    const sysMsg = { roomId: note.roomId, sender: 'ta', type: 'action', text: `TA 回复了你的便笺：\n“${replyText}”`, timestamp: Date.now() };
+    dbAdd('messages', sysMsg, () => {
+      if (document.getElementById('page-chat').classList.contains('active') && currentRoom.id === note.roomId) {
+        dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+      }
+    });
+  });
+}
+
+// 检测 TA 主动写便笺
+function checkRandomTaNote() {
+  if (Math.random() * 100 > appSettings.noteProb) return;
+
+  const poolXingyu = allCards.filter(c => c.type === 'xingyu');
+  let pool = [];
+  const randomRoom = allRooms[Math.floor(Math.random() * allRooms.length)];
+  const xiyan = allCards.filter(c => c.type === 'xiyan' && c.roomId === randomRoom.id);
+  pool = [...poolXingyu, ...xiyan];
+  
+  if (pool.length === 0) return;
+
+  const count = Math.floor(Math.random() * 3) + 3;
+  let content = '';
+  for(let i=0; i<count; i++) {
+    const card = pool[Math.floor(Math.random() * pool.length)];
+    content += card.text + '，';
+  }
+  content = content.slice(0, -1) + '。';
+
+  const newNote = {
+    sender: 'ta',
+    roomId: randomRoom.id,
+    content: content,
+    bgImage: null,
+    color: NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)],
+    pinned: false,
+    createdAt: Date.now(),
+    replies: [],
+    nextReplyTime: null
+  };
+
+  dbAdd('notes', newNote, () => {
+    renderNotes();
+    showToast("TA 给你留了一张便笺，快去看看吧");
+  });
+}
+
+// 页面加载时检查所有过期未回复的便笺
+function checkPendingNotes() {
+  const now = Date.now();
+  allNotes.forEach(n => {
+    if (n.sender === 'me' && n.nextReplyTime && n.nextReplyTime <= now) {
+      generateTaNoteReply(n);
+    }
+  });
+}
+setInterval(checkPendingNotes, 60000); // 每分钟检查一次
 
 /* ================= 聊天界面 ================= */
 function openChatRoom(id) {
@@ -1786,7 +2055,6 @@ function appendMessageToUI(m) {
     row.dataset.id = m.id;
     container.appendChild(row);
   } else if (m.type === 'quiz') {
-    // 渲染投问卡片
     const data = JSON.parse(m.text);
     const card = document.createElement('div');
     card.className = 'quiz-card';
@@ -1795,14 +2063,14 @@ function appendMessageToUI(m) {
     let innerHTML = `<div class="quiz-question">${data.question}</div>`;
     if(data.img) innerHTML += `<img src="${data.img}" class="quiz-image">`;
     
-    if(data.mode === 'trace') { // 星痕
+    if(data.mode === 'trace') {
       innerHTML += `<div class="quiz-grid">`;
       data.options.forEach((opt, i) => {
         let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null ? 'dim' : '');
         innerHTML += `<div class="quiz-grid-item ${hClass}"><img src="${opt}"></div>`;
       });
       innerHTML += `</div>`;
-    } else if (data.mode === 'heart') { // 心迹
+    } else if (data.mode === 'heart') {
       innerHTML += `<div class="quiz-options">`;
       data.options.forEach((opt, i) => {
         let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null ? 'dim' : '');
@@ -1813,7 +2081,6 @@ function appendMessageToUI(m) {
     card.innerHTML = innerHTML;
     
     if(data.selected === null) {
-      // 如果还没选，给个等待提示
       let tRow = document.createElement('div'); 
       tRow.id = 'typingIndicator'; tRow.className = 'msg-row left';
       const avHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="font-size:16px;color:var(--purple)">梦</span>`;
@@ -1821,7 +2088,6 @@ function appendMessageToUI(m) {
       tRow.innerHTML = `<div class="msg-avatar">${avHTML}</div><div class="typing-bubble"><div class="typing-quiz-icon">◌</div> ${msgText} <div class="typing-dots"><span></span><span></span><span></span></div></div>`;
       container.appendChild(tRow);
     }
-    
     container.appendChild(card);
   } else {
     const isMe = m.sender === 'me';
@@ -1924,13 +2190,13 @@ function triggerReply(room) {
   currentReplyTimer = setTimeout(() => {
     showTypingIndicator(false);
     
-    // 判断 TA 是否来电话/视频
+    // 检查是否触发电话/视频
     let doCall = Math.random() < (appSettings.callProb / 100);
     let doVideo = Math.random() < (appSettings.videoProb / 100);
     
     if (doVideo) {
       triggerIncomingCall(true);
-      return; // 视频优先
+      return;
     } else if (doCall) {
       triggerIncomingCall(false);
       return;
@@ -2380,7 +2646,7 @@ function closeCompanionPanel(e) {
 // 概率结束陪伴
 setInterval(() => {
   if (companionActive) {
-    let p = Math.random() * 2 + 1; // 1~3%
+    let p = Math.random() * 2 + 1;
     if (Math.random() * 100 < p) {
       clearInterval(companionTimerInterval);
       document.getElementById('companionPanelContainer').classList.remove('active');
@@ -2395,14 +2661,14 @@ setInterval(() => {
       });
     }
   }
-}, 60000); 
+}, 60000);
 
 /* ================= 通话功能 ================= */
 let callActive = false;
 let callTimerInterval = null;
 let callStartTime = 0;
 let isVideoCall = false;
-let callStatus = 'idle'; 
+let callStatus = 'idle';
 
 function triggerIncomingCall(video) {
   if (callActive) return;
@@ -2414,11 +2680,12 @@ function triggerIncomingCall(video) {
   document.getElementById('callStatusText').textContent = `${currentRoom.taCall || currentRoom.taName} 想${video ? '看看你' : '听听你的声音'}...`;
   document.getElementById('btnAnswer').style.display = 'flex';
   document.getElementById('btnMinimize').style.display = 'none';
+  document.getElementById('btnHangup').style.display = 'flex';
   
   let waitTime = Math.floor(Math.random() * 14) + 1;
   setTimeout(() => {
     if (callStatus === 'incoming') {
-      hangupCall(true); 
+      hangupCall(true);
     }
   }, waitTime * 1000);
 }
@@ -2433,15 +2700,18 @@ function startManualCall(video) {
   document.getElementById('callStatusText').textContent = `正在拨打 ${currentRoom.taCall || currentRoom.taName}...`;
   document.getElementById('btnAnswer').style.display = 'none';
   document.getElementById('btnMinimize').style.display = 'none';
+  document.getElementById('btnHangup').style.display = 'flex';
 
   let waitTime = Math.floor(Math.random() * 14) + 1;
   let isRejected = Math.random() < 0.2; 
 
   setTimeout(() => {
-    if (isRejected) {
-      hangupCall(true);
-    } else {
-      answerCall();
+    if (callStatus === 'outgoing') {
+      if (isRejected) {
+        hangupCall(true);
+      } else {
+        answerCall();
+      }
     }
   }, waitTime * 1000);
 }
@@ -2488,6 +2758,7 @@ function answerCall() {
   
   document.getElementById('btnAnswer').style.display = 'none';
   document.getElementById('btnMinimize').style.display = 'flex';
+  document.getElementById('btnHangup').style.display = 'flex';
   
   document.getElementById('callStatusText').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
   document.getElementById('callVideoStatus').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
@@ -2589,303 +2860,7 @@ setInterval(() => {
   }
 }, 60000); 
 
-/* ================= 小便笺 ================= */
-function renderNotepads() {
-  const container = document.getElementById('notepadListContainer');
-  container.innerHTML = '';
-  if(allNotepads.length === 0) {
-    container.innerHTML = `<div class="empty-tip">还没有便笺，点击右上角写一张吧</div>`;
-    return;
-  }
-
-  // 检查 TA 主动留言 (概率触发) - 仅在进入页面且没触发过的时候调用
-  if (allRooms.length > 0 && !window.notepadTriggered) {
-    window.notepadTriggered = true; // 每次页面加载只触发一次判定
-    if (Math.random() * 100 < appSettings.notepadProb) {
-      let randomRoom = allRooms[Math.floor(Math.random() * allRooms.length)];
-      let pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === randomRoom.id));
-      if(pool.length > 0) {
-        let count = Math.floor(Math.random() * 3) + 3; // 3~5张
-        let texts = [];
-        for(let i=0; i<count; i++) {
-          texts.push(pool[Math.floor(Math.random() * pool.length)].text);
-        }
-        let taNoteText = texts.join('，') + '。';
-        let newNote = {
-          sender: 'ta', roomId: randomRoom.id, content: taNoteText,
-          color: getRandomNotepadColor(), bgImage: null,
-          timestamp: Date.now(), pinned: false, replies: []
-        };
-        dbAdd('notepads', newNote, () => {
-          dbGetAll('notepads', n => { 
-            allNotepads = n; 
-            showToast("发现了一张 TA 留下的便笺！");
-            renderNotepads(); 
-          });
-        });
-        return; // 触发后先返回，等数据库刷新后再渲染
-      }
-    }
-  }
-
-  // 检查是否有 TA 延迟回复的便笺
-  let now = Date.now();
-  let needUpdate = false;
-  allNotepads.forEach(note => {
-    if (note.sender === 'me' && note.replyTime && note.replyTime <= now && !note.replies.length) {
-      // 时间到了，生成 TA 回复
-      let pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === note.roomId));
-      if(pool.length > 0) {
-        let count = Math.floor(Math.random() * 3) + 3; // 3~5张
-        let texts = [];
-        for(let i=0; i<count; i++) {
-          texts.push(pool[Math.floor(Math.random() * pool.length)].text);
-        }
-        note.replies = [{ sender: 'ta', content: texts.join('，') + '。', timestamp: now }];
-        delete note.replyTime;
-        dbPut('notepads', note);
-        needUpdate = true;
-      }
-    }
-  });
-
-  // 重新排序：置顶优先，然后按时间倒序
-  allNotepads.sort((a,b) => {
-    if(a.pinned && !b.pinned) return -1;
-    if(!a.pinned && b.pinned) return 1;
-    return b.timestamp - a.timestamp;
-  });
-
-  allNotepads.forEach(note => {
-    const room = allRooms.find(r => r.id === note.roomId) || { taName: '未知' };
-    const isTa = note.sender === 'ta';
-    const div = document.createElement('div');
-    div.className = 'notepad-card' + (note.pinned ? ' pinned' : '');
-    div.dataset.id = note.id;
-    
-    // 设置背景
-    if (note.bgImage) {
-      div.style.backgroundImage = `url(${note.bgImage})`;
-      div.style.backgroundColor = 'transparent';
-    } else {
-      div.style.backgroundImage = 'none';
-      div.style.backgroundColor = note.pinned ? 'var(--honey-bg)' : (note.color || '#FFF9E6');
-    }
-
-    const date = new Date(note.timestamp);
-    const timeStr = `${date.getMonth()+1}-${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
-    
-    let headerStr = isTa ? `来自 ${room.taName} 的留言` : `写给 ${room.taName}`;
-    let replyHTML = '';
-    if (note.replies && note.replies.length > 0) {
-      replyHTML = `<div class="notepad-reply-box">
-        <div class="notepad-reply-time">${isTa ? '你的回复' : room.taName + ' 的回复'} (${note.replies[0].timestamp ? formatTime(note.replies[0].timestamp) : ''})</div>
-        <div>${note.replies[0].content}</div>
-      </div>`;
-    } else if (note.sender === 'me' && note.replyTime) {
-      replyHTML = `<div class="notepad-reply-box" style="color:var(--sub); font-style:italic;">TA 正在思考怎么回复...</div>`;
-    }
-
-    div.innerHTML = `
-      <div class="notepad-card-mask" style="background: rgba(255,255,255,${note.bgImage ? (appSettings.globalBgBlur/100) : 0.4})"></div>
-      <div class="notepad-card-content">
-        <div class="notepad-header"><span>${headerStr}</span><span>${timeStr}</span></div>
-        <div class="notepad-text">${note.content}</div>
-        ${replyHTML}
-      </div>
-    `;
-
-    // 长按菜单
-    let pressTimer;
-    div.addEventListener('touchstart', (e) => { 
-      pressTimer = setTimeout(() => { 
-        e.preventDefault(); 
-        targetNotepadId = note.id;
-        document.getElementById('npPinBtn').textContent = note.pinned ? '取消置顶' : '置顶';
-        document.getElementById('notepadMenu').classList.add('active');
-      }, 500); 
-    }, {passive: false});
-    div.addEventListener('touchend', () => clearTimeout(pressTimer));
-    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
-
-    // 点击查看全屏
-    div.addEventListener('click', () => {
-      if(!pressTimer) return; // 如果长按了就不触发点击
-      openFullNotepad(note);
-    });
-
-    container.appendChild(div);
-  });
-
-  if(needUpdate) dbGetAll('notepads', n => { allNotepads = n; renderNotepads(); });
-}
-
-function getRandomNotepadColor() {
-  const colors = ['#FFF9E6', '#E8F5E9', '#F3E5F5']; // 米黄, 薄荷绿, 薰衣草紫
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
-function openWriteNotepad() {
-  if(allRooms.length === 0) return showToast("请先建立羁绊");
-  const select = document.getElementById('notepadToRoom');
-  select.innerHTML = '';
-  allRooms.forEach(r => {
-    select.innerHTML += `<option value="${r.id}">${r.taName}</option>`;
-  });
-  document.getElementById('notepadContent').value = '';
-  document.getElementById('notepadBgPreview').style.display = 'none';
-  document.getElementById('notepadBgIcon').style.display = 'block';
-  document.getElementById('notepadSendToChat').checked = false;
-  currentNotepadBg = null;
-  
-  goToPage('page-write-notepad');
-}
-
-function previewNotepadBg(e) {
-  const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    currentNotepadBg = ev.target.result;
-    document.getElementById('notepadBgPreview').src = currentNotepadBg;
-    document.getElementById('notepadBgPreview').style.display = 'block';
-    document.getElementById('notepadBgIcon').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function saveNotepad() {
-  const roomId = parseInt(document.getElementById('notepadToRoom').value);
-  const content = document.getElementById('notepadContent').value.trim();
-  const sendToChat = document.getElementById('notepadSendToChat').checked;
-  
-  if(!content) return showToast("写点什么吧");
-  
-  // 计算 1~3 小时后的时间
-  const minH = appSettings.notepadReplyMin || 1;
-  const maxH = appSettings.notepadReplyMax || 3;
-  const delayH = minH + Math.random() * (maxH - minH);
-  const replyTime = Date.now() + delayH * 60 * 60 * 1000;
-
-  const note = {
-    sender: 'me', roomId: roomId, content: content,
-    color: getRandomNotepadColor(), bgImage: currentNotepadBg,
-    timestamp: Date.now(), pinned: false, replies: [], replyTime: replyTime
-  };
-
-  dbAdd('notepads', note, () => {
-    showToast("便笺贴上啦");
-    
-    if (sendToChat) {
-      const room = allRooms.find(r => r.id === roomId);
-      const msg = { roomId: roomId, sender: 'me', type: 'action', text: `你给 ${room ? room.taName : 'TA'} 留了一张便笺：\n${content}`, timestamp: Date.now() };
-      dbAdd('messages', msg, () => {});
-    }
-
-    refreshAllData();
-    goToPage('page-notepad');
-  });
-}
-
-function openFullNotepad(note) {
-  currentViewingNotepad = note;
-  const room = allRooms.find(r => r.id === note.roomId) || { taName: '未知' };
-  const isTa = note.sender === 'ta';
-
-  const contentDiv = document.getElementById('fullNotepadContent');
-  if(note.bgImage) {
-    contentDiv.style.backgroundImage = `url(${note.bgImage})`;
-    contentDiv.style.backgroundColor = 'transparent';
-  } else {
-    contentDiv.style.backgroundImage = 'none';
-    contentDiv.style.backgroundColor = note.color || '#FFF9E6';
-  }
-
-  document.getElementById('fullNotepadHeader').innerHTML = `<span>${isTa ? '来自' + room.taName : '写给' + room.taName}</span><span>${formatTime(note.timestamp)}</span>`;
-  document.getElementById('fullNotepadMainText').textContent = note.content;
-
-  const repliesDiv = document.getElementById('fullNotepadReplies');
-  repliesDiv.innerHTML = '';
-  if (note.replies && note.replies.length > 0) {
-    note.replies.forEach(r => {
-      repliesDiv.innerHTML += `<div class="reply-item">${r.content}</div>`;
-    });
-  }
-
-  const inputArea = document.getElementById('notepadInputArea');
-  if (isTa && (!note.replies || note.replies.length === 0)) {
-    inputArea.style.display = 'flex'; // 只有 TA 的留言且你还没回过，才显示输入框
-  } else {
-    inputArea.style.display = 'none';
-  }
-
-  document.getElementById('fullNotepadModal').classList.add('active');
-}
-
-function closeFullNotepad() {
-  document.getElementById('fullNotepadModal').classList.remove('active');
-  currentViewingNotepad = null;
-}
-
-function sendNotepadReply() {
-  if(!currentViewingNotepad) return;
-  const text = document.getElementById('notepadReplyInput').value.trim();
-  if(!text) return;
-
-  currentViewingNotepad.replies = [{ sender: 'me', content: text, timestamp: Date.now() }];
-  dbPut('notepads', currentViewingNotepad, () => {
-    document.getElementById('notepadReplyInput').value = '';
-    closeFullNotepad();
-    refreshAllData();
-    showToast("回复成功");
-  });
-}
-
-function closeNotepadMenu(e) { if(e.target === document.getElementById('notepadMenu')) document.getElementById('notepadMenu').classList.remove('active'); }
-
-function toggleNotepadPin() {
-  closeNotepadMenu({target:document.getElementById('notepadMenu')});
-  dbGetAll('notepads', notes => {
-    notes.forEach(n => { if(n.pinned) { n.pinned = false; dbPut('notepads', n); } });
-    const target = notes.find(n => n.id === targetNotepadId);
-    if(target) { target.pinned = true; dbPut('notepads', target, () => refreshAllData()); }
-  });
-}
-
-function changeNotepadBg() {
-  closeNotepadMenu({target:document.getElementById('notepadMenu')});
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = 'image/*';
-  input.onchange = (e) => {
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      dbGetAll('notepads', notes => {
-        const target = notes.find(n => n.id === targetNotepadId);
-        if(target) {
-          target.bgImage = ev.target.result;
-          dbPut('notepads', target, () => { refreshAllData(); showToast("背景已更换"); });
-        }
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-}
-
-function deleteNotepad() {
-  closeNotepadMenu({target:document.getElementById('notepadMenu')});
-  document.getElementById('confirmTitle').textContent = '删除便笺';
-  document.getElementById('confirmDesc').textContent = '确定要撕掉这张便笺吗？';
-  document.getElementById('confirmYesBtn').onclick = () => {
-    dbDelete('notepads', [targetNotepadId], () => {
-      closeConfirm({target:document.getElementById('confirmDeleteModal')});
-      refreshAllData(); showToast("已删除");
-    });
-  };
-  document.getElementById('confirmDeleteModal').classList.add('active');
-}
-
-/* ================= 拖拽与位置记忆逻辑 (全局) ================= */
+/* 拖拽与位置记忆逻辑 (全局) */
 function savePosition(id, x, y) {
   if(!currentRoom) return;
   if(!currentRoom.positions) currentRoom.positions = {};
@@ -3095,6 +3070,7 @@ function handleWordImport(e) {
   };
   reader.readAsText(file);
 }
+
 
 /* ================= 小互动管理 ================= */
 function switchActionTab(index) {
@@ -4078,9 +4054,9 @@ function openSettings() {
   document.getElementById('setFavProb').value = appSettings.favProb;
   document.getElementById('setCallProb').value = appSettings.callProb;
   document.getElementById('setVideoProb').value = appSettings.videoProb;
-  document.getElementById('setNotepadProb').value = appSettings.notepadProb;
-  document.getElementById('setNotepadReplyMin').value = appSettings.notepadReplyMin;
-  document.getElementById('setNotepadReplyMax').value = appSettings.notepadReplyMax;
+  document.getElementById('setNoteProb').value = appSettings.noteProb;
+  document.getElementById('setNoteSpeedMin').value = appSettings.noteSpeedMin;
+  document.getElementById('setNoteSpeedMax').value = appSettings.noteSpeedMax;
   document.getElementById('setCarouselMin').value = appSettings.carouselMin;
   document.getElementById('setCarouselMax').value = appSettings.carouselMax;
   goToPage('page-settings');
@@ -4095,7 +4071,7 @@ function backupData() {
     music: allMusic,
     favorites: allFavs,
     lovedays: allLoveDays,
-    notepads: allNotepads,
+    notes: allNotes,
     settings: appSettings
   };
   const content = JSON.stringify(backup, null, 2);
@@ -4113,7 +4089,7 @@ function importBackup(e) {
       if(!data.rooms || !data.wordcards) return showToast("备份文件无效");
       if(!confirm("确认覆盖当前所有数据吗？此操作不可逆！")) return;
       
-      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notepads');
+      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes');
       
       setTimeout(() => {
         if(data.rooms.length > 0) dbAdd('rooms', data.rooms);
@@ -4123,7 +4099,7 @@ function importBackup(e) {
         if(data.music && data.music.length > 0) dbAdd('music', data.music);
         if(data.favorites && data.favorites.length > 0) dbAdd('favorites', data.favorites);
         if(data.lovedays && data.lovedays.length > 0) dbAdd('lovedays', data.lovedays);
-        if(data.notepads && data.notepads.length > 0) dbAdd('notepads', data.notepads);
+        if(data.notes && data.notes.length > 0) dbAdd('notes', data.notes);
         setTimeout(() => { showToast("备份已恢复"); refreshAllData(); goToPage('page-home'); }, 500);
       }, 300);
     } catch(err) { showToast("解析失败"); }
@@ -4133,8 +4109,8 @@ function importBackup(e) {
 }
 
 function clearAllData() {
-  if(!confirm("确定要清除所有数据吗？包括所有聊天记录和贴图！")) return;
-  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notepads');
+  if(!confirm("确定要清除所有数据吗？包括所有聊天记录、便笺和贴图！")) return;
+  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes');
   setTimeout(() => { showToast("数据已清空"); refreshAllData(); goToPage('page-home'); }, 300);
 }
 </script>
