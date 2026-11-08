@@ -11,7 +11,7 @@
     --card:#FFFFFF; --line:#ECE5F8;
     --purple:#8B5CF6; --purple-soft:#A78BFA;
     --taro:#B89AF6; --taro-bg:rgba(184, 154, 246, 0.15);
-    --honey:#FF8BA7; --honey-bg:#FFF0F4; /* 蜜粉色 */
+    --honey:#FF8BA7; --honey-bg:#FFF0F4;
     --text:#2A2438; --sub:#9A93AE;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -108,7 +108,6 @@
   .avatar-upload span { font-size: 24px; color: var(--purple-soft); }
   .input-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
   
-  /* 修复问题框多出横线，以及增加内边距距离 */
   .input-field { 
     width: 100%; padding: 12px 14px; border-radius: 10px; 
     border: 1px solid var(--line); background: #FFFFFF; 
@@ -157,12 +156,11 @@
     border-bottom: 1px solid rgba(236, 229, 248, 0.5);
     min-height: 60px; 
   }
-  .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; padding-left: 40px; /* 留出返回键空间 */}
+  .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; padding-left: 40px; }
   .header-avatar { width: 40px; height: 40px; border-radius: 12px; background: #EDE9FE; overflow: hidden; flex-shrink: 0;}
   .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
   .header-info { display: flex; flex-direction: column; justify-content: center; overflow: hidden; flex: 1;}
   .header-name { font-size: 16px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-  /* 签名支持三行 */
   .header-sign { font-size: 12px; color: var(--sub); white-space: normal; word-break: break-all; line-height: 1.3; margin-top: 2px; max-height: 3.9em; overflow: hidden;}
   
   .phone-btn { width: 36px; height: 36px; background: var(--taro-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;}
@@ -304,9 +302,9 @@
 
   /* ================= LoveDays ================= */
   .loveday-card { background: #FFFFFF; border-radius: 16px; padding: 20px 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05); display:flex; flex-direction:column; position:relative; margin-bottom:12px; overflow:hidden; min-height: 160px; justify-content: center; align-items: center;}
-  .loveday-card.pinned { min-height: 200px; } /* 置顶的卡片变大 */
+  .loveday-card.pinned { min-height: 200px; }
   .ld-bg { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index: 0; }
-  .ld-bg-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.3); z-index: 1; } /* 默认30%遮罩 */
+  .ld-bg-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.3); z-index: 1; }
   .ld-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;}
   
   .ld-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
@@ -339,22 +337,11 @@
     white-space: pre-wrap; word-break: break-all; transition: all 0.3s;
   }
   
-  /* 高亮状态 */
-  .quiz-grid-item.highlight {
-    border-color: var(--honey);
-    box-shadow: 0 0 10px rgba(255, 139, 167, 0.4);
-  }
+  .quiz-grid-item.highlight { border-color: var(--honey); box-shadow: 0 0 10px rgba(255, 139, 167, 0.4); }
   .quiz-grid-item.dim { opacity: 0.5; }
-  
-  .quiz-option.highlight {
-    background: var(--honey-bg);
-    border-color: var(--honey);
-    color: var(--honey);
-    font-weight: 600;
-  }
+  .quiz-option.highlight { background: var(--honey-bg); border-color: var(--honey); color: var(--honey); font-weight: 600; }
   .quiz-option.dim { opacity: 0.5; }
 
-  /* 转圈圈等待符 */
   .typing-quiz-icon { display: inline-block; animation: spin 1.5s linear infinite; margin-right: 4px; font-weight: bold; font-size: 16px;}
 
   /* ================= 弹窗与提示 ================= */
@@ -451,67 +438,40 @@
   .mp-close-btn svg { width: 16px; height: 16px; stroke: #FFFFFF; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
   /* ================= 陪伴功能 ================= */
-  .companion-option {
-    padding: 10px 12px; border-radius: 12px; font-size: 14px;
-    background: #FBF9FE; border: 1px solid var(--line); color: var(--text);
-    cursor: pointer; text-align: center; transition: all 0.2s;
-  }
-  .companion-option.selected {
-    background: var(--taro); color: #fff; border-color: var(--taro);
-  }
+  .companion-option { padding: 10px 12px; border-radius: 12px; font-size: 14px; background: #FBF9FE; border: 1px solid var(--line); color: var(--text); cursor: pointer; text-align: center; transition: all 0.2s;}
+  .companion-option.selected { background: var(--taro); color: #fff; border-color: var(--taro); }
 
-  /* 陪伴悬浮窗 (完全透明，无边框背景，纯头像) */
-  #companionOrb {
-    position: fixed; z-index: 2000; width: 76px; height: 60px;
-    display: none; align-items: center; justify-content: center;
-    cursor: grab; touch-action: none; user-select: none;
-    background: transparent;
-  }
-  
-  .companion-avatars { 
-    display: flex; align-items: center; justify-content: center; 
-    width: 100%; height: 100%;
-  }
-  .companion-avatars .av { 
-    width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; 
-    overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  }
+  #companionOrb { position: fixed; z-index: 2000; width: 76px; height: 60px; display: none; align-items: center; justify-content: center; cursor: grab; touch-action: none; user-select: none; background: transparent;}
+  .companion-avatars { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;}
+  .companion-avatars .av { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 8px rgba(0,0,0,0.15);}
   .companion-avatars .av img { width: 100%; height: 100%; object-fit: cover; }
-  
-  /* 强制用负边距让它们交叠 */
   .companion-avatars .av-ta { margin-left: -18px; animation: attractTa 3s infinite alternate ease-in-out; z-index: 2;}
   .companion-avatars .av-me { animation: attractMe 3s infinite alternate ease-in-out; z-index: 1;}
-
   @keyframes attractTa { 0% { transform: translateX(0px); } 100% { transform: translateX(6px); } }
   @keyframes attractMe { 0% { transform: translateX(0px); } 100% { transform: translateX(-6px); } }
 
-  /* 陪伴大面板 (高度 80vh) */
   .companion-panel-container { position: fixed; top: 10%; left: 10%; width: 80%; max-width: 320px; z-index: 1001; display: none; }
   .companion-panel-container.active { display: block; }
   
   .companion-modal { 
     position: relative; overflow: hidden; background: #FFFFFF; 
     border-radius: 24px; padding: 24px 20px; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; /* 加大间距填补高度 */
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
     box-shadow: 0 10px 40px rgba(139,92,246,0.2); 
     cursor: grab; user-select: none; 
-    height: 80vh; /* 强制高度占屏幕 80% */
+    height: 80vh; 
   }
   .companion-modal:active { cursor: grabbing; }
   
   .cmp-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
   .cmp-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
-  
   .cmp-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; gap: 30px;}
   
   .cmp-avatars-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; margin-top: 40px; }
   .cmp-avatars-wrap .av { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; overflow: hidden; background:#EDE9FE; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
   .cmp-avatars-wrap .av img { width: 100%; height: 100%; object-fit: cover; }
-  
   .cmp-avatars-wrap .av-ta { margin-left: -30px; animation: attractTaPanel 3s infinite alternate ease-in-out; z-index: 2;}
   .cmp-avatars-wrap .av-me { animation: attractMePanel 3s infinite alternate ease-in-out; z-index: 1;}
-
   @keyframes attractTaPanel { 0% { transform: translateX(0px); } 100% { transform: translateX(15px); } }
   @keyframes attractMePanel { 0% { transform: translateX(0px); } 100% { transform: translateX(-15px); } }
 
@@ -519,13 +479,11 @@
   .cmp-timer-wrap { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
   .cmp-timer-label { font-size: 15px; color: var(--sub); margin-bottom: 6px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
   .cmp-timer { font-size: 48px; font-weight: 700; color: var(--purple); letter-spacing: 2px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
-
-  /* 底部居中的收起按钮 */
   .cmp-bottom-controls { display: flex; justify-content: center; align-items: center; margin-top: auto; margin-bottom: 20px; width: 100%;}
   .cmp-minimize { display: flex; align-items: center; justify-content: center; cursor: pointer; width: 50px; height: 50px; font-size: 32px; color: var(--purple-soft); font-weight: bold;}
 
   /* ================= 通话功能 ================= */
-  .call-panel-container { position: fixed; top: 10%; left: 10%; width: 80%; height: 80vh; z-index: 1005; display: none; }
+  .call-panel-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80vh; z-index: 1005; display: none; }
   .call-panel-container.active { display: block; }
 
   .call-modal { 
@@ -537,16 +495,14 @@
   .call-modal:active { cursor: grabbing; }
 
   .call-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
-  .call-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.3); }
+  .call-bg-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: rgba(255,255,255,0.7); }
 
   .call-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; gap: 20px;}
 
-  /* 语音头像框 */
   .call-avatar-wrap { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;}
   .call-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; background:#EDE9FE; z-index: 2; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
   .call-avatar img { width: 100%; height: 100%; object-fit: cover; }
   
-  /* 呼吸波纹 */
   .breath-ripple {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 80px; height: 80px; border-radius: 50%; background: rgba(184, 154, 246, 0.4);
@@ -554,35 +510,36 @@
   }
   @keyframes ripple { 0% { width: 80px; height: 80px; opacity: 1; } 100% { width: 160px; height: 160px; opacity: 0; } }
 
-  .call-name { font-size: 24px; font-weight: 600; color: var(--text); text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
-  .call-status { font-size: 15px; color: var(--sub); text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
-  .call-timer { font-size: 20px; font-weight: 600; color: var(--purple); margin-top: 10px; text-shadow: 0 1px 3px rgba(255,255,255,0.9);}
+  .call-name { font-size: 24px; font-weight: 600; color: var(--text); text-shadow: 0 1px 3px rgba(255,255,255,0.9); }
+  .call-status { font-size: 15px; color: var(--sub); text-shadow: 0 1px 3px rgba(255,255,255,0.9); }
+  .call-timer { font-size: 20px; font-weight: 600; color: var(--purple); margin-top: 10px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
 
-  /* 视频画面 (画中画) */
   .call-video-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background-size: cover; background-position: center; }
-  .call-video-pip { position: absolute; top: 20%; right: 20px; width: 100px; height: 140px; border-radius: 12px; border: 2px solid #fff; background: #EDE9FE; overflow: hidden; z-index: 3; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .call-video-pip { position: absolute; bottom: 110px; right: 20px; width: 90px; height: 120px; border-radius: 12px; border: 2px solid #fff; background: #EDE9FE; overflow: hidden; z-index: 3; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
   .call-video-pip img { width: 100%; height: 100%; object-fit: cover; }
   
-  /* 视频时的状态文字居中覆盖 */
-  .call-video-overlay-text { position: absolute; top: 40%; left: 0; right: 0; text-align: center; z-index: 2; pointer-events: none;}
-  .call-video-overlay-text .call-name { color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.6);}
-  .call-video-overlay-text .call-status { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);}
+  .call-video-overlay-text { position: absolute; top: 15%; left: 0; right: 0; text-align: center; z-index: 2; pointer-events: none;}
+  .call-video-overlay-text .call-name, .call-video-overlay-text .call-status, .call-video-overlay-text .call-timer { text-shadow: 0 1px 4px rgba(255,255,255,1), 0 1px 2px rgba(255,255,255,1);}
 
-  .call-controls { display: flex; justify-content: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; padding-bottom: 20px;}
+  .call-controls { display: flex; justify-content: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; align-items: center;}
   
-  /* 按钮去底色，纯图标 */
   .call-btn-icon { 
-    width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; 
-    cursor: pointer; transition: transform 0.15s; border: none; background: transparent;
+    display: flex; align-items: center; justify-content: center; 
+    cursor: pointer; transition: transform 0.15s;
+    background: transparent;
   }
   .call-btn-icon:active { transform: scale(0.9); }
-  .call-btn-icon svg { width: 48px; height: 48px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
+  .call-btn-icon svg { width: 46px; height: 46px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
   
-  .btn-answer svg { stroke: #34C759; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); } /* 绿色 */
-  .btn-hangup svg { stroke: #FF3B30; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); } /* 红色 */
-  .btn-minimize-call svg { stroke: var(--purple); filter: drop-shadow(0 2px 4px rgba(255,255,255,0.4)); }
+  .btn-answer { }
+  .btn-answer svg { stroke: #34C759; filter: drop-shadow(0 2px 4px rgba(52,199,89,0.4)); }
+  
+  .btn-hangup { }
+  .btn-hangup svg { stroke: #FF3B30; filter: drop-shadow(0 2px 4px rgba(255,59,48,0.4)); }
 
-  /* 通话悬浮窗 (对方头像) */
+  .btn-minimize-call { }
+  .btn-minimize-call svg { stroke: var(--purple); filter: drop-shadow(0 2px 4px rgba(139,92,246,0.4)); }
+
   #callOrb {
     position: fixed; z-index: 2000; width: 60px; height: 60px;
     border-radius: 50%; background: var(--taro); border: 2px solid #fff;
@@ -593,38 +550,54 @@
   }
   #callOrb img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   #callOrb svg { width: 28px; height: 28px; stroke: #fff; fill: none; pointer-events: none; }
-  
-  /* 悬浮窗通话中的波纹 */
   .orb-breath { animation: orbRipple 2s infinite alternate ease-in-out; }
   @keyframes orbRipple { 0% { box-shadow: 0 0 0 0 rgba(184, 154, 246, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(184, 154, 246, 0); } }
 
-  /* ================= 小便笺功能 ================= */
-  #page-note { display:none; flex-direction:column; height:100vh; overflow:hidden; background: transparent; }
-  #page-note.active { display:flex; }
-  
-  .note-list { flex:1; overflow-y:auto; padding: 16px; display:flex; flex-direction:column; gap:12px; }
-  
-  .note-card {
-    border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05);
-    display:flex; flex-direction:column; gap:12px; position:relative; background-size: cover; background-position: center;
+  /* ================= 小便笺 ================= */
+  .notepad-card {
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s;
+    background-size: cover;
+    background-position: center;
     overflow: hidden;
   }
-  .note-card-content { position: relative; z-index: 2; font-size: 15px; line-height: 1.5; color: var(--text); white-space: pre-wrap; word-break: break-all;}
+  .notepad-card.pinned {
+    transform: scale(1.02);
+    margin: 10px 0 20px 0;
+    box-shadow: 0 6px 20px rgba(255, 139, 167, 0.25);
+    background-color: var(--honey-bg) !important;
+    border: 1.5px solid var(--honey);
+  }
+  .notepad-card-mask { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.7); z-index: 1; pointer-events: none;}
+  .notepad-card-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 8px;}
+  .notepad-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--purple-soft); font-weight: 500; }
+  .notepad-card.pinned .notepad-header { color: var(--honey); }
+  .notepad-text { font-size: 15px; line-height: 1.6; color: var(--text); white-space: pre-wrap; word-break: break-all;}
+  .notepad-reply-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--text); background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px;}
+  .notepad-reply-time { font-size: 11px; color: var(--sub); margin-bottom: 4px;}
+
+  .full-notepad-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(42,36,56,0.5); z-index: 2000; display: none; flex-direction: column; backdrop-filter: blur(5px); }
+  .full-notepad-modal.active { display: flex; }
+  .full-notepad-content { 
+    flex: 1; margin: 40px 20px 80px; border-radius: 20px; padding: 24px; 
+    background-size: cover; background-position: center; position: relative; overflow-y: auto; display: flex; flex-direction: column;
+  }
+  .full-notepad-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.8); z-index: 1; pointer-events: none; border-radius: 20px;}
+  .full-notepad-inner { position: relative; z-index: 2; display: flex; flex-direction: column; flex: 1;}
+  .full-notepad-main-text { font-size: 18px; line-height: 1.8; color: var(--text); white-space: pre-wrap; word-break: break-all; margin-bottom: 20px;}
+  .full-notepad-replies { flex: 1; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;}
+  .reply-item { background: #FFFFFF; padding: 12px; border-radius: 12px; font-size: 15px; color: var(--text); box-shadow: 0 2px 6px rgba(0,0,0,0.05);}
+  .full-notepad-close { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; z-index: 10; color: var(--purple);}
   
-  .note-card-footer { position: relative; z-index: 2; display:flex; justify-content:space-between; font-size: 11px; color: var(--text); opacity: 0.6; margin-top: 10px;}
-  
-  /* 便笺全屏视图 */
-  .note-full-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1002; display: none; background: #FFFFFF; }
-  .note-full-container.active { display: flex; flex-direction: column; }
-  .note-full-bg { position: absolute; top:0; left:0; right:0; bottom:0; z-index: 0; background-size: cover; background-position: center; }
-  .note-full-mask { position: absolute; top:0; left:0; right:0; bottom:0; z-index: 1; background: rgba(255,255,255,0.6); }
-  .note-full-content { position: relative; z-index: 2; flex: 1; padding: 24px 20px; overflow-y: auto; font-size: 16px; line-height: 1.6; color: var(--text); white-space: pre-wrap; word-break: break-all; display: flex; flex-direction: column;}
-  
-  .note-reply-area { position: relative; z-index: 2; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: rgba(255,255,255,0.8); border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: center;}
-  .note-reply-input { flex: 1; height: 40px; border-radius: 20px; border: 1px solid var(--line); padding: 0 16px; font-size: 14px; outline: none; background: #FFF;}
-  
-  /* 便笺内的回复气泡 */
-  .note-reply-item { margin-top: 16px; background: rgba(139,92,246,0.1); padding: 12px; border-radius: 12px; font-size: 14px; border: 1px solid rgba(139,92,246,0.2);}
+  .notepad-input-area { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px calc(16px + env(safe-area-inset-bottom)); display: flex; gap: 8px; align-items: center; z-index: 10; background: #FFFFFF; border-top: 1px solid var(--line);}
+  .notepad-input { flex: 1; height: 40px; border: 1px solid var(--line); border-radius: 20px; padding: 0 16px; font-size: 15px; outline: none;}
 
 </style>
 </head>
@@ -634,7 +607,7 @@
 <div id="globalBgMask"></div>
 <div class="toast" id="toast"></div>
 
-<!-- 音乐悬浮球 -->
+<!-- 悬浮球 -->
 <div id="musicOrb"><svg viewBox="0 0 24 24"><path d="M9 18V6.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></div>
 <audio id="bgAudio" loop></audio>
 
@@ -646,7 +619,7 @@
   </div>
 </div>
 
-<!-- 通话悬浮窗 (显示对方头像) -->
+<!-- 通话悬浮窗 -->
 <div id="callOrb" class="orb-breath" onclick="openCallPanel()">
   <div id="callOrbContent" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#EDE9FE;">
     <span style="color:var(--purple);font-size:16px;">梦</span>
@@ -656,13 +629,11 @@
 <!-- 通话大面板 -->
 <div class="call-panel-container" id="callPanelContainer" onclick="closeCallPanel(event)">
   <div class="call-modal" id="callModal" onclick="event.stopPropagation()">
-    <!-- 语音背景 / 视频背景（视频时替换为大背景） -->
     <div class="call-bg" id="callBg"></div>
     <div class="call-bg-mask" id="callBgMask"></div>
 
-    <!-- 通话内容 -->
     <div class="call-content">
-      <!-- 语音专用居中头像 -->
+      <!-- 语音视图 -->
       <div id="callVoiceView" style="display:flex; flex-direction:column; align-items:center; width:100%; height: 100%; justify-content: center;">
         <div class="call-avatar-wrap">
           <div class="breath-ripple"></div>
@@ -675,23 +646,21 @@
         <div class="call-timer" id="callTimer" style="display:none;">00:00</div>
       </div>
 
-      <!-- 视频专用画中画视图 (初始隐藏) -->
+      <!-- 视频视图 -->
       <div id="callVideoView" style="display:none; width:100%; height:100%; position:absolute; top:0; left:0;">
-        <!-- 视频状态文字（顶部/居中） -->
         <div class="call-video-overlay-text">
           <div class="call-name" id="callVideoName">TA</div>
           <div class="call-status" id="callVideoStatus">正在视频...</div>
-          <div class="call-timer" id="callVideoTimer" style="display:none; color:#fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">00:00</div>
+          <div class="call-timer" id="callVideoTimer" style="display:none;">00:00</div>
         </div>
-        <!-- 你的画中画小窗 -->
         <div class="call-video-pip" id="callVideoPip">
           <span style="color:var(--purple); font-size:14px;">我</span>
         </div>
       </div>
 
-      <!-- 底部按钮组 -->
+      <!-- 按钮组 -->
       <div class="call-controls" id="callControls">
-        <!-- 来电状态：接听与挂断 -->
+        <!-- 接听与挂断 -->
         <div class="call-btn-icon btn-answer" id="btnAnswer" onclick="answerCall()" style="display:none;">
           <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
@@ -699,12 +668,9 @@
           <svg viewBox="0 0 24 24" transform="rotate(135 12 12)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
         
-        <!-- 通话中状态：收起与挂断 -->
+        <!-- 收起与挂断 -->
         <div class="call-btn-icon btn-minimize-call" id="btnMinimize" onclick="minimizeCall()" style="display:none;">
           <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-        </div>
-        <div class="call-btn-icon btn-hangup" id="btnHangupActive" onclick="hangupCall()" style="display:none;">
-          <svg viewBox="0 0 24 24" transform="rotate(135 12 12)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
       </div>
     </div>
@@ -722,7 +688,8 @@
     </div>
     <div class="grid-home">
       <div class="card" data-fn="chat" onclick="goToPage('page-chatlist')"><svg viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>汐棠小屋</span></div>
-      <div class="card" data-fn="note" onclick="goToPage('page-note')"><svg viewBox="0 0 24 24"><path d="M5.5 3.5h9l5 5V20a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 4.5 20V5a1.5 1.5 0 0 1 1-1.5Z"/><path d="M14 3.5v5h5"/><path d="M8 13h8M8 17h5"/></svg><span>小便笺</span></div>
+      <div class="card" data-fn="mail"><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.8 6.8 8.2 6 8.2-6"/></svg><span>鸿雁传书</span></div>
+      <div class="card" data-fn="notepad" onclick="goToPage('page-notepad')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>小便笺</span></div>
       <div class="card" data-fn="wordcard" onclick="goToPage('page-wordbox')"><svg viewBox="0 0 24 24"><rect x="6.5" y="4" width="14" height="14" rx="2"/><path d="M3.5 7v11.5A2.5 2.5 0 0 0 6 21h11"/></svg><span>字匣</span></div>
       <div class="card" data-fn="sticker" onclick="goToPage('page-sticker')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m4 17 5-5 4 4 3-3 4 4"/></svg><span>贴图</span></div>
       <div class="card" data-fn="action" onclick="goToPage('page-actionmanage')"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-9.2A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 3.2C19 15.6 12 20 12 20Z" transform="translate(-1 0) scale(0.82)"/><path d="M12 20s-7-4.4-7-9.2A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 3.2C19 15.6 12 20 12 20Z" transform="translate(7 0) scale(0.82)"/></svg><span>小互动</span></div>
@@ -750,7 +717,7 @@
     </div>
     <input type="file" id="globalBgFile" accept="image/*" style="display:none" onchange="uploadGlobalBg(event)">
     <div class="slider-row">
-      <span>全局背景雾化度</span>
+      <span>全局雾化度（全场景统一）</span>
       <input type="range" id="globalBgBlur" min="0" max="100" value="30" oninput="updateGlobalBgBlur(this.value)">
       <span id="globalBgBlurVal">30%</span>
     </div>
@@ -887,17 +854,17 @@
     </div>
     <div class="speed-row" style="margin-bottom:12px;">
       <span>TA写便笺概率：</span>
-      <input type="number" class="input-field" id="setNoteProb" value="5" style="width:60px; text-align:center;" onchange="saveSetting('noteProb', this.value)"> %
+      <input type="number" class="input-field" id="setNotepadProb" value="5" style="width:60px; text-align:center;" onchange="saveSetting('notepadProb', this.value)"> %
     </div>
     <div class="speed-row" style="margin-bottom:12px;">
-      <span>便笺回复时间：</span>
-      <input type="number" class="input-field" id="setNoteMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('noteMin', this.value)"> ~ 
-      <input type="number" class="input-field" id="setNoteMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('noteMax', this.value)"> 小时
+      <span>便笺回复速度(小时)：</span>
+      <input type="number" class="input-field" id="setNotepadReplyMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('notepadReplyMin', this.value)"> ~ 
+      <input type="number" class="input-field" id="setNotepadReplyMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('notepadReplyMax', this.value)">
     </div>
     <div class="speed-row">
-      <span>桌面轮播间隔：</span>
+      <span>桌面轮播间隔(小时)：</span>
       <input type="number" class="input-field" id="setCarouselMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('carouselMin', this.value)"> ~ 
-      <input type="number" class="input-field" id="setCarouselMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('carouselMax', this.value)"> 小时
+      <input type="number" class="input-field" id="setCarouselMax" value="3" style="width:50px; text-align:center;" onchange="saveSetting('carouselMax', this.value)">
     </div>
   </div>
   <div class="form-group">
@@ -939,70 +906,6 @@
         <path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-  </div>
-</div>
-
-<!-- ================= 小便笺页 ================= -->
-<div class="page" id="page-note">
-  <div class="header">
-    <div class="back-btn" onclick="goToPage('page-home')">‹</div>
-    <h1>小便笺</h1>
-    <!-- 你定制的 📜 卷轴图标 -->
-    <div style="position:absolute; right:16px; cursor:pointer;" onclick="openAddNoteModal()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px; margin-top:4px;">
-        <rect x="7" y="3" width="10" height="3" rx="1.5" />
-        <rect x="7" y="18" width="10" height="3" rx="1.5" />
-        <path d="M8 6v12" />
-        <path d="M16 6v12" />
-        <path d="M11 10h2.5" />
-        <path d="M11 13h2.5" />
-      </svg>
-    </div>
-  </div>
-  <div class="content" id="noteListContainer" style="padding: 16px; display:flex; flex-direction:column; gap:12px;"></div>
-</div>
-
-<!-- 新建/查看便笺全屏面板 -->
-<div class="note-full-container" id="noteFullContainer">
-  <div class="note-full-bg" id="noteFullBg"></div>
-  <div class="note-full-mask"></div>
-  
-  <div class="header" style="background:transparent; z-index:3;">
-    <div class="back-btn" onclick="closeNoteFullView()">‹</div>
-    <h1 id="noteFullTitle" style="opacity: 0;">便笺</h1>
-    <!-- 贴上面板的提交按钮 -->
-    <div id="noteFullSubmitBtn" style="position:absolute; right:16px; color:var(--purple); font-weight:600; font-size:15px; cursor:pointer; display:none;" onclick="submitNote()">贴上</div>
-  </div>
-
-  <!-- 写便笺的内容区 -->
-  <div class="note-full-content">
-    <div id="noteEditArea" style="display:none; flex-direction:column; height:100%;">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-        <span style="font-size:14px; color:var(--sub);">写给：</span>
-        <select id="noteToRoom" class="input-field" style="width:120px; padding:6px 10px; height:auto; font-size:14px;"></select>
-        <div style="flex:1;"></div>
-        <!-- 换图按钮 -->
-        <div onclick="document.getElementById('noteBgFile').click()" style="font-size:13px; color:var(--purple); border:1px solid var(--purple-soft); padding:4px 10px; border-radius:12px; cursor:pointer;">上传背景</div>
-        <input type="file" id="noteBgFile" accept="image/*" style="display:none" onchange="uploadNoteBg(event)">
-      </div>
-      <textarea id="noteTextArea" placeholder="想留点什么话..." style="flex:1; width:100%; border:none; background:transparent; outline:none; font-size:16px; line-height:1.6; font-family:inherit; resize:none; color:var(--text);"></textarea>
-      <div style="margin-top:12px; display:flex; align-items:center; gap:6px; justify-content:flex-end;">
-        <input type="checkbox" id="noteSendToChat" style="width:16px; height:16px; accent-color:var(--purple);">
-        <label for="noteSendToChat" style="font-size:13px; color:var(--sub);">发送到聊天</label>
-      </div>
-    </div>
-
-    <!-- 查看便笺的内容区 -->
-    <div id="noteViewArea" style="display:none; flex-direction:column; height:100%;">
-      <div id="noteViewText" style="flex:1; font-size:16px; line-height:1.6; white-space:pre-wrap; word-break:break-all;"></div>
-      <div id="noteViewReplies"></div>
-    </div>
-  </div>
-
-  <!-- 底部回复框 (如果是查看 TA 的便笺) -->
-  <div class="note-reply-area" id="noteReplyArea" style="display:none;">
-    <input type="text" class="note-reply-input" id="noteReplyInput" placeholder="回复 TA...">
-    <button class="btn-save" style="padding:8px 16px;" onclick="submitNoteReply()">发送</button>
   </div>
 </div>
 
@@ -1134,7 +1037,6 @@
     <div class="cmp-bg" id="cmpBg"></div>
     <div class="cmp-bg-mask" id="cmpBgMask"></div>
     
-    <!-- 右上角只保留关闭按钮 -->
     <div style="position:absolute; top:16px; right:16px; z-index:5; display:flex; gap:8px;">
       <div class="mp-close-btn" style="position:static; width:28px; height:28px;" onclick="stopCompanion()">
         <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -1152,7 +1054,6 @@
         <div class="cmp-timer" id="cmpTimer">00:00</div>
       </div>
       
-      <!-- 正下方的收起按钮 -->
       <div class="cmp-bottom-controls">
         <div class="cmp-minimize" onclick="minimizeCompanionPanel()">⊙</div>
       </div>
@@ -1198,6 +1099,66 @@
   </div>
 </div>
 <input type="file" id="wordImportFile" accept=".txt,.json" style="display:none" onchange="handleWordImport(event)">
+
+<!-- ================= 小便笺 ================= -->
+<div class="page" id="page-notepad">
+  <div class="header">
+    <div class="back-btn" onclick="goToPage('page-home')">‹</div>
+    <h1>小便笺</h1>
+    <div style="position:absolute; right:16px; font-size:20px; font-weight:bold; color:var(--purple); cursor:pointer;" onclick="openWriteNotepad()">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--purple)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="7" y="3" width="10" height="3" rx="1.5" />
+        <rect x="7" y="18" width="10" height="3" rx="1.5" />
+        <path d="M8 6v12" />
+        <path d="M16 6v12" />
+        <path d="M11 10h2.5" />
+        <path d="M11 13h2.5" />
+      </svg>
+    </div>
+  </div>
+  <div class="content" id="notepadListContainer"></div>
+</div>
+
+<!-- 写便笺大面板 -->
+<div class="page" id="page-write-notepad" style="background:#FFFFFF; z-index: 1500;">
+  <div class="header">
+    <div class="back-btn" onclick="goToPage('page-notepad')">‹</div>
+    <h1>写下留言</h1>
+  </div>
+  <div class="content" style="padding: 16px; display:flex; flex-direction:column; gap:16px;">
+    <div class="speed-row">
+      <span>写给：</span>
+      <select class="input-field" id="notepadToRoom" style="flex:1; padding: 8px;"></select>
+    </div>
+    <textarea class="input-field" id="notepadContent" placeholder="写下你想说的话..." style="height: 200px; font-size: 16px; line-height: 1.6; padding: 16px;"></textarea>
+    <div class="bg-upload-area" onclick="document.getElementById('notepadBgFile').click()" style="height: 80px; margin-bottom: 0;">
+      <img id="notepadBgPreview" src="" style="display:none;"><span id="notepadBgIcon">点击上传自定义便笺背景</span>
+    </div>
+    <input type="file" id="notepadBgFile" accept="image/*" style="display:none" onchange="previewNotepadBg(event)">
+    <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
+      <input type="checkbox" id="notepadSendToChat" style="width:16px; height:16px;">
+      <label for="notepadSendToChat" style="color:var(--text);">将留言同步发送到聊天</label>
+    </div>
+    <button class="btn-submit" style="margin-top: 10px;" onclick="saveNotepad()">贴上</button>
+  </div>
+</div>
+
+<!-- 便笺全屏查看与回复面板 -->
+<div class="full-notepad-modal" id="fullNotepadModal">
+  <div class="full-notepad-content" id="fullNotepadContent">
+    <div class="full-notepad-mask"></div>
+    <div class="full-notepad-close" onclick="closeFullNotepad()">×</div>
+    <div class="full-notepad-inner">
+      <div class="notepad-header" id="fullNotepadHeader"></div>
+      <div class="full-notepad-main-text" id="fullNotepadMainText"></div>
+      <div class="full-notepad-replies" id="fullNotepadReplies"></div>
+    </div>
+  </div>
+  <div class="notepad-input-area" id="notepadInputArea" style="display:none;">
+    <input type="text" class="notepad-input" id="notepadReplyInput" placeholder="回复 TA 的留言...">
+    <button class="btn-save" onclick="sendNotepadReply()">发送</button>
+  </div>
+</div>
 
 <!-- ================= 小互动管理 ================= -->
 <div class="page" id="page-actionmanage">
@@ -1290,7 +1251,6 @@
   </div>
   <div class="tabs-wrap" id="favRoomTabsWrap" style="display:none;">
     <div class="tabs" style="justify-content:flex-start; overflow-x:auto; gap:8px; background:transparent; padding:0;">
-      <!-- 梦角分类按钮动态渲染 -->
     </div>
   </div>
   <div class="content" id="favListContainer"></div>
@@ -1438,12 +1398,11 @@
   </div>
 </div>
 
-<!-- 便笺操作菜单 -->
-<div class="modal-overlay" id="noteMenu" onclick="closeNoteMenu(event)">
+<div class="modal-overlay" id="notepadMenu" onclick="closeNotepadMenu(event)">
   <div class="small-modal" onclick="event.stopPropagation()">
-    <div class="small-modal-item" id="notePinBtn" onclick="toggleNotePin()">置顶</div>
-    <div class="small-modal-item" onclick="changeNoteBg()">换图</div>
-    <div class="small-modal-item" onclick="deleteNote()">删除</div>
+    <div class="small-modal-item" id="npPinBtn" onclick="toggleNotepadPin()">置顶</div>
+    <div class="small-modal-item" onclick="changeNotepadBg()">换图</div>
+    <div class="small-modal-item" onclick="deleteNotepad()">删除</div>
   </div>
 </div>
 
@@ -1501,7 +1460,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 11); // 升级版本，加入便笺
+const request = indexedDB.open("SunsetFogDB", 11); // 升级版本，加入小便笺
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -1512,8 +1471,8 @@ request.onupgradeneeded = e => {
   if (!db.objectStoreNames.contains("music")) db.createObjectStore("music", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("favorites")) db.createObjectStore("favorites", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("lovedays")) db.createObjectStore("lovedays", { keyPath: "id", autoIncrement: true });
-  if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", { keyPath: "id", autoIncrement: true }); // 新增便笺存储
   if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings", { keyPath: "key" });
+  if (!db.objectStoreNames.contains("notepads")) db.createObjectStore("notepads", { keyPath: "id", autoIncrement: true });
 };
 request.onsuccess = e => {
   db = e.target.result;
@@ -1528,7 +1487,7 @@ function dbDelete(storeName, ids, callback) { const tx = db.transaction(storeNam
 function dbClear(storeName) { const tx = db.transaction(storeName, "readwrite"); tx.objectStore(storeName).clear(); }
 
 /* ================= 全局状态 ================= */
-let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [], allLoveDays = [], allNotes = [];
+let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [], allLoveDays = [], allNotepads = [];
 let wordDeleteMode = false, selectedWordIds = new Set();
 let currentActionTab = "tangdong", actionDeleteMode = false, selectedActionIds = new Set();
 let currentRoom = null, editRoomId = null, targetRoomId = null, currentReplyTimer = null, pendingStickerFiles = [];
@@ -1542,6 +1501,11 @@ let editLoveDaysId = null, targetLoveDaysId = null, currentLovedayBg = null, sel
 let stImgBase64 = null, stOptionsBase64 = [];
 let htImgBase64 = null;
 
+// 便笺状态
+let currentNotepadBg = null;
+let targetNotepadId = null;
+let currentViewingNotepad = null;
+
 let appSettings = { 
   stickerProb: 10, 
   actionProb: 7, 
@@ -1549,9 +1513,9 @@ let appSettings = {
   favProb: 3, 
   callProb: 2, 
   videoProb: 1,
-  noteProb: 5,
-  noteMin: 1,
-  noteMax: 3,
+  notepadProb: 5,
+  notepadReplyMin: 1,
+  notepadReplyMax: 3,
   carouselMin: 1, 
   carouselMax: 3, 
   globalBgImage: null,
@@ -1568,9 +1532,9 @@ function initSettings() {
     document.getElementById('setFavProb').value = appSettings.favProb;
     document.getElementById('setCallProb').value = appSettings.callProb;
     document.getElementById('setVideoProb').value = appSettings.videoProb;
-    document.getElementById('setNoteProb').value = appSettings.noteProb;
-    document.getElementById('setNoteMin').value = appSettings.noteMin;
-    document.getElementById('setNoteMax').value = appSettings.noteMax;
+    document.getElementById('setNotepadProb').value = appSettings.notepadProb;
+    document.getElementById('setNotepadReplyMin').value = appSettings.notepadReplyMin;
+    document.getElementById('setNotepadReplyMax').value = appSettings.notepadReplyMax;
     document.getElementById('setCarouselMin').value = appSettings.carouselMin;
     document.getElementById('setCarouselMax').value = appSettings.carouselMax;
     
@@ -1606,7 +1570,7 @@ function goToPage(pageId) {
   if(pageId === 'page-musicmanage') renderMusicList();
   if(pageId === 'page-favorites') renderFavorites();
   if(pageId === 'page-lovedays') renderLoveDays();
-  if(pageId === 'page-note') renderNoteList();
+  if(pageId === 'page-notepad') renderNotepads();
 }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
 function refreshAllData() {
@@ -1617,7 +1581,7 @@ function refreshAllData() {
   dbGetAll('music', m => { allMusic = m; renderMusicList(); });
   dbGetAll('favorites', f => { allFavs = f; renderFavorites(); });
   dbGetAll('lovedays', l => { allLoveDays = l; renderLoveDays(); });
-  dbGetAll('notes', n => { allNotes = n; renderNoteList(); });
+  dbGetAll('notepads', n => { allNotepads = n; renderNotepads(); });
 }
 
 /* ================= 桌面轮播 ================= */
@@ -1636,7 +1600,7 @@ function renderSlides(){
   allRooms.forEach((r,i)=>{
     const slide = document.createElement('div'); slide.className = 'slide';
     const displayName = r.taCall || r.taName || '梦角';
-    const myDisplayName = r.myCall || r.myName || '我'; // 优先显示昵称
+    const myDisplayName = r.myCall || r.myName || '我';
     slide.innerHTML = `<div class="person">${avatarHTML(r.taAvatar,'梦')}<div class="name">${displayName}</div></div><div class="diamond">◆</div><div class="person">${avatarHTML(r.myAvatar,'我')}<div class="name">${myDisplayName}</div></div>`;
     track.appendChild(slide);
     const d = document.createElement('div'); d.className = 'dot' + (i===0?' on':''); dots.appendChild(d);
@@ -1732,7 +1696,7 @@ function openCreateForm() {
   document.getElementById('bgPreview').style.display = 'none'; document.getElementById('bgPreview').src = ''; document.getElementById('bgIcon').style.display = 'block';
   document.getElementById('speedMin').value = 8; document.getElementById('speedMax').value = 15;
   
-  // 清空专属配置
+  // 清空音乐和陪伴配置
   document.getElementById('orbPreview').style.display = 'none'; document.getElementById('orbPreview').src = ''; document.getElementById('orbIcon').style.display = 'block';
   document.getElementById('mpBgPreview').style.display = 'none'; document.getElementById('mpBgPreview').src = ''; document.getElementById('mpBgIcon').style.display = 'block';
   document.getElementById('cmpBgPreview').style.display = 'none'; document.getElementById('cmpBgPreview').src = ''; document.getElementById('cmpBgIcon').style.display = 'block';
@@ -1752,7 +1716,6 @@ function openEditForm() {
   if(room.bgImage) { setPreview('bgPreview', 'bgIcon', room.bgImage); } else { document.getElementById('bgPreview').style.display = 'none'; document.getElementById('bgIcon').style.display = 'block'; }
   document.getElementById('speedMin').value = room.speedMin || 8; document.getElementById('speedMax').value = room.speedMax || 15;
   
-  // 恢复专属配置
   if(room.orbImage) { setPreview('orbPreview', 'orbIcon', room.orbImage); } else { document.getElementById('orbPreview').style.display = 'none'; document.getElementById('orbIcon').style.display = 'block'; }
   if(room.mpBgImage) { setPreview('mpBgPreview', 'mpBgIcon', room.mpBgImage); } else { document.getElementById('mpBgPreview').style.display = 'none'; document.getElementById('mpBgIcon').style.display = 'block'; }
   if(room.cmpBgImage) { setPreview('cmpBgPreview', 'cmpBgIcon', room.cmpBgImage); } else { document.getElementById('cmpBgPreview').style.display = 'none'; document.getElementById('cmpBgIcon').style.display = 'block'; }
@@ -1860,49 +1823,6 @@ function appendMessageToUI(m) {
     }
     
     container.appendChild(card);
-  } else if (m.type === 'note') {
-    // 便笺卡片
-    const data = JSON.parse(m.text);
-    const card = document.createElement('div');
-    card.style.cssText = "background: #FFFFFF; border-radius: 12px; padding: 16px; max-width: 80%; box-shadow: 0 2px 10px rgba(139,92,246,.1); position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--line);";
-    if (data.bgImage) { card.style.backgroundImage = `url(${data.bgImage})`; card.style.backgroundSize = 'cover'; card.style.backgroundPosition = 'center'; }
-    else if (data.color) { card.style.background = data.color; }
-    
-    card.innerHTML = `
-      <div style="position:relative; z-index:2; display:flex; flex-direction:column; gap:8px;">
-        <div style="font-size:12px; color:var(--text); opacity:0.6; display:flex; justify-content:space-between;">
-          <span>📜 便笺</span>
-        </div>
-        <div style="font-size:14px; color:var(--text); white-space:pre-wrap;">${data.text.length > 30 ? data.text.slice(0, 30) + '...' : data.text}</div>
-        <div style="font-size:12px; color:var(--purple); text-align:right; margin-top:4px;">点击查看</div>
-      </div>
-    `;
-    card.onclick = () => { openNoteFullView(data.noteId, 'view'); };
-    
-    const row = document.createElement('div'); row.className = `msg-row ${m.sender === 'me' ? 'right' : 'left'}`;
-    const isMe = m.sender === 'me';
-    const avatarSrc = isMe ? currentRoom.myAvatar : currentRoom.taAvatar;
-    const avatarFallback = isMe ? '我' : '梦';
-    const avHTML = avatarSrc ? `<img src="${avatarSrc}">` : `<span style="font-size:16px;color:var(--purple)">${avatarFallback}</span>`;
-    
-    row.innerHTML = `<div class="msg-avatar">${avHTML}</div>`;
-    row.appendChild(card);
-    
-    let pressTimer;
-    row.addEventListener('touchstart', (e) => { 
-      pressTimer = setTimeout(() => { 
-        e.preventDefault(); 
-        longPressMsgTarget = m;
-        const favBtn = document.getElementById('msgFavBtn');
-        if (m.sender === 'me') favBtn.style.display = 'none';
-        else favBtn.style.display = 'block';
-        document.getElementById('chatMsgMenu').classList.add('active');
-      }, 500); 
-    }, {passive: false});
-    row.addEventListener('touchend', () => clearTimeout(pressTimer));
-    row.addEventListener('touchmove', () => clearTimeout(pressTimer));
-
-    container.appendChild(row);
   } else {
     const isMe = m.sender === 'me';
     const row = document.createElement('div'); row.className = `msg-row ${isMe ? 'right' : 'left'}`;
@@ -2482,7 +2402,7 @@ let callActive = false;
 let callTimerInterval = null;
 let callStartTime = 0;
 let isVideoCall = false;
-let callStatus = 'idle'; // 'outgoing', 'incoming', 'active'
+let callStatus = 'idle'; 
 
 function triggerIncomingCall(video) {
   if (callActive) return;
@@ -2492,18 +2412,13 @@ function triggerIncomingCall(video) {
   
   openCallUI();
   document.getElementById('callStatusText').textContent = `${currentRoom.taCall || currentRoom.taName} 想${video ? '看看你' : '听听你的声音'}...`;
-  document.getElementById('callVideoStatus').textContent = `${currentRoom.taCall || currentRoom.taName} 想${video ? '看看你' : '听听你的声音'}...`;
-  
   document.getElementById('btnAnswer').style.display = 'flex';
   document.getElementById('btnMinimize').style.display = 'none';
-  document.getElementById('btnHangup').style.display = 'flex';
-  document.getElementById('btnHangupActive').style.display = 'none';
   
-  // 15秒不接自动挂断
   let waitTime = Math.floor(Math.random() * 14) + 1;
   setTimeout(() => {
     if (callStatus === 'incoming') {
-      hangupCall(true); // true 表示超时
+      hangupCall(true); 
     }
   }, waitTime * 1000);
 }
@@ -2516,24 +2431,17 @@ function startManualCall(video) {
   
   openCallUI();
   document.getElementById('callStatusText').textContent = `正在拨打 ${currentRoom.taCall || currentRoom.taName}...`;
-  document.getElementById('callVideoStatus').textContent = `正在拨打 ${currentRoom.taCall || currentRoom.taName}...`;
-  
   document.getElementById('btnAnswer').style.display = 'none';
   document.getElementById('btnMinimize').style.display = 'none';
-  document.getElementById('btnHangup').style.display = 'flex';
-  document.getElementById('btnHangupActive').style.display = 'none';
 
-  // 随机 1~15 秒接通或挂断
   let waitTime = Math.floor(Math.random() * 14) + 1;
-  
-  // 设定概率挂断 (比如 20% 概率不接)
   let isRejected = Math.random() < 0.2; 
 
   setTimeout(() => {
     if (isRejected) {
-      hangupCall(true); // 对方挂断
+      hangupCall(true);
     } else {
-      answerCall(); // 接通
+      answerCall();
     }
   }, waitTime * 1000);
 }
@@ -2580,8 +2488,6 @@ function answerCall() {
   
   document.getElementById('btnAnswer').style.display = 'none';
   document.getElementById('btnMinimize').style.display = 'flex';
-  document.getElementById('btnHangup').style.display = 'none';
-  document.getElementById('btnHangupActive').style.display = 'flex';
   
   document.getElementById('callStatusText').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
   document.getElementById('callVideoStatus').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
@@ -2663,8 +2569,8 @@ function closeCallPanel(e) {
 setInterval(() => {
   if (callActive && callStatus === 'active') {
     let p = 0;
-    if (isVideoCall) p = Math.random() * 1 + 1; // 视频 1~2%
-    else p = Math.random() * 1 + 2; // 电话 2~3%
+    if (isVideoCall) p = Math.random() * 1 + 1;
+    else p = Math.random() * 1 + 2;
     
     if (Math.random() * 100 < p) {
       clearInterval(callTimerInterval);
@@ -2683,315 +2589,303 @@ setInterval(() => {
   }
 }, 60000); 
 
-/* ================= 小便笺功能 ================= */
-const NOTE_COLORS = ['#FFF9E6', '#E6F6EE', '#F3E8FF']; // 米黄、薄荷绿、薰衣草紫
-let editingNoteId = null;
-let currentNoteColor = NOTE_COLORS[0];
-let currentNoteBg = null;
-
-function renderNoteList() {
-  const container = document.getElementById('noteListContainer');
+/* ================= 小便笺 ================= */
+function renderNotepads() {
+  const container = document.getElementById('notepadListContainer');
   container.innerHTML = '';
-  
-  // 处理已到时间的回复
-  let hasChange = false;
-  allNotes.forEach(n => {
-    if (!n.isTa && n.replyTime && !n.replied && Date.now() >= n.replyTime) {
-      n.replied = true;
-      const count = Math.floor(3 + Math.random() * 3); // 3~5
-      const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === n.roomId));
-      let replyText = '我看了你的留言，想对你说：\n';
-      if(pool.length > 0) {
-        for(let i=0; i<count; i++) {
-          replyText += pool[Math.floor(Math.random() * pool.length)].text + '\n';
-        }
-      } else {
-        replyText += '（还没有字卡可以回复，去字匣里加一点吧）';
-      }
-      n.replies = n.replies || [];
-      n.replies.push({ sender: 'ta', text: replyText, time: Date.now() });
-      dbPut('notes', n);
-      hasChange = true;
-    }
-  });
-  if (hasChange) allNotes = [...allNotes]; // 触发重绘
-
-  // 处理 TA 主动写便笺的概率
-  if (Math.random() * 100 < appSettings.noteProb && allRooms.length > 0) {
-    // 防止频繁触发
-    if (!sessionStorage.getItem('noteTaCheck')) {
-      sessionStorage.setItem('noteTaCheck', 'true');
-      const r = allRooms[Math.floor(Math.random() * allRooms.length)];
-      const count = Math.floor(3 + Math.random() * 3);
-      const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === r.id));
-      let text = '';
-      if (pool.length > 0) {
-        for(let i=0; i<count; i++) text += pool[Math.floor(Math.random() * pool.length)].text + '\n';
-      } else {
-        text = '今天天气很好，想你了。';
-      }
-      const newNote = {
-        roomId: r.id, text: text.trim(), isTa: true, pinned: false,
-        color: NOTE_COLORS[Math.floor(Math.random() * 3)], bgImage: null,
-        time: Date.now(), replies: []
-      };
-      dbAdd('notes', newNote, () => {
-        showToast(`${r.taCall || r.taName} 给你留了一张便笺`);
-        refreshAllData();
-      });
-    }
-  }
-
-  allNotes.sort((a,b) => {
-    if(a.pinned && !b.pinned) return -1;
-    if(!a.pinned && b.pinned) return 1;
-    return b.time - a.time;
-  });
-
-  if(allNotes.length === 0) {
-    container.innerHTML = '<div class="empty-tip">还没有便笺哦，点击右上角写一张吧</div>';
+  if(allNotepads.length === 0) {
+    container.innerHTML = `<div class="empty-tip">还没有便笺，点击右上角写一张吧</div>`;
     return;
   }
 
-  allNotes.forEach(n => {
-    const room = allRooms.find(r => r.id === n.roomId);
-    if(!room) return; // 梦角被删了
-    
-    const card = document.createElement('div');
-    card.className = 'note-card';
-    if (n.pinned) card.classList.add('pinned');
-    
-    // 底色或背景
-    if (n.bgImage) {
-      card.style.backgroundImage = `url(${n.bgImage})`;
-      card.style.backgroundSize = 'cover';
-      card.style.backgroundPosition = 'center';
-    } else {
-      card.style.background = n.pinned ? 'var(--honey-bg)' : (n.color || NOTE_COLORS[0]);
+  // 检查 TA 主动留言 (概率触发) - 仅在进入页面且没触发过的时候调用
+  if (allRooms.length > 0 && !window.notepadTriggered) {
+    window.notepadTriggered = true; // 每次页面加载只触发一次判定
+    if (Math.random() * 100 < appSettings.notepadProb) {
+      let randomRoom = allRooms[Math.floor(Math.random() * allRooms.length)];
+      let pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === randomRoom.id));
+      if(pool.length > 0) {
+        let count = Math.floor(Math.random() * 3) + 3; // 3~5张
+        let texts = [];
+        for(let i=0; i<count; i++) {
+          texts.push(pool[Math.floor(Math.random() * pool.length)].text);
+        }
+        let taNoteText = texts.join('，') + '。';
+        let newNote = {
+          sender: 'ta', roomId: randomRoom.id, content: taNoteText,
+          color: getRandomNotepadColor(), bgImage: null,
+          timestamp: Date.now(), pinned: false, replies: []
+        };
+        dbAdd('notepads', newNote, () => {
+          dbGetAll('notepads', n => { 
+            allNotepads = n; 
+            showToast("发现了一张 TA 留下的便笺！");
+            renderNotepads(); 
+          });
+        });
+        return; // 触发后先返回，等数据库刷新后再渲染
+      }
     }
+  }
 
-    // 添加蒙版防止文字看不清
-    const mask = document.createElement('div');
-    mask.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.3);z-index:1;border-radius:16px;";
-    card.appendChild(mask);
-
-    const content = document.createElement('div');
-    content.className = 'note-card-content';
-    content.textContent = n.text;
-    
-    const footer = document.createElement('div');
-    footer.className = 'note-card-footer';
-    const timeStr = formatTime(n.time);
-    const who = n.isTa ? `${room.taCall || room.taName} 写给你` : `你写给 ${room.taCall || room.taName}`;
-    footer.innerHTML = `<span>${who}</span><span>${timeStr}</span>`;
-    
-    card.appendChild(content);
-    card.appendChild(footer);
-
-    card.onclick = () => openNoteFullView(n.id, 'view');
-    
-    // 长按菜单 (只能操作自己写的)
-    if (!n.isTa) {
-      let pressTimer;
-      card.addEventListener('touchstart', (e) => { 
-        pressTimer = setTimeout(() => { 
-          e.preventDefault(); 
-          editingNoteId = n.id;
-          document.getElementById('notePinBtn').textContent = n.pinned ? '取消置顶' : '置顶';
-          document.getElementById('noteMenu').classList.add('active');
-        }, 500); 
-      }, {passive: false});
-      card.addEventListener('touchend', () => clearTimeout(pressTimer));
-      card.addEventListener('touchmove', () => clearTimeout(pressTimer));
+  // 检查是否有 TA 延迟回复的便笺
+  let now = Date.now();
+  let needUpdate = false;
+  allNotepads.forEach(note => {
+    if (note.sender === 'me' && note.replyTime && note.replyTime <= now && !note.replies.length) {
+      // 时间到了，生成 TA 回复
+      let pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === note.roomId));
+      if(pool.length > 0) {
+        let count = Math.floor(Math.random() * 3) + 3; // 3~5张
+        let texts = [];
+        for(let i=0; i<count; i++) {
+          texts.push(pool[Math.floor(Math.random() * pool.length)].text);
+        }
+        note.replies = [{ sender: 'ta', content: texts.join('，') + '。', timestamp: now }];
+        delete note.replyTime;
+        dbPut('notepads', note);
+        needUpdate = true;
+      }
     }
-    
-    container.appendChild(card);
   });
+
+  // 重新排序：置顶优先，然后按时间倒序
+  allNotepads.sort((a,b) => {
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+    return b.timestamp - a.timestamp;
+  });
+
+  allNotepads.forEach(note => {
+    const room = allRooms.find(r => r.id === note.roomId) || { taName: '未知' };
+    const isTa = note.sender === 'ta';
+    const div = document.createElement('div');
+    div.className = 'notepad-card' + (note.pinned ? ' pinned' : '');
+    div.dataset.id = note.id;
+    
+    // 设置背景
+    if (note.bgImage) {
+      div.style.backgroundImage = `url(${note.bgImage})`;
+      div.style.backgroundColor = 'transparent';
+    } else {
+      div.style.backgroundImage = 'none';
+      div.style.backgroundColor = note.pinned ? 'var(--honey-bg)' : (note.color || '#FFF9E6');
+    }
+
+    const date = new Date(note.timestamp);
+    const timeStr = `${date.getMonth()+1}-${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    
+    let headerStr = isTa ? `来自 ${room.taName} 的留言` : `写给 ${room.taName}`;
+    let replyHTML = '';
+    if (note.replies && note.replies.length > 0) {
+      replyHTML = `<div class="notepad-reply-box">
+        <div class="notepad-reply-time">${isTa ? '你的回复' : room.taName + ' 的回复'} (${note.replies[0].timestamp ? formatTime(note.replies[0].timestamp) : ''})</div>
+        <div>${note.replies[0].content}</div>
+      </div>`;
+    } else if (note.sender === 'me' && note.replyTime) {
+      replyHTML = `<div class="notepad-reply-box" style="color:var(--sub); font-style:italic;">TA 正在思考怎么回复...</div>`;
+    }
+
+    div.innerHTML = `
+      <div class="notepad-card-mask" style="background: rgba(255,255,255,${note.bgImage ? (appSettings.globalBgBlur/100) : 0.4})"></div>
+      <div class="notepad-card-content">
+        <div class="notepad-header"><span>${headerStr}</span><span>${timeStr}</span></div>
+        <div class="notepad-text">${note.content}</div>
+        ${replyHTML}
+      </div>
+    `;
+
+    // 长按菜单
+    let pressTimer;
+    div.addEventListener('touchstart', (e) => { 
+      pressTimer = setTimeout(() => { 
+        e.preventDefault(); 
+        targetNotepadId = note.id;
+        document.getElementById('npPinBtn').textContent = note.pinned ? '取消置顶' : '置顶';
+        document.getElementById('notepadMenu').classList.add('active');
+      }, 500); 
+    }, {passive: false});
+    div.addEventListener('touchend', () => clearTimeout(pressTimer));
+    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+    // 点击查看全屏
+    div.addEventListener('click', () => {
+      if(!pressTimer) return; // 如果长按了就不触发点击
+      openFullNotepad(note);
+    });
+
+    container.appendChild(div);
+  });
+
+  if(needUpdate) dbGetAll('notepads', n => { allNotepads = n; renderNotepads(); });
 }
 
-function openAddNoteModal() {
-  if (allRooms.length === 0) return showToast("请先建立羁绊");
-  editingNoteId = null;
-  currentNoteColor = NOTE_COLORS[Math.floor(Math.random() * 3)];
-  currentNoteBg = null;
-  
-  document.getElementById('noteFullTitle').textContent = "写便笺";
-  document.getElementById('noteFullSubmitBtn').style.display = 'block';
-  document.getElementById('noteEditArea').style.display = 'flex';
-  document.getElementById('noteViewArea').style.display = 'none';
-  document.getElementById('noteReplyArea').style.display = 'none';
-  
-  const select = document.getElementById('noteToRoom');
+function getRandomNotepadColor() {
+  const colors = ['#FFF9E6', '#E8F5E9', '#F3E5F5']; // 米黄, 薄荷绿, 薰衣草紫
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function openWriteNotepad() {
+  if(allRooms.length === 0) return showToast("请先建立羁绊");
+  const select = document.getElementById('notepadToRoom');
   select.innerHTML = '';
   allRooms.forEach(r => {
-    const opt = document.createElement('option');
-    opt.value = r.id;
-    opt.textContent = r.taName;
-    select.appendChild(opt);
+    select.innerHTML += `<option value="${r.id}">${r.taName}</option>`;
   });
-
-  document.getElementById('noteTextArea').value = '';
-  document.getElementById('noteSendToChat').checked = false;
-  document.getElementById('noteFullBg').style.background = currentNoteColor;
+  document.getElementById('notepadContent').value = '';
+  document.getElementById('notepadBgPreview').style.display = 'none';
+  document.getElementById('notepadBgIcon').style.display = 'block';
+  document.getElementById('notepadSendToChat').checked = false;
+  currentNotepadBg = null;
   
-  document.getElementById('noteFullContainer').classList.add('active');
+  goToPage('page-write-notepad');
 }
 
-let viewingNoteId = null;
-function openNoteFullView(id, mode) {
-  const n = allNotes.find(x => x.id === id);
-  if (!n) return;
-  viewingNoteId = id;
-  
-  const room = allRooms.find(r => r.id === n.roomId);
-  const taName = room ? (room.taCall || room.taName) : 'TA';
-
-  document.getElementById('noteFullTitle').textContent = n.isTa ? `${taName} 的留言` : `写给 ${taName}`;
-  document.getElementById('noteFullSubmitBtn').style.display = 'none';
-  document.getElementById('noteEditArea').style.display = 'none';
-  document.getElementById('noteViewArea').style.display = 'flex';
-  
-  // 底色/背景
-  if (n.bgImage) {
-    document.getElementById('noteFullBg').style.backgroundImage = `url(${n.bgImage})`;
-    document.getElementById('noteFullBg').style.backgroundSize = 'cover';
-    document.getElementById('noteFullBg').style.backgroundPosition = 'center';
-  } else {
-    document.getElementById('noteFullBg').style.backgroundImage = 'none';
-    document.getElementById('noteFullBg').style.background = n.pinned ? 'var(--honey-bg)' : (n.color || NOTE_COLORS[0]);
-  }
-
-  document.getElementById('noteViewText').innerHTML = `<div style="margin-bottom:16px;">${n.text}</div>`;
-  
-  const repliesWrap = document.getElementById('noteViewReplies');
-  repliesWrap.innerHTML = '';
-  if (n.replies && n.replies.length > 0) {
-    n.replies.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'note-reply-item';
-      div.innerHTML = `<div style="font-size:12px; color:var(--sub); margin-bottom:4px;">${r.sender === 'ta' ? taName : '你'} 回复：</div><div>${r.text}</div>`;
-      repliesWrap.appendChild(div);
-    });
-  }
-
-  // 如果是 TA 写的，你可以回复
-  if (n.isTa) {
-    document.getElementById('noteReplyArea').style.display = 'flex';
-    document.getElementById('noteReplyInput').value = '';
-  } else {
-    document.getElementById('noteReplyArea').style.display = 'none';
-  }
-
-  document.getElementById('noteFullContainer').classList.add('active');
-}
-
-function closeNoteFullView() {
-  document.getElementById('noteFullContainer').classList.remove('active');
-}
-
-function submitNote() {
-  const text = document.getElementById('noteTextArea').value.trim();
-  if (!text) return showToast("便笺是空的哦");
-  
-  const roomId = parseInt(document.getElementById('noteToRoom').value);
-  const sendToChat = document.getElementById('noteSendToChat').checked;
-  const bgImage = currentNoteBg;
-  const color = currentNoteColor;
-  
-  // 1~3小时后的时间
-  const minH = appSettings.noteMin || 1;
-  const maxH = appSettings.noteMax || 3;
-  const delay = (minH + Math.random() * (maxH - minH)) * 60 * 60 * 1000;
-  const replyTime = Date.now() + delay;
-
-  const noteData = {
-    roomId: roomId, text: text, isTa: false, pinned: false,
-    color: color, bgImage: bgImage,
-    time: Date.now(), replyTime: replyTime, replied: false, replies: []
-  };
-
-  dbAdd('notes', noteData, () => {
-    closeNoteFullView();
-    renderNoteList();
-    showToast("便笺已贴上");
-    
-    if (sendToChat) {
-      // 发送到聊天
-      const chatMsg = { roomId: roomId, sender: 'me', type: 'note', text: JSON.stringify(noteData), timestamp: Date.now() };
-      dbAdd('messages', chatMsg, () => {
-        dbGetAll('rooms', rooms => {
-          const r = rooms.find(x => x.id === roomId);
-          if (r) { r.lastMsg = '[便笺]'; r.updatedAt = Date.now(); dbPut('rooms', r); }
-        });
-      });
-    }
-  });
-}
-
-function submitNoteReply() {
-  const text = document.getElementById('noteReplyInput').value.trim();
-  if (!text) return;
-  
-  const n = allNotes.find(x => x.id === viewingNoteId);
-  if (!n) return;
-  
-  n.replies = n.replies || [];
-  n.replies.push({ sender: 'me', text: text, time: Date.now() });
-  
-  dbPut('notes', n, () => {
-    document.getElementById('noteReplyInput').value = '';
-    openNoteFullView(viewingNoteId, 'view');
-    renderNoteList();
-    showToast("回复已发送");
-  });
-}
-
-function uploadNoteBg(e) {
-  const file = e.target.files[0]; if (!file) return;
+function previewNotepadBg(e) {
+  const file = e.target.files[0]; if(!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    currentNoteBg = ev.target.result;
-    document.getElementById('noteFullBg').style.backgroundImage = `url(${currentNoteBg})`;
-    document.getElementById('noteFullBg').style.backgroundSize = 'cover';
-    document.getElementById('noteFullBg').style.backgroundPosition = 'center';
+    currentNotepadBg = ev.target.result;
+    document.getElementById('notepadBgPreview').src = currentNotepadBg;
+    document.getElementById('notepadBgPreview').style.display = 'block';
+    document.getElementById('notepadBgIcon').style.display = 'none';
   };
   reader.readAsDataURL(file);
 }
 
-function closeNoteMenu(e) { if (e.target === document.getElementById('noteMenu')) document.getElementById('noteMenu').classList.remove('active'); }
+function saveNotepad() {
+  const roomId = parseInt(document.getElementById('notepadToRoom').value);
+  const content = document.getElementById('notepadContent').value.trim();
+  const sendToChat = document.getElementById('notepadSendToChat').checked;
+  
+  if(!content) return showToast("写点什么吧");
+  
+  // 计算 1~3 小时后的时间
+  const minH = appSettings.notepadReplyMin || 1;
+  const maxH = appSettings.notepadReplyMax || 3;
+  const delayH = minH + Math.random() * (maxH - minH);
+  const replyTime = Date.now() + delayH * 60 * 60 * 1000;
 
-function toggleNotePin() {
-  closeNoteMenu({target:document.getElementById('noteMenu')});
-  const n = allNotes.find(x => x.id === editingNoteId);
-  if (!n) return;
-  
-  // 如果有其他的置顶了，就取消其他的（唯一置顶逻辑）
-  allNotes.forEach(x => { if(x.pinned) { x.pinned = false; dbPut('notes', x); } });
-  
-  n.pinned = !n.pinned;
-  dbPut('notes', n, () => renderNoteList());
+  const note = {
+    sender: 'me', roomId: roomId, content: content,
+    color: getRandomNotepadColor(), bgImage: currentNotepadBg,
+    timestamp: Date.now(), pinned: false, replies: [], replyTime: replyTime
+  };
+
+  dbAdd('notepads', note, () => {
+    showToast("便笺贴上啦");
+    
+    if (sendToChat) {
+      const room = allRooms.find(r => r.id === roomId);
+      const msg = { roomId: roomId, sender: 'me', type: 'action', text: `你给 ${room ? room.taName : 'TA'} 留了一张便笺：\n${content}`, timestamp: Date.now() };
+      dbAdd('messages', msg, () => {});
+    }
+
+    refreshAllData();
+    goToPage('page-notepad');
+  });
 }
 
-function changeNoteBg() {
-  closeNoteMenu({target:document.getElementById('noteMenu')});
-  document.getElementById('noteBgFile').click();
+function openFullNotepad(note) {
+  currentViewingNotepad = note;
+  const room = allRooms.find(r => r.id === note.roomId) || { taName: '未知' };
+  const isTa = note.sender === 'ta';
+
+  const contentDiv = document.getElementById('fullNotepadContent');
+  if(note.bgImage) {
+    contentDiv.style.backgroundImage = `url(${note.bgImage})`;
+    contentDiv.style.backgroundColor = 'transparent';
+  } else {
+    contentDiv.style.backgroundImage = 'none';
+    contentDiv.style.backgroundColor = note.color || '#FFF9E6';
+  }
+
+  document.getElementById('fullNotepadHeader').innerHTML = `<span>${isTa ? '来自' + room.taName : '写给' + room.taName}</span><span>${formatTime(note.timestamp)}</span>`;
+  document.getElementById('fullNotepadMainText').textContent = note.content;
+
+  const repliesDiv = document.getElementById('fullNotepadReplies');
+  repliesDiv.innerHTML = '';
+  if (note.replies && note.replies.length > 0) {
+    note.replies.forEach(r => {
+      repliesDiv.innerHTML += `<div class="reply-item">${r.content}</div>`;
+    });
+  }
+
+  const inputArea = document.getElementById('notepadInputArea');
+  if (isTa && (!note.replies || note.replies.length === 0)) {
+    inputArea.style.display = 'flex'; // 只有 TA 的留言且你还没回过，才显示输入框
+  } else {
+    inputArea.style.display = 'none';
+  }
+
+  document.getElementById('fullNotepadModal').classList.add('active');
 }
 
-function deleteNote() {
-  closeNoteMenu({target:document.getElementById('noteMenu')});
+function closeFullNotepad() {
+  document.getElementById('fullNotepadModal').classList.remove('active');
+  currentViewingNotepad = null;
+}
+
+function sendNotepadReply() {
+  if(!currentViewingNotepad) return;
+  const text = document.getElementById('notepadReplyInput').value.trim();
+  if(!text) return;
+
+  currentViewingNotepad.replies = [{ sender: 'me', content: text, timestamp: Date.now() }];
+  dbPut('notepads', currentViewingNotepad, () => {
+    document.getElementById('notepadReplyInput').value = '';
+    closeFullNotepad();
+    refreshAllData();
+    showToast("回复成功");
+  });
+}
+
+function closeNotepadMenu(e) { if(e.target === document.getElementById('notepadMenu')) document.getElementById('notepadMenu').classList.remove('active'); }
+
+function toggleNotepadPin() {
+  closeNotepadMenu({target:document.getElementById('notepadMenu')});
+  dbGetAll('notepads', notes => {
+    notes.forEach(n => { if(n.pinned) { n.pinned = false; dbPut('notepads', n); } });
+    const target = notes.find(n => n.id === targetNotepadId);
+    if(target) { target.pinned = true; dbPut('notepads', target, () => refreshAllData()); }
+  });
+}
+
+function changeNotepadBg() {
+  closeNotepadMenu({target:document.getElementById('notepadMenu')});
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      dbGetAll('notepads', notes => {
+        const target = notes.find(n => n.id === targetNotepadId);
+        if(target) {
+          target.bgImage = ev.target.result;
+          dbPut('notepads', target, () => { refreshAllData(); showToast("背景已更换"); });
+        }
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function deleteNotepad() {
+  closeNotepadMenu({target:document.getElementById('notepadMenu')});
   document.getElementById('confirmTitle').textContent = '删除便笺';
-  document.getElementById('confirmDesc').textContent = '确定要丢掉这张便笺吗？';
+  document.getElementById('confirmDesc').textContent = '确定要撕掉这张便笺吗？';
   document.getElementById('confirmYesBtn').onclick = () => {
-    dbDelete('notes', [editingNoteId], () => {
+    dbDelete('notepads', [targetNotepadId], () => {
       closeConfirm({target:document.getElementById('confirmDeleteModal')});
-      renderNoteList(); showToast("已删除");
+      refreshAllData(); showToast("已删除");
     });
   };
   document.getElementById('confirmDeleteModal').classList.add('active');
 }
 
-
-/* 拖拽与位置记忆逻辑 (全局) */
+/* ================= 拖拽与位置记忆逻辑 (全局) ================= */
 function savePosition(id, x, y) {
   if(!currentRoom) return;
   if(!currentRoom.positions) currentRoom.positions = {};
@@ -3051,7 +2945,6 @@ makeDraggable(document.getElementById('companionOrb'), 'cmpOrb');
 makeDraggable(document.getElementById('companionModal'), 'cmpPanel');
 makeDraggable(document.getElementById('callOrb'), 'callOrb');
 makeDraggable(document.getElementById('callModal'), 'callPanel');
-// 音乐悬浮球与面板依然用旧逻辑
 
 /* ================= 字匣 ================= */
 function switchTab(index) {
@@ -4185,9 +4078,9 @@ function openSettings() {
   document.getElementById('setFavProb').value = appSettings.favProb;
   document.getElementById('setCallProb').value = appSettings.callProb;
   document.getElementById('setVideoProb').value = appSettings.videoProb;
-  document.getElementById('setNoteProb').value = appSettings.noteProb;
-  document.getElementById('setNoteMin').value = appSettings.noteMin;
-  document.getElementById('setNoteMax').value = appSettings.noteMax;
+  document.getElementById('setNotepadProb').value = appSettings.notepadProb;
+  document.getElementById('setNotepadReplyMin').value = appSettings.notepadReplyMin;
+  document.getElementById('setNotepadReplyMax').value = appSettings.notepadReplyMax;
   document.getElementById('setCarouselMin').value = appSettings.carouselMin;
   document.getElementById('setCarouselMax').value = appSettings.carouselMax;
   goToPage('page-settings');
@@ -4202,7 +4095,7 @@ function backupData() {
     music: allMusic,
     favorites: allFavs,
     lovedays: allLoveDays,
-    notes: allNotes,
+    notepads: allNotepads,
     settings: appSettings
   };
   const content = JSON.stringify(backup, null, 2);
@@ -4220,7 +4113,7 @@ function importBackup(e) {
       if(!data.rooms || !data.wordcards) return showToast("备份文件无效");
       if(!confirm("确认覆盖当前所有数据吗？此操作不可逆！")) return;
       
-      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes');
+      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notepads');
       
       setTimeout(() => {
         if(data.rooms.length > 0) dbAdd('rooms', data.rooms);
@@ -4230,7 +4123,7 @@ function importBackup(e) {
         if(data.music && data.music.length > 0) dbAdd('music', data.music);
         if(data.favorites && data.favorites.length > 0) dbAdd('favorites', data.favorites);
         if(data.lovedays && data.lovedays.length > 0) dbAdd('lovedays', data.lovedays);
-        if(data.notes && data.notes.length > 0) dbAdd('notes', data.notes);
+        if(data.notepads && data.notepads.length > 0) dbAdd('notepads', data.notepads);
         setTimeout(() => { showToast("备份已恢复"); refreshAllData(); goToPage('page-home'); }, 500);
       }, 300);
     } catch(err) { showToast("解析失败"); }
@@ -4241,7 +4134,7 @@ function importBackup(e) {
 
 function clearAllData() {
   if(!confirm("确定要清除所有数据吗？包括所有聊天记录和贴图！")) return;
-  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes');
+  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notepads');
   setTimeout(() => { showToast("数据已清空"); refreshAllData(); goToPage('page-home'); }, 300);
 }
 </script>
