@@ -340,15 +340,21 @@
   .note-detail-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; background: transparent; display:none; flex-direction:column;}
   .note-detail-modal.active { display:flex; }
   .note-detail-bg-global { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-2;}
-  .note-detail-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-1;}
+  .note-detail-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-1; display:none;} /* 隐藏原本铺满全屏的便笺背景 */
   .note-detail-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:0;}
   
   .note-detail-header { position:relative; z-index:2; display:flex; align-items:center; padding: calc(16px + env(safe-area-inset-top)) 16px 10px;}
   .note-detail-content { position:relative; z-index:2; flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:20px;}
-  .note-main-text { font-size:18px; line-height:1.6; color:var(--text); white-space:pre-wrap; word-break:break-all; padding:20px; background:rgba(255,255,255,0.6); border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;}
-  .note-detail-card-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
-  .note-detail-card-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
-  .note-detail-text-content { position:relative; z-index:2; }
+  
+  /* 便笺卡片正文 (在详情页) */
+  .note-main-text { 
+    font-size:18px; line-height:1.6; color:var(--text); white-space:pre-wrap; word-break:break-all; 
+    padding:20px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05);
+    position:relative; overflow:hidden;
+  }
+  .note-main-text .nmt-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
+  .note-main-text .nmt-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
+  .note-main-text .nmt-inner { position:relative; z-index:2; }
   
   .note-replies { display:flex; flex-direction:column; gap:12px; margin-top:20px;}
   .note-reply-item { background:rgba(255,255,255,0.8); padding:12px 16px; border-radius:12px; font-size:15px; line-height:1.5;}
@@ -1876,12 +1882,10 @@ function appendMessageToUI(m) {
     
     const card = document.createElement('div');
     card.className = 'chat-note-card';
-    
-    // 修改：修复聊天卡片便笺背景
     if(noteData.bgImage) {
-      card.innerHTML += `<div class="chat-note-card-bg" style="background-image:url("${noteData.bgImage}")"></div><div class="chat-note-card-mask"></div>`;
+      card.innerHTML += `<div class="chat-note-card-bg" style="background-image:url('${noteData.bgImage}')"></div><div class="chat-note-card-mask"></div>`;
     } else {
-      card.style.background = noteData.bgColor || '#FFFFFF';
+      card.style.background = noteData.bgColor;
     }
     card.innerHTML += `<div class="chat-note-inner"><div class="chat-note-header">${isMe ? '你留下一张便笺' : (currentRoom.taCall||currentRoom.taName)+' 留下一张便笺'}</div><div class="chat-note-text">${noteData.content}</div></div>`;
     
@@ -2543,12 +2547,6 @@ function openCallUI() {
   const pip = document.getElementById('callVideoPip');
   pip.innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:14px;">我</span>`;
 
-  // 修复计时器：接通前强制隐藏并重置
-  document.getElementById('callTimer').style.display = 'none';
-  document.getElementById('callTimer').textContent = '00:00';
-  document.getElementById('callVideoTimer').style.display = 'none';
-  document.getElementById('callVideoTimer').textContent = '00:00';
-
   if (isVideoCall) {
     document.getElementById('callVoiceView').style.display = 'none';
     document.getElementById('callVideoView').style.display = 'block';
@@ -2563,6 +2561,11 @@ function openCallUI() {
     document.getElementById('hangupIcon').innerHTML = `<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>`;
     document.getElementById('hangupIcon').setAttribute('transform', 'rotate(135 12 12)');
   }
+
+  document.getElementById('callTimer').style.display = 'none';
+  document.getElementById('callTimer').textContent = '00:00';
+  document.getElementById('callVideoTimer').style.display = 'none';
+  document.getElementById('callVideoTimer').textContent = '00:00';
 }
 
 function answerCall() {
@@ -2577,6 +2580,8 @@ function answerCall() {
   
   document.getElementById('callTimer').style.display = 'block';
   document.getElementById('callVideoTimer').style.display = 'block';
+  document.getElementById('callTimer').textContent = '00:00';
+  document.getElementById('callVideoTimer').textContent = '00:00';
   
   callStartTime = Date.now();
   clearInterval(callTimerInterval);
@@ -2691,9 +2696,8 @@ function previewNoteBg(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     currentNoteBg = ev.target.result;
-    // 修复：消除 background 简写覆盖 backgroundImage 的问题，改用 backgroundImage 加引号
-    document.getElementById('writeNoteBg').style.background = 'transparent'; 
     document.getElementById('writeNoteBg').style.backgroundImage = `url("${currentNoteBg}")`;
+    document.getElementById('writeNoteBg').style.background = 'transparent';
     document.getElementById('writeNoteMask').style.background = 'rgba(255,255,255,0.3)';
   };
   reader.readAsDataURL(file);
@@ -2779,9 +2783,8 @@ function renderNoteList() {
     const div = document.createElement('div');
     div.className = 'note-card' + (note.pinned ? ' pinned' : '');
     
-    // 修复列表卡片便笺背景
     if(note.bgImage) {
-      div.innerHTML += `<div class="note-bg" style="background-image:url("${note.bgImage}")"></div><div class="note-bg-mask"></div>`;
+      div.innerHTML += `<div class="note-bg" style="background-image:url('${note.bgImage}')"></div><div class="note-bg-mask"></div>`;
     } else {
       div.style.background = note.bgColor;
     }
@@ -2843,36 +2846,33 @@ function openNoteDetail(id) {
   if(!note) return;
   currentNoteDetailId = id;
   
-  // 全局背景 (底层)
+  // 设置全局背景 (如果有)
   if(appSettings.globalBgImage) {
     document.getElementById('noteDetailBgGlobal').style.backgroundImage = `url("${appSettings.globalBgImage}")`;
   } else {
     document.getElementById('noteDetailBgGlobal').style.background = 'transparent';
   }
   
-  // 清空专属背景全屏层（不符合规则）
+  // 设置专属背景 (此处全屏层隐藏，改用卡片承载)
   document.getElementById('noteDetailBg').style.backgroundImage = 'none';
   document.getElementById('noteDetailBg').style.background = 'transparent';
   
-  // 全局 30% 白纱遮罩
+  // 30% 全局白纱遮罩
   document.getElementById('noteDetailMask').style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`;
 
   const contentDiv = document.getElementById('noteDetailContent');
   
-  // 构建全屏详情里的便笺卡片（应用便笺背景）
-  let cardStyle = `background: ${note.bgColor || '#FFFFFF'};`;
-  let bgLayer = '';
+  // 构建便笺正文卡片
+  let cardHTML = `<div class="note-main-text">`;
   if(note.bgImage) {
-    cardStyle = `background: transparent;`;
-    bgLayer = `<div class="note-detail-card-bg" style="background-image:url("${note.bgImage}")"></div><div class="note-detail-card-mask"></div>`;
+    cardHTML += `<div class="nmt-bg" style="background-image:url('${note.bgImage}')"></div><div class="nmt-mask"></div>`;
+  } else {
+    // 如果没有背景图，则直接用 bgColor 作为背景
+    cardHTML = `<div class="note-main-text" style="background:${note.bgColor};">`;
   }
-
-  contentDiv.innerHTML = `
-    <div class="note-main-text" style="${cardStyle}">
-      ${bgLayer}
-      <div class="note-detail-text-content">${note.content}</div>
-    </div>
-  `;
+  cardHTML += `<div class="nmt-inner">${note.content}</div></div>`;
+  
+  contentDiv.innerHTML = cardHTML;
   
   if(note.replies && note.replies.length > 0) {
     const repDiv = document.createElement('div');
@@ -3728,7 +3728,7 @@ function renderLoveDays() {
     const div = document.createElement('div');
     div.className = 'loveday-card' + (ld.pinned ? ' pinned' : '');
     
-    let bgStyle = ld.bgImage ? `background-image: url("${ld.bgImage}");` : '';
+    let bgStyle = ld.bgImage ? `background-image: url('${ld.bgImage}');` : '';
     
     const today = new Date();
     today.setHours(0,0,0,0);
