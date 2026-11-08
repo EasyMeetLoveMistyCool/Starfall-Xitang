@@ -1272,7 +1272,7 @@
 </div>
 
 <!-- ================= 选择收件人底部面板 ================= -->
-<div class="panel-overlay" id="targetPanel" onclick="closeTargetPanel(event)">
+<div class="panel-overlay" id="targetPanel" style="z-index: 2000;" onclick="closeTargetPanel(event)">
   <div class="panel-content" onclick="event.stopPropagation()" style="max-height: 60vh;">
     <div class="panel-header"><span>选择收件人</span><div class="panel-close" onclick="closeTargetPanel({target:document.getElementById('targetPanel')})">×</div></div>
     <div class="target-select-list" id="targetSelectList"></div>
