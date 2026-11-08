@@ -309,11 +309,11 @@
     border-radius: 20px; padding: 16px; position:relative; overflow:hidden;
     box-shadow: 0 4px 15px rgba(139,92,246,0.06); cursor:pointer; transition: all 0.3s;
     display:flex; flex-direction:column; min-height: 140px; justify-content: space-between;
-    background: #FFFFFF; /* 卡片保留白底 */
+    background: #FFFFFF;
   }
   .note-card:active { transform: scale(0.98); }
   .note-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
-  .note-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;} /* 清透白纱 */
+  .note-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
   .note-content-wrap { position:relative; z-index:2; display:flex; flex-direction:column; height:100%; width:100%;}
   
   .note-header { display:flex; justify-content:space-between; font-size:12px; color:var(--sub); margin-bottom:8px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
@@ -329,16 +329,19 @@
     border: 2px solid var(--honey);
   }
   .note-card.pinned .note-header { color: var(--honey); }
+  .note-card.pinned .note-center-icon svg { stroke: var(--honey); }
+  .note-card.pinned .note-footer-status { color: var(--honey); }
   .note-card.pinned::after { 
     content:'置顶'; position:absolute; top:0; right:0; background:var(--honey); color:#fff; 
     font-size:11px; padding:2px 10px; border-bottom-left-radius:12px; z-index:3;
   }
 
   /* 全屏便笺详情 */
-  .note-detail-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; background:#F8F4FE; display:none; flex-direction:column;}
+  .note-detail-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; background: transparent; display:none; flex-direction:column;}
   .note-detail-modal.active { display:flex; }
-  .note-detail-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
-  .note-detail-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1; backdrop-filter: blur(5px);}
+  .note-detail-bg-global { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-2;}
+  .note-detail-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-1;}
+  .note-detail-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:0;}
   
   .note-detail-header { position:relative; z-index:2; display:flex; align-items:center; padding: calc(16px + env(safe-area-inset-top)) 16px 10px;}
   .note-detail-content { position:relative; z-index:2; flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:20px;}
@@ -349,8 +352,8 @@
   .note-reply-item.ta { border-left:4px solid var(--taro);}
   .note-reply-item.me { border-right:4px solid var(--purple); text-align:right;}
 
-  .note-detail-footer { position:relative; z-index:2; display:flex; gap:10px; padding:16px; background:#fff; border-top:1px solid var(--line);}
-  .note-detail-input { flex:1; border:1px solid var(--line); background:#FBF9FE; border-radius:20px; padding:0 16px; font-size:15px; outline:none;}
+  .note-detail-footer { position:relative; z-index:2; display:flex; gap:10px; padding:16px; background:#fff; border-top:1px solid var(--line); height: 72px;}
+  .note-detail-input { flex:1; border:1px solid var(--line); background:#FBF9FE; border-radius:20px; padding:0 16px; font-size:15px; outline:none; height: 40px;}
   
   /* 写便笺界面 */
   .write-note-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; display:none; flex-direction:column; background:#F8F4FE; transition: background 0.3s;}
@@ -629,9 +632,9 @@
   .call-video-pip img { width: 100%; height: 100%; object-fit: cover; }
   .call-video-overlay-text { position: absolute; top: 20%; left: 0; right: 0; text-align: center; z-index: 2; pointer-events: none;}
 
-  .call-controls { display: flex; justify-content: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; }
+  /* 按钮组水平对齐 */
+  .call-controls { display: flex; justify-content: center; align-items: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; height: 60px; }
   
-  /* 按钮去底色正圆 */
   .call-btn-circle { 
     width: 60px !important; height: 60px !important; border-radius: 50% !important; 
     display: flex; align-items: center; justify-content: center; 
@@ -640,7 +643,8 @@
     flex-shrink: 0;
   }
   .call-btn-circle:active { transform: scale(0.9); }
-  .call-btn-circle svg { width: 36px; height: 36px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;}
+  /* 强制所有 icon 在正中间 */
+  .call-btn-circle svg { width: 36px; height: 36px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; margin: auto;}
   
   .btn-answer svg { stroke: #34C759; }
   .btn-hangup svg { stroke: #FF3B30; }
@@ -731,7 +735,7 @@
 
         <!-- 挂断 (始终显示，在右边) -->
         <div class="call-btn-circle btn-hangup" id="btnHangupMain" onclick="hangupCall()">
-          <svg viewBox="0 0 24 24" id="hangupIcon" transform="rotate(135 12 12)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <svg viewBox="0 0 24 24" id="hangupIcon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
       </div>
     </div>
@@ -996,6 +1000,7 @@
 
 <!-- 全屏便笺详情 -->
 <div class="note-detail-modal" id="noteDetailModal">
+  <div class="note-detail-bg-global" id="noteDetailBgGlobal"></div>
   <div class="note-detail-bg" id="noteDetailBg"></div>
   <div class="note-detail-bg-mask" id="noteDetailMask"></div>
   <div class="note-detail-header">
@@ -1999,6 +2004,21 @@ function sendAction(text) {
   });
 }
 
+function joinCards(cards) {
+  let res = "";
+  cards.forEach((c, idx) => {
+    res += c;
+    if (idx < cards.length - 1) {
+      const lastChar = c.slice(-1);
+      const puncts = ['。', '，', '！', '？', '…', '.', ',', '!', '?'];
+      if (!puncts.includes(lastChar)) {
+        res += Math.random() > 0.5 ? '，' : '。';
+      }
+    }
+  });
+  return res;
+}
+
 function triggerReply(room) {
   clearTimeout(currentReplyTimer); 
   showTypingIndicator(true);
@@ -2523,14 +2543,12 @@ function openCallUI() {
     document.getElementById('callVideoView').style.display = 'block';
     document.getElementById('callBg').style.display = 'block';
     
-    // 切换视频挂断图标
     document.getElementById('hangupIcon').innerHTML = `<rect x="2.5" y="6" width="13" height="12" rx="2.5" /><path d="M15.5 10.5l5-3v9l-5-3" stroke-linejoin="round" /><path d="M3 3l18 18" />`;
     document.getElementById('hangupIcon').removeAttribute('transform');
   } else {
     document.getElementById('callVoiceView').style.display = 'flex';
     document.getElementById('callVideoView').style.display = 'none';
     
-    // 切换语音挂断图标
     document.getElementById('hangupIcon').innerHTML = `<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>`;
     document.getElementById('hangupIcon').setAttribute('transform', 'rotate(135 12 12)');
   }
@@ -2779,7 +2797,7 @@ function renderNoteList() {
           <span>${timeStr}</span>
         </div>
         <div class="note-center-icon">
-          <svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:var(--purple);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;">
+          <svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;">
             <rect x="7" y="3" width="10" height="3" rx="1.5" />
             <rect x="7" y="18" width="10" height="3" rx="1.5" />
             <path d="M8 6v12" /><path d="M16 6v12" />
@@ -2812,6 +2830,14 @@ function openNoteDetail(id) {
   if(!note) return;
   currentNoteDetailId = id;
   
+  // 设置全局背景 (如果有)
+  if(appSettings.globalBgImage) {
+    document.getElementById('noteDetailBgGlobal').style.backgroundImage = `url(${appSettings.globalBgImage})`;
+  } else {
+    document.getElementById('noteDetailBgGlobal').style.background = 'transparent';
+  }
+  
+  // 设置专属背景
   if(note.bgImage) {
     document.getElementById('noteDetailBg').style.backgroundImage = `url(${note.bgImage})`;
     document.getElementById('noteDetailBg').style.background = 'transparent';
@@ -2820,8 +2846,8 @@ function openNoteDetail(id) {
     document.getElementById('noteDetailBg').style.background = note.bgColor;
   }
   
-  // 全屏详情保留白纱遮罩，保证文字看清
-  document.getElementById('noteDetailMask').style.background = 'rgba(255,255,255,0.5)';
+  // 30% 全局白纱遮罩
+  document.getElementById('noteDetailMask').style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`;
 
   const contentDiv = document.getElementById('noteDetailContent');
   contentDiv.innerHTML = `<div class="note-main-text">${note.content}</div>`;
@@ -2910,7 +2936,7 @@ function checkNoteTrigger() {
       const newNote = {
         roomId: randomRoom.id,
         sender: 'ta',
-        content: msgArr.join(''),
+        content: joinCards(msgArr),
         bgColor: noteColors[Math.floor(Math.random()*noteColors.length)],
         bgImage: null,
         timestamp: Date.now(),
@@ -2932,7 +2958,7 @@ function checkNoteReplies() {
           let msgArr = [];
           for(let i=0; i<count; i++) msgArr.push(pool[Math.floor(Math.random() * pool.length)].text);
           
-          note.replies.push({ sender: 'ta', text: msgArr.join('') });
+          note.replies.push({ sender: 'ta', text: joinCards(msgArr) });
           dbPut('notes', note, () => {
             showToast("TA 回复了你的便笺");
             refreshAllData();
