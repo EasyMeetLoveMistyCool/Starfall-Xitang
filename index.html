@@ -390,6 +390,81 @@
   .chat-note-header { font-size:12px; color:var(--sub); margin-bottom:8px;}
   .chat-note-text { font-size:14px; color:var(--text); line-height:1.5; white-space:pre-wrap; word-break:break-all; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
 
+  /* ================= 鸿雁传书 (信件) ================= */
+  #page-letters { display:none; flex-direction:column; height:100vh; overflow:hidden; background: transparent; }
+  #page-letters.active { display:flex; }
+  .letter-list { flex:1; overflow-y:auto; padding: 16px; display:flex; flex-direction:column; gap:16px;}
+  
+  /* 信件卡片 */
+  .letter-card { 
+    border-radius: 16px; padding: 16px; position:relative; overflow:hidden;
+    box-shadow: 0 4px 15px rgba(139,92,246,0.06); cursor:pointer; transition: all 0.3s;
+    display:flex; flex-direction:column; min-height: 130px;
+    background: #FDF8F5; /* 默认奶油白 */
+  }
+  .letter-card:active { transform: scale(0.98); }
+  .letter-card.pinned { border: 2px solid var(--honey); }
+  .letter-card.pinned::after { 
+    content:'置顶'; position:absolute; top:0; right:0; background:var(--honey); color:#fff; 
+    font-size:11px; padding:2px 10px; border-bottom-left-radius:12px; z-index:3;
+  }
+  
+  .letter-card-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
+  .letter-card-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
+  
+  .letter-content-wrap { position:relative; z-index:2; display:flex; flex-direction:column; height:100%;}
+  
+  .letter-header { display:flex; justify-content:space-between; font-size:13px; color:var(--purple); margin-bottom:10px; font-weight:600;}
+  .letter-preview { font-size:14px; color:var(--text); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:1;}
+  .letter-footer-status { font-size:12px; color:var(--sub); margin-top:10px; text-align:right;}
+  
+  /* 梦角头像印章 */
+  .letter-stamp { position:absolute; bottom:12px; right:12px; width:40px; height:40px; border-radius:50%; border:2px solid #fff; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:3; display:flex; align-items:center; justify-content:center; background:#EDE9FE;}
+  .letter-stamp img { width:100%; height:100%; object-fit:cover; }
+  .letter-stamp.unread { border-color: var(--honey); box-shadow:0 0 8px rgba(255,139,167,0.6); }
+  
+  /* 全屏信件详情 */
+  .letter-detail-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; background: transparent; display:none; flex-direction:column;}
+  .letter-detail-modal.active { display:flex; }
+  .letter-detail-bg-global { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:-2;}
+  .letter-detail-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:0;}
+  
+  .letter-detail-header { position:relative; z-index:2; display:flex; align-items:center; padding: calc(16px + env(safe-area-inset-top)) 16px 10px;}
+  .letter-detail-content { position:relative; z-index:2; flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:20px;}
+  
+  /* 信纸内容 */
+  .letter-paper { 
+    font-size:16px; line-height:1.8; color:var(--text); 
+    padding:24px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05);
+    position:relative; overflow:hidden; background:#FDF8F5;
+  }
+  .letter-paper-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
+  .letter-paper-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1;}
+  .letter-paper-inner { position:relative; z-index:2; }
+  
+  .letter-salutation { margin-bottom: 12px; }
+  .letter-body { white-space:pre-wrap; word-break:break-all; margin-bottom: 20px; }
+  .letter-closing { text-align: left; margin-bottom: 20px; }
+  .letter-signature { text-align: right; line-height:1.4; }
+  
+  .letter-replies { display:flex; flex-direction:column; gap:12px; margin-top:10px;}
+  .letter-reply-item { background:rgba(255,255,255,0.8); padding:12px 16px; border-radius:12px; font-size:15px; line-height:1.5; border-left:4px solid var(--taro);}
+  
+  /* 写信界面 */
+  .write-letter-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:1500; display:none; flex-direction:column; background:#F8F4FE; transition: background 0.3s;}
+  .write-letter-modal.active { display:flex; }
+  .write-letter-bg { position:absolute; top:0; left:0; right:0; bottom:0; background-size:cover; background-position:center; z-index:0;}
+  .write-letter-bg-mask { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.4); z-index:1; backdrop-filter: blur(5px);}
+  
+  .write-letter-header { position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding: calc(16px + env(safe-area-inset-top)) 16px 10px;}
+  .write-letter-target { font-size:15px; font-weight:600; color:var(--purple); display:flex; align-items:center; gap:8px; cursor:pointer;}
+  .write-letter-body { position:relative; z-index:2; flex:1; padding:20px; display:flex; flex-direction:column;}
+  .write-letter-textarea { flex:1; width:100%; background:transparent; border:none; outline:none; font-size:16px; line-height:1.8; color:var(--text); resize:none; font-family:inherit; text-shadow: 0 1px 2px rgba(255,255,255,0.8);}
+  .write-letter-textarea::placeholder { color:rgba(42,36,56,0.3);}
+  
+  .write-letter-footer { position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); background:rgba(255,255,255,0.8); border-top:1px solid var(--line);}
+  .write-letter-tools { display:flex; gap:16px; align-items:center;}
+
   /* ================= 收藏册 ================= */
   .fav-card { background: #FFFFFF; border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(139,92,246,.05); display:flex; flex-direction:column; gap:8px; margin-bottom:12px; position:relative;}
   .fav-header { display:flex; justify-content:space-between; font-size:12px; color:var(--purple-soft);}
@@ -641,20 +716,49 @@
   .call-video-pip img { width: 100%; height: 100%; object-fit: cover; }
   .call-video-overlay-text { position: absolute; top: 20%; left: 0; right: 0; text-align: center; z-index: 2; pointer-events: none;}
 
-  /* 按钮组水平对齐 */
-  .call-controls { display: flex; justify-content: center; align-items: center; gap: 60px; width: 100%; margin-top: auto; z-index: 2; height: 60px; }
+  /* 按钮组，绝对定位完美解决居中 */
+  .call-controls { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: auto; z-index: 2; height: 60px; }
   
   .call-btn-circle { 
+    position: absolute; top: 50%; transform: translateY(-50%);
     width: 60px !important; height: 60px !important; border-radius: 50% !important; 
     display: flex; align-items: center; justify-content: center; 
     cursor: pointer; transition: transform 0.15s;
     background: transparent !important; 
     flex-shrink: 0;
   }
-  .call-btn-circle:active { transform: scale(0.9); }
+  .call-btn-circle:active { transform: translateY(-50%) scale(0.9) !important; }
   /* 强制所有 icon 在正中间 */
   .call-btn-circle svg { width: 36px; height: 36px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; margin: auto;}
   
+  /* 独立控制三个按钮位置，接通前挂断绝对居中 */
+  #btnHangupMain {
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  #btnMinimize {
+    left: 20%;
+    display: none;
+  }
+  #btnAnswer {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+  }
+
+  /* 接通后，挂断靠右，收起靠左（定位和视频一样） */
+  .call-controls.active-call #btnHangupMain {
+    left: auto;
+    right: 20%;
+    transform: translateY(-50%);
+  }
+  .call-controls.active-call #btnHangupMain:active {
+    transform: translateY(-50%) scale(0.9) !important;
+  }
+  .call-controls.active-call #btnMinimize {
+    display: flex;
+  }
+
   .btn-answer svg { stroke: #34C759; }
   .btn-hangup svg { stroke: #FF3B30; }
   .btn-minimize-call svg { stroke: var(--purple); }
@@ -733,16 +837,16 @@
       <!-- 底部按钮 -->
       <div class="call-controls" id="callControls">
         <!-- 接听 (只有来电时显示) -->
-        <div class="call-btn-circle btn-answer" id="btnAnswer" onclick="answerCall()" style="display:none;">
+        <div class="call-btn-circle btn-answer" id="btnAnswer" onclick="answerCall()">
           <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
         
         <!-- 收起 (接通后显示，在左边) -->
-        <div class="call-btn-circle btn-minimize-call" id="btnMinimize" onclick="minimizeCall()" style="display:none;">
+        <div class="call-btn-circle btn-minimize-call" id="btnMinimize" onclick="minimizeCall()">
           <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
         </div>
 
-        <!-- 挂断 (始终显示，在右边) -->
+        <!-- 挂断 (始终显示，在右边，接通前绝对居中) -->
         <div class="call-btn-circle btn-hangup" id="btnHangupMain" onclick="hangupCall()">
           <svg viewBox="0 0 24 24" id="hangupIcon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
@@ -762,7 +866,7 @@
     </div>
     <div class="grid-home">
       <div class="card" data-fn="chat" onclick="goToPage('page-chatlist')"><svg viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>汐棠小屋</span></div>
-      <div class="card" data-fn="mail"><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.8 6.8 8.2 6 8.2-6"/></svg><span>鸿雁传书</span></div>
+      <div class="card" data-fn="mail" onclick="goToPage('page-letters')"><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.8 6.8 8.2 6 8.2-6"/></svg><span>鸿雁传书</span></div>
       <div class="card" data-fn="note" onclick="goToPage('page-note')"><svg viewBox="0 0 24 24" stroke-width="1.6"><rect x="7" y="3" width="10" height="3" rx="1.5" /><rect x="7" y="18" width="10" height="3" rx="1.5" /><path d="M8 6v12M16 6v12M11 10h2.5M11 13h2.5" /></svg><span>小便笺</span></div>
       <div class="card" data-fn="wordcard" onclick="goToPage('page-wordbox')"><svg viewBox="0 0 24 24"><rect x="6.5" y="4" width="14" height="14" rx="2"/><path d="M3.5 7v11.5A2.5 2.5 0 0 0 6 21h11"/></svg><span>字匣</span></div>
       <div class="card" data-fn="sticker" onclick="goToPage('page-sticker')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m4 17 5-5 4 4 3-3 4 4"/></svg><span>贴图</span></div>
@@ -937,9 +1041,27 @@
     </div>
     
     <div class="speed-row" style="margin-bottom:12px; justify-content: space-between;">
-      <span>回帖预告（显示预计时间）：</span>
+      <span>便笺回帖预告（显示预计时间）：</span>
       <label class="switch">
         <input type="checkbox" id="setShowNoteTime" checked onchange="saveSetting('showNoteTime', this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="speed-row" style="margin-bottom:12px;">
+      <span>TA 主动写信概率：</span>
+      <input type="number" class="input-field" id="setLetterProb" value="3" style="width:60px; text-align:center;" onchange="saveSetting('letterProb', this.value)"> %
+    </div>
+    <div class="speed-row" style="margin-bottom:12px;">
+      <span>信件回复速度：</span>
+      <input type="number" class="input-field" id="setLetterRepMin" value="5" style="width:50px; text-align:center;" onchange="saveSetting('letterRepMin', this.value)"> ~ 
+      <input type="number" class="input-field" id="setLetterRepMax" value="8" style="width:50px; text-align:center;" onchange="saveSetting('letterRepMax', this.value)"> 小时
+    </div>
+    
+    <div class="speed-row" style="margin-bottom:12px; justify-content: space-between;">
+      <span>信件回帖预告（显示预计时间）：</span>
+      <label class="switch">
+        <input type="checkbox" id="setShowLetterTime" checked onchange="saveSetting('showLetterTime', this.checked)">
         <span class="slider"></span>
       </label>
     </div>
@@ -987,6 +1109,61 @@
         <path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
+  </div>
+</div>
+
+<!-- ================= 鸿雁传书页面 ================= -->
+<div class="page" id="page-letters">
+  <div class="header">
+    <div class="back-btn" onclick="goToPage('page-home')">‹</div>
+    <h1>鸿雁传书</h1>
+    <div style="position:absolute; right:16px; font-size:24px; cursor:pointer;" onclick="openWriteLetter()">📃</div>
+  </div>
+  <div class="letter-list" id="letterListContainer"></div>
+</div>
+
+<!-- 全屏信件详情 -->
+<div class="letter-detail-modal" id="letterDetailModal">
+  <div class="letter-detail-bg-global" id="letterDetailBgGlobal"></div>
+  <div class="letter-detail-bg-mask" id="letterDetailMask"></div>
+  <div class="letter-detail-header">
+    <div class="back-btn" onclick="closeLetterDetail()" style="position:static;transform:none;">‹</div>
+  </div>
+  <div class="letter-detail-content" id="letterDetailContent">
+    <!-- 动态生成 -->
+  </div>
+  <div class="note-detail-footer" id="letterDetailFooter">
+    <input type="text" class="note-detail-input" id="letterReplyInput" placeholder="回信...">
+    <button class="btn-save" style="padding:0 20px;" onclick="sendLetterReply()">发送</button>
+  </div>
+</div>
+
+<!-- 写信界面 -->
+<div class="write-letter-modal" id="writeLetterModal">
+  <div class="write-letter-bg" id="writeLetterBg"></div>
+  <div class="write-letter-bg-mask" id="writeLetterMask"></div>
+  
+  <div class="write-letter-header">
+    <div class="back-btn" onclick="closeWriteLetter()" style="position:static; transform:none;">‹</div>
+    <div class="write-letter-target" id="writeLetterTarget" onclick="selectLetterTarget()">
+      <span id="letterTargetText">写给谁</span>
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div style="width:32px;"></div>
+  </div>
+
+  <div class="write-letter-body">
+    <textarea class="write-letter-textarea" id="letterWriteInput" placeholder="写下你想说的话..."></textarea>
+  </div>
+
+  <div class="write-letter-footer">
+    <div class="write-letter-tools">
+      <div class="wn-btn" onclick="document.getElementById('letterBgFile').click()">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <input type="file" id="letterBgFile" accept="image/*" style="display:none" onchange="previewLetterBg(event)">
+    </div>
+    <button class="btn-save" style="background:var(--taro); color:#fff; padding:10px 24px;" onclick="saveLetter()">寄出</button>
   </div>
 </div>
 
@@ -1495,6 +1672,15 @@
   </div>
 </div>
 
+<!-- 信件长按菜单 -->
+<div class="modal-overlay" id="letterMenu" onclick="closeLetterMenu(event)">
+  <div class="small-modal" onclick="event.stopPropagation()">
+    <div class="small-modal-item" id="letterPinBtn" onclick="toggleLetterPin()">置顶</div>
+    <div class="small-modal-item" onclick="changeLetterBg()">换图</div>
+    <div class="small-modal-item" onclick="deleteLetter()">删除</div>
+  </div>
+</div>
+
 <!-- 通用删除确认 -->
 <div class="modal-overlay" id="confirmDeleteModal" onclick="closeConfirm(event)">
   <div class="modal-card" style="width: 260px; padding: 20px;" onclick="event.stopPropagation()">
@@ -1549,7 +1735,7 @@
 <script>
 /* ================= 数据库 ================= */
 let db;
-const request = indexedDB.open("SunsetFogDB", 11);
+const request = indexedDB.open("SunsetFogDB", 12); // 升级版本号
 request.onupgradeneeded = e => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("wordcards")) db.createObjectStore("wordcards", { keyPath: "id", autoIncrement: true });
@@ -1562,12 +1748,14 @@ request.onupgradeneeded = e => {
   if (!db.objectStoreNames.contains("lovedays")) db.createObjectStore("lovedays", { keyPath: "id", autoIncrement: true });
   if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings", { keyPath: "key" });
   if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", { keyPath: "id", autoIncrement: true });
+  if (!db.objectStoreNames.contains("letters")) db.createObjectStore("letters", { keyPath: "id", autoIncrement: true });
 };
 request.onsuccess = e => {
   db = e.target.result;
   initSettings();
   refreshAllData();
   checkNoteReplies();
+  checkLetterReplies();
 };
 
 function dbGetAll(storeName, callback) { const tx = db.transaction(storeName, "readonly"); const store = tx.objectStore(storeName); const req = store.getAll(); req.onsuccess = () => callback(req.result); }
@@ -1577,7 +1765,7 @@ function dbDelete(storeName, ids, callback) { const tx = db.transaction(storeNam
 function dbClear(storeName) { const tx = db.transaction(storeName, "readwrite"); tx.objectStore(storeName).clear(); }
 
 /* ================= 全局状态 ================= */
-let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [], allLoveDays = [], allNotes = [];
+let currentTab = "xingyu", currentXiyanRoomId = null, allCards = [], allRooms = [], allStickers = [], allActions = [], allMusic = [], allFavs = [], allLoveDays = [], allNotes = [], allLetters = [];
 let wordDeleteMode = false, selectedWordIds = new Set();
 let currentActionTab = "tangdong", actionDeleteMode = false, selectedActionIds = new Set();
 let currentRoom = null, editRoomId = null, targetRoomId = null, currentReplyTimer = null, pendingStickerFiles = [];
@@ -1589,6 +1777,9 @@ let longPressMsgTarget = null, longPressFavTarget = null;
 let editLoveDaysId = null, targetLoveDaysId = null, currentLovedayBg = null, selectedLoveRooms = [];
 let longPressNoteTarget = null, currentNoteBg = null, currentNoteTargetRoom = null, currentNoteSendToChat = true;
 let currentNoteDetailId = null;
+
+let longPressLetterTarget = null, currentLetterBg = null, currentLetterTargetRoom = null;
+let currentLetterDetailId = null;
 
 let stImgBase64 = null, stOptionsBase64 = [];
 let htImgBase64 = null;
@@ -1604,11 +1795,17 @@ let appSettings = {
   noteRepMin: 1,
   noteRepMax: 3,
   showNoteTime: true,
+  letterProb: 3,
+  letterRepMin: 5,
+  letterRepMax: 8,
+  showLetterTime: true,
   carouselMin: 1, 
   carouselMax: 3, 
   globalBgImage: null,
   globalBgBlur: 30
 };
+
+const LETTER_COLORS = ['#FDF8F5', '#F6F1FB', 'linear-gradient(180deg, #FFF5F8 0%, #F6F1FB 100%)', '#FFFFFF'];
 
 function initSettings() {
   dbGetAll('settings', data => {
@@ -1624,6 +1821,12 @@ function initSettings() {
     document.getElementById('setNoteRepMin').value = appSettings.noteRepMin;
     document.getElementById('setNoteRepMax').value = appSettings.noteRepMax;
     document.getElementById('setShowNoteTime').checked = appSettings.showNoteTime;
+    
+    document.getElementById('setLetterProb').value = appSettings.letterProb;
+    document.getElementById('setLetterRepMin').value = appSettings.letterRepMin;
+    document.getElementById('setLetterRepMax').value = appSettings.letterRepMax;
+    document.getElementById('setShowLetterTime').checked = appSettings.showLetterTime;
+
     document.getElementById('setCarouselMin').value = appSettings.carouselMin;
     document.getElementById('setCarouselMax').value = appSettings.carouselMax;
     
@@ -1648,6 +1851,7 @@ function saveSetting(key, val) {
     showToast("设置已保存");
     if(key.includes('carousel')) scheduleNextCarousel();
     if(key === 'showNoteTime') renderNoteList();
+    if(key === 'showLetterTime') renderLetterList();
   });
 }
 
@@ -1660,7 +1864,8 @@ function goToPage(pageId) {
   if(pageId === 'page-musicmanage') renderMusicList();
   if(pageId === 'page-favorites') renderFavorites();
   if(pageId === 'page-lovedays') renderLoveDays();
-  if(pageId === 'page-note') { renderNoteList(); checkNoteTrigger(); }
+  if(pageId === 'page-note') { renderNoteList(); }
+  if(pageId === 'page-letters') { renderLetterList(); }
 }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
 function refreshAllData() {
@@ -1672,6 +1877,7 @@ function refreshAllData() {
   dbGetAll('favorites', f => { allFavs = f; renderFavorites(); });
   dbGetAll('lovedays', l => { allLoveDays = l; renderLoveDays(); });
   dbGetAll('notes', n => { allNotes = n; renderNoteList(); });
+  dbGetAll('letters', l => { allLetters = l; renderLetterList(); });
 }
 
 /* ================= 桌面轮播 ================= */
@@ -2028,6 +2234,39 @@ function joinCards(cards) {
   return res;
 }
 
+// 辅助：生成书信正文 (8-20张卡，分2-3段)
+function generateLetterBody(room) {
+  const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === room.id));
+  if(pool.length === 0) return "（字匣空空的，不知道该写什么。）";
+  
+  const totalCards = Math.floor(8 + Math.random() * 13); // 8~20
+  const paragraphs = Math.floor(2 + Math.random() * 2); // 2~3段
+  
+  let selectedCards = [];
+  for(let i=0; i<totalCards; i++) {
+    selectedCards.push(pool[Math.floor(Math.random() * pool.length)].text);
+  }
+  
+  let pLines = Math.ceil(selectedCards.length / paragraphs);
+  let result = [];
+  for(let i=0; i<paragraphs; i++) {
+    let chunk = selectedCards.slice(i*pLines, (i+1)*pLines);
+    if(chunk.length > 0) result.push(joinCards(chunk));
+  }
+  return result.join('\n\n');
+}
+
+// 辅助：生成信件日期后缀
+function getLetterDateSuffix(ts) {
+  const d = new Date(ts);
+  const h = d.getHours();
+  let suffix = '';
+  if(h >= 5 && h < 12) suffix = '';
+  else if(h >= 12 && h < 18) suffix = ' 午';
+  else suffix = ' 晚';
+  return `${d.getMonth()+1}月${d.getDate()}日${suffix}`;
+}
+
 function triggerReply(room) {
   clearTimeout(currentReplyTimer); 
   showTypingIndicator(true);
@@ -2038,6 +2277,43 @@ function triggerReply(room) {
   
   currentReplyTimer = setTimeout(() => {
     showTypingIndicator(false);
+    
+    // 聊天触发：TA主动写便笺
+    if (Math.random() * 100 < (appSettings.noteProb || 5)) {
+      const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === room.id));
+      if(pool.length > 0) {
+        const count = Math.floor(Math.random() * 3) + 3; 
+        let msgArr = [];
+        for(let i=0; i<count; i++) msgArr.push(pool[Math.floor(Math.random() * pool.length)].text);
+        
+        const newNote = {
+          roomId: room.id, sender: 'ta', content: joinCards(msgArr),
+          bgColor: noteColors[Math.floor(Math.random()*noteColors.length)],
+          bgImage: null, timestamp: Date.now(), replies: []
+        };
+        dbAdd('notes', newNote, () => { 
+          refreshAllData(); 
+          showToast(`${room.taName} 悄悄给你留了一张便笺`); 
+        });
+      }
+    }
+
+    // 聊天触发：TA主动写信
+    if (Math.random() * 100 < (appSettings.letterProb || 3)) {
+      const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === room.id));
+      if(pool.length > 0) {
+        const newLetter = {
+          roomId: room.id, sender: 'ta', type: 'letter',
+          content: generateLetterBody(room),
+          bgColor: LETTER_COLORS[Math.floor(Math.random()*LETTER_COLORS.length)],
+          bgImage: null, timestamp: Date.now(), replies: [], isRead: false
+        };
+        dbAdd('letters', newLetter, () => { 
+          refreshAllData(); 
+          showToast(`鸿雁传来了一封来自 ${room.taName} 的信`); 
+        });
+      }
+    }
     
     let doCall = Math.random() < (appSettings.callProb / 100);
     let doVideo = Math.random() < (appSettings.videoProb / 100);
@@ -2116,6 +2392,314 @@ function showTypingIndicator(show) {
     tRow.innerHTML = `<div class="msg-avatar">${avHTML}</div><div class="typing-bubble">正在输入 <div class="typing-dots"><span></span><span></span><span></span></div></div>`;
     document.getElementById('chatContent').appendChild(tRow); scrollToBottom();
   } else { if(tRow) tRow.remove(); }
+}
+
+/* ================= 鸿雁传书功能 ================= */
+function openWriteLetter() {
+  if(allRooms.length === 0) return showToast("请先建立羁绊");
+  currentLetterBg = null;
+  currentLetterTargetRoom = allRooms[0].id;
+  
+  document.getElementById('letterWriteInput').value = '';
+  document.getElementById('writeLetterBg').style.backgroundImage = 'none';
+  document.getElementById('writeLetterBg').style.background = LETTER_COLORS[Math.floor(Math.random()*LETTER_COLORS.length)];
+  document.getElementById('writeLetterMask').style.background = 'transparent';
+  
+  updateLetterTargetText();
+  document.getElementById('writeLetterModal').classList.add('active');
+}
+function closeWriteLetter() {
+  document.getElementById('writeLetterModal').classList.remove('active');
+}
+function previewLetterBg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentLetterBg = ev.target.result;
+    document.getElementById('writeLetterBg').style.backgroundImage = `url("${currentLetterBg}")`;
+    document.getElementById('writeLetterBg').style.background = 'transparent';
+    document.getElementById('writeLetterMask').style.background = 'rgba(255,255,255,0.3)';
+  };
+  reader.readAsDataURL(file);
+}
+function updateLetterTargetText() {
+  if(!currentLetterTargetRoom) {
+    document.getElementById('letterTargetText').textContent = '写给谁';
+  } else {
+    const r = allRooms.find(x=>x.id === currentLetterTargetRoom);
+    document.getElementById('letterTargetText').textContent = r ? (r.taCall || r.taName) : '写给谁';
+  }
+}
+function selectLetterTarget() {
+  if(allRooms.length === 0) return showToast("请先建立羁绊");
+  let options = allRooms.map(r => `${r.taName} (${r.taCall||'无称呼'})`).join('\n');
+  let targetName = prompt("请输入要写给谁的名字：\n" + options);
+  if(targetName) {
+    const found = allRooms.find(r => r.taName === targetName || r.taCall === targetName);
+    if(found) { currentLetterTargetRoom = found.id; updateLetterTargetText(); }
+    else showToast("未找到该梦角");
+  }
+}
+
+function saveLetter() {
+  const content = document.getElementById('letterWriteInput').value.trim();
+  if(!content) return showToast("信件内容不能为空");
+  if(!currentLetterTargetRoom) return showToast("请选择写给谁");
+  
+  let bgColor = '#FFFFFF';
+  if(!currentLetterBg) bgColor = document.getElementById('writeLetterBg').style.background;
+  
+  const newLetter = {
+    roomId: currentLetterTargetRoom,
+    sender: 'me',
+    type: 'letter',
+    content: content,
+    bgColor: bgColor,
+    bgImage: currentLetterBg,
+    timestamp: Date.now(),
+    replies: [],
+    replyTime: Date.now() + (Math.random() * (appSettings.letterRepMax - appSettings.letterRepMin) + appSettings.letterRepMin) * 60 * 60 * 1000,
+    isRead: true
+  };
+  
+  dbAdd('letters', newLetter, () => {
+    closeWriteLetter();
+    refreshAllData();
+    showToast("鸿雁已带着信飞走了");
+  });
+}
+
+function renderLetterList() {
+  const container = document.getElementById('letterListContainer');
+  container.innerHTML = '';
+  
+  if(allLetters.length === 0) {
+    container.innerHTML = `<div class="empty-tip">这里还没有信件，点击右上角写一封吧</div>`;
+    return;
+  }
+  
+  allLetters.sort((a,b) => {
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+    return b.timestamp - a.timestamp;
+  });
+
+  allLetters.forEach(letter => {
+    const div = document.createElement('div');
+    div.className = 'letter-card' + (letter.pinned ? ' pinned' : '');
+    
+    if(letter.bgImage) {
+      div.innerHTML += `<div class="letter-card-bg" style="background-image:url('${letter.bgImage}')"></div><div class="letter-card-mask"></div>`;
+    } else {
+      div.style.background = letter.bgColor;
+    }
+
+    const d = new Date(letter.timestamp);
+    const timeStr = `${d.getMonth()+1}-${d.getDate()}`;
+    const room = allRooms.find(r => r.id === letter.roomId);
+    const targetName = room ? (room.taCall || room.taName) : '未知';
+    const senderName = letter.sender === 'me' ? `寄给 ${targetName}` : `来自 ${targetName}`;
+
+    let statusHTML = '';
+    if(letter.sender === 'me' && letter.replies.length === 0) {
+      if(appSettings.showLetterTime && letter.replyTime) {
+        const rt = new Date(letter.replyTime);
+        const rtStr = `${rt.getMonth()+1}月${rt.getDate()}日 ${String(rt.getHours()).padStart(2,'0')}:${String(rt.getMinutes()).padStart(2,'0')}`;
+        statusHTML = `<div class="letter-footer-status">等待回信 · 预计 ${rtStr}</div>`;
+      } else {
+        statusHTML = `<div class="letter-footer-status">等待回信...</div>`;
+      }
+    } else if(letter.sender === 'ta') {
+      if (!letter.isRead) {
+        statusHTML = `<div class="letter-footer-status" style="color:var(--honey);font-weight:600;">有一封未读来信</div>`;
+      } else if (letter.replies.length === 0) {
+        statusHTML = `<div class="letter-footer-status">已读，你可以回信</div>`;
+      } else {
+        statusHTML = `<div class="letter-footer-status">你已回信</div>`;
+      }
+    } else {
+      statusHTML = `<div class="letter-footer-status">对方已回信</div>`;
+    }
+
+    const avatarSrc = room && room.taAvatar ? room.taAvatar : null;
+    const stampClass = (!letter.isRead && letter.sender === 'ta') ? 'unread' : '';
+    const stampHTML = `<div class="letter-stamp ${stampClass}">${avatarSrc ? `<img src="${avatarSrc}">` : `<span style="color:var(--purple)">梦</span>`}</div>`;
+
+    // 根据 sender 稍微倾斜以营造叠放感
+    const rotateStyle = letter.sender === 'me' ? 'transform: rotate(-1deg);' : 'transform: rotate(1deg);';
+    div.style.cssText += rotateStyle;
+
+    div.innerHTML += `
+      <div class="letter-content-wrap">
+        <div class="letter-header">
+          <span>${senderName}</span>
+          <span>${timeStr}</span>
+        </div>
+        <div class="letter-preview">${letter.content.replace(/\n/g, ' ')}</div>
+        ${statusHTML}
+      </div>
+      ${stampHTML}
+    `;
+
+    div.onclick = () => openLetterDetail(letter.id);
+    let pressTimer;
+    div.addEventListener('touchstart', (e) => { 
+      pressTimer = setTimeout(() => { 
+        e.preventDefault(); 
+        longPressLetterTarget = letter;
+        document.getElementById('letterPinBtn').textContent = letter.pinned ? '取消置顶' : '置顶';
+        document.getElementById('letterMenu').classList.add('active');
+      }, 500); 
+    }, {passive: false});
+    div.addEventListener('touchend', () => clearTimeout(pressTimer));
+    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+    container.appendChild(div);
+  });
+}
+
+function openLetterDetail(id) {
+  const letter = allLetters.find(n => n.id === id);
+  if(!letter) return;
+  currentLetterDetailId = id;
+  
+  if(letter.sender === 'ta' && !letter.isRead) {
+    letter.isRead = true;
+    dbPut('letters', letter, () => { renderLetterList(); });
+  }
+
+  if(appSettings.globalBgImage) {
+    document.getElementById('letterDetailBgGlobal').style.backgroundImage = `url("${appSettings.globalBgImage}")`;
+  } else {
+    document.getElementById('letterDetailBgGlobal').style.background = 'transparent';
+  }
+  document.getElementById('letterDetailMask').style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`;
+
+  const contentDiv = document.getElementById('letterDetailContent');
+  const room = allRooms.find(r => r.id === letter.roomId);
+  const taName = room ? (room.taCall || room.taName) : 'TA';
+  const myName = room ? (room.myCall || room.myName) : '我';
+  
+  let salutation = letter.sender === 'me' ? `致 ${taName}：` : `致 ${myName}：`;
+  let signName = letter.sender === 'me' ? `你的 ${myName}` : `你的 ${taName}`;
+  let dateStr = getLetterDateSuffix(letter.timestamp);
+
+  let paperHTML = `<div class="letter-paper">`;
+  if(letter.bgImage) {
+    paperHTML += `<div class="letter-paper-bg" style="background-image:url('${letter.bgImage}')"></div><div class="letter-paper-mask"></div>`;
+  } else {
+    paperHTML = `<div class="letter-paper" style="background:${letter.bgColor};">`;
+  }
+  
+  // 替换原文字段落格式
+  let bodyContent = letter.content.replace(/\n/g, '<br>');
+  
+  paperHTML += `
+    <div class="letter-paper-inner">
+      <div class="letter-salutation">${salutation}</div>
+      <div class="letter-body">${bodyContent}</div>
+      <div class="letter-closing">祝好。</div>
+      <div class="letter-signature">
+        ——${signName}<br>
+        ${dateStr}
+      </div>
+    </div>
+  </div>`;
+  
+  contentDiv.innerHTML = paperHTML;
+  
+  if(letter.replies && letter.replies.length > 0) {
+    const repDiv = document.createElement('div');
+    repDiv.className = 'letter-replies';
+    letter.replies.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'letter-reply-item';
+      const rDate = getLetterDateSuffix(r.timestamp);
+      item.innerHTML = `<div style="font-size:12px;color:var(--sub);margin-bottom:4px;">${r.sender === 'me' ? myName : taName} 回复于 ${rDate}：</div>${r.text}`;
+      repDiv.appendChild(item);
+    });
+    contentDiv.appendChild(repDiv);
+  }
+
+  if(letter.sender === 'ta' || letter.replies.length > 0) {
+    document.getElementById('letterDetailFooter').style.display = 'flex';
+  } else {
+    document.getElementById('letterDetailFooter').style.display = 'none';
+  }
+
+  document.getElementById('letterDetailModal').classList.add('active');
+}
+
+function closeLetterDetail() {
+  document.getElementById('letterDetailModal').classList.remove('active');
+}
+
+function sendLetterReply() {
+  const input = document.getElementById('letterReplyInput');
+  const text = input.value.trim();
+  if(!text || !currentLetterDetailId) return;
+  
+  const letter = allLetters.find(n => n.id === currentLetterDetailId);
+  if(!letter) return;
+  
+  letter.replies.push({ sender: 'me', text: text, timestamp: Date.now() });
+  dbPut('letters', letter, () => {
+    input.value = '';
+    openLetterDetail(currentLetterDetailId);
+    showToast("回信已寄出");
+  });
+}
+
+function closeLetterMenu(e) { if(e.target === document.getElementById('letterMenu')) document.getElementById('letterMenu').classList.remove('active'); }
+function toggleLetterPin() {
+  closeLetterMenu({target:document.getElementById('letterMenu')});
+  if(!longPressLetterTarget) return;
+  longPressLetterTarget.pinned = !longPressLetterTarget.pinned;
+  dbPut('letters', longPressLetterTarget, () => { refreshAllData(); showToast(longPressLetterTarget.pinned ? '已置顶' : '已取消置顶'); });
+}
+function changeLetterBg() {
+  closeLetterMenu({target:document.getElementById('letterMenu')});
+  if(!longPressLetterTarget) return;
+  document.getElementById('letterBgFile').onchange = function(e) {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      longPressLetterTarget.bgImage = ev.target.result;
+      longPressLetterTarget.bgColor = '#FFFFFF';
+      dbPut('letters', longPressLetterTarget, () => { refreshAllData(); showToast("背景已更换"); });
+    };
+    reader.readAsDataURL(file);
+  };
+  document.getElementById('letterBgFile').click();
+}
+function deleteLetter() {
+  closeLetterMenu({target:document.getElementById('letterMenu')});
+  if(!longPressLetterTarget) return;
+  dbDelete('letters', [longPressLetterTarget.id], () => {
+    refreshAllData();
+    showToast("信件已删除");
+  });
+}
+
+function checkLetterReplies() {
+  setInterval(() => {
+    const now = Date.now();
+    allLetters.forEach(letter => {
+      if(letter.sender === 'me' && letter.replyTime && letter.replies.length === 0 && now >= letter.replyTime) {
+        const room = allRooms.find(r => r.id === letter.roomId);
+        if(!room) return;
+        
+        const replyContent = generateLetterBody(room);
+        letter.replies.push({ sender: 'ta', text: replyContent, timestamp: Date.now() });
+        letter.isRead = false; // TA 回信，变成未读状态
+        
+        dbPut('letters', letter, () => {
+          showToast("TA 回信了");
+          refreshAllData();
+        });
+      }
+    });
+  }, 60000);
 }
 
 /* ================= 投问逻辑 ================= */
@@ -2547,6 +3131,9 @@ function openCallUI() {
   const pip = document.getElementById('callVideoPip');
   pip.innerHTML = currentRoom.myAvatar ? `<img src="${currentRoom.myAvatar}">` : `<span style="color:var(--purple);font-size:14px;">我</span>`;
 
+  const controls = document.getElementById('callControls');
+  controls.classList.remove('active-call'); // 默认移除接通后的状态
+
   if (isVideoCall) {
     document.getElementById('callVoiceView').style.display = 'none';
     document.getElementById('callVideoView').style.display = 'block';
@@ -2575,6 +3162,10 @@ function answerCall() {
   document.getElementById('btnAnswer').style.display = 'none';
   document.getElementById('btnMinimize').style.display = 'flex';
   
+  // 添加接通后的类，让按钮布局变成左收起、右挂断
+  const controls = document.getElementById('callControls');
+  controls.classList.add('active-call');
+
   document.getElementById('callStatusText').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
   document.getElementById('callVideoStatus').textContent = isVideoCall ? '正在看着你...' : '正在听你的声音...';
   
@@ -2942,31 +3533,6 @@ function deleteNote() {
     refreshAllData();
     showToast("便笺已删除");
   });
-}
-
-function checkNoteTrigger() {
-  if(allRooms.length === 0) return;
-  if(Math.random() * 100 < appSettings.noteProb) {
-    const randomRoom = allRooms[Math.floor(Math.random() * allRooms.length)];
-    const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === randomRoom.id));
-    if(pool.length > 0) {
-      const count = Math.floor(Math.random() * 3) + 3; 
-      let msgArr = [];
-      for(let i=0; i<count; i++) {
-        msgArr.push(pool[Math.floor(Math.random() * pool.length)].text);
-      }
-      const newNote = {
-        roomId: randomRoom.id,
-        sender: 'ta',
-        content: joinCards(msgArr),
-        bgColor: noteColors[Math.floor(Math.random()*noteColors.length)],
-        bgImage: null,
-        timestamp: Date.now(),
-        replies: []
-      };
-      dbAdd('notes', newNote, () => { refreshAllData(); showToast(`${randomRoom.taName} 给你留了一张便笺`); });
-    }
-  }
 }
 
 function checkNoteReplies() {
@@ -4179,6 +4745,12 @@ function openSettings() {
   document.getElementById('setNoteRepMin').value = appSettings.noteRepMin;
   document.getElementById('setNoteRepMax').value = appSettings.noteRepMax;
   document.getElementById('setShowNoteTime').checked = appSettings.showNoteTime;
+  
+  document.getElementById('setLetterProb').value = appSettings.letterProb;
+  document.getElementById('setLetterRepMin').value = appSettings.letterRepMin;
+  document.getElementById('setLetterRepMax').value = appSettings.letterRepMax;
+  document.getElementById('setShowLetterTime').checked = appSettings.showLetterTime;
+
   document.getElementById('setCarouselMin').value = appSettings.carouselMin;
   document.getElementById('setCarouselMax').value = appSettings.carouselMax;
   goToPage('page-settings');
@@ -4194,6 +4766,7 @@ function backupData() {
     favorites: allFavs,
     lovedays: allLoveDays,
     notes: allNotes,
+    letters: allLetters,
     settings: appSettings
   };
   const content = JSON.stringify(backup, null, 2);
@@ -4211,7 +4784,7 @@ function importBackup(e) {
       if(!data.rooms || !data.wordcards) return showToast("备份文件无效");
       if(!confirm("确认覆盖当前所有数据吗？此操作不可逆！")) return;
       
-      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes');
+      dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes'); dbClear('letters');
       
       setTimeout(() => {
         if(data.rooms.length > 0) dbAdd('rooms', data.rooms);
@@ -4222,6 +4795,7 @@ function importBackup(e) {
         if(data.favorites && data.favorites.length > 0) dbAdd('favorites', data.favorites);
         if(data.lovedays && data.lovedays.length > 0) dbAdd('lovedays', data.lovedays);
         if(data.notes && data.notes.length > 0) dbAdd('notes', data.notes);
+        if(data.letters && data.letters.length > 0) dbAdd('letters', data.letters);
         setTimeout(() => { showToast("备份已恢复"); refreshAllData(); goToPage('page-home'); }, 500);
       }, 300);
     } catch(err) { showToast("解析失败"); }
@@ -4232,7 +4806,7 @@ function importBackup(e) {
 
 function clearAllData() {
   if(!confirm("确定要清除所有数据吗？包括所有聊天记录和贴图！")) return;
-  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes');
+  dbClear('wordcards'); dbClear('rooms'); dbClear('messages'); dbClear('stickers'); dbClear('actions'); dbClear('music'); dbClear('favorites'); dbClear('lovedays'); dbClear('notes'); dbClear('letters');
   setTimeout(() => { showToast("数据已清空"); refreshAllData(); goToPage('page-home'); }, 300);
 }
 </script>
