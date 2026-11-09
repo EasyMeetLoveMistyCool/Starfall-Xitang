@@ -1721,7 +1721,6 @@
 <div class="modal-overlay" id="noteMenu" onclick="closeNoteMenu(event)">
   <div class="small-modal" onclick="event.stopPropagation()">
     <div class="small-modal-item" id="notePinBtn" onclick="toggleNotePin()">置顶</div>
-    <div class="small-modal-item" onclick="changeNoteBg()">换图</div>
     <div class="small-modal-item" onclick="deleteNote()">删除</div>
   </div>
 </div>
@@ -1730,7 +1729,6 @@
 <div class="modal-overlay" id="letterMenu" onclick="closeLetterMenu(event)">
   <div class="small-modal" onclick="event.stopPropagation()">
     <div class="small-modal-item" id="letterPinBtn" onclick="toggleLetterPin()">置顶</div>
-    <div class="small-modal-item" onclick="changeLetterBg()">换图</div>
     <div class="small-modal-item" onclick="deleteLetter()">删除</div>
   </div>
 </div>
@@ -1862,7 +1860,19 @@ let appSettings = {
   globalBgBlur: 30
 };
 
-const LETTER_COLORS = ['#FDF8F5', '#F6F1FB', 'linear-gradient(180deg, #FFF5F8 0%, #F6F1FB 100%)', '#FFFFFF'];
+const NOTE_COLORS = [
+  '#FFF8E7', '#E8F5E9', '#FFF0F4', '#F4EDFC', '#E3F2FD', '#FFF3E0', '#E0F2F1', '#F3E5F5', 
+  '#FCE4EC', '#EDE7F6', '#F1F8E9', '#EFEBE9', '#FFFDE7', '#E1F5FE', '#FBE9E7', '#E0F7FA', 
+  '#FDF5F7', '#FFF9E6', '#F5F3FA', '#FFFFFF'
+];
+
+const LETTER_COLORS = [
+  '#FDF8F5', '#FFFFFF', '#F6F1FB', '#FAF6F0', '#FFF5F8', '#F4F8FB', 
+  'linear-gradient(180deg, #FFF5F8 0%, #F6F1FB 100%)', 'linear-gradient(180deg, #FAF6F0 0%, #FDF8F5 100%)',
+  '#F5F5F5', '#F7F3EE', '#FAF0F0', '#F0F4F8', '#F2F5F3', '#F5EFEB', '#FEF9EF', 
+  'linear-gradient(180deg, #FFF3E0 0%, #FFF5F8 100%)', 'linear-gradient(180deg, #F5F3FA 0%, #E8EAF6 100%)',
+  '#FCF8F2', '#FBF4F9', '#F1F7FA'
+];
 
 function initSettings() {
   dbGetAll('settings', data => {
@@ -2110,6 +2120,10 @@ function openChatRoom(id) {
   if(currentRoom.bgImage) { bg.style.backgroundImage = `url("${currentRoom.bgImage}")`; } else { bg.style.background = `transparent`; }
   mask.style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`; 
   
+  // 核心修复：切房间瞬间先清空屏幕，防止串台
+  document.getElementById('chatContent').innerHTML = '';
+  lastMsgMinute = null;
+
   dbGetAll('messages', msgs => {
     const roomMsgs = msgs.filter(m => m.roomId === id).sort((a,b) => a.timestamp - b.timestamp);
     renderMessages(roomMsgs);
@@ -2348,7 +2362,7 @@ function triggerReply(room) {
         
         const newNote = {
           roomId: room.id, sender: 'ta', content: joinCards(msgArr),
-          bgColor: noteColors[Math.floor(Math.random()*noteColors.length)],
+          bgColor: NOTE_COLORS[Math.floor(Math.random()*NOTE_COLORS.length)],
           bgImage: null, timestamp: Date.now(), replies: []
         };
         dbAdd('notes', newNote, () => { 
@@ -2430,7 +2444,7 @@ function triggerReply(room) {
         dbAdd('messages', msg, () => {
           // 触发 TA 主动收藏 (3%)
           if (Math.random() * 100 < (appSettings.favProb || 3)) {
-            const fav = { msgId: msg.id, roomId: room.id, type: msg.type, content: msg.text, collector: 'ta', favTime: Date.now() };
+            const fav = { msgId: msg.id, roomId: room.id, type: msg.type, content: msg.text, collector: 'ta', sender: msg.sender, favTime: Date.now() };
             dbAdd('favorites', fav, () => { refreshAllData(); });
           }
 
@@ -2709,7 +2723,8 @@ function openLetterDetail(id) {
 
   contentDiv.innerHTML = allPapersHTML;
 
-  if(letter.sender === 'ta' || letter.replies.length > 0) {
+  // 核心修复4：只要有过回复，就不再显示输入框
+  if(letter.sender === 'ta' && letter.replies.length === 0) {
     document.getElementById('letterDetailFooter').style.display = 'flex';
   } else {
     document.getElementById('letterDetailFooter').style.display = 'none';
@@ -2744,21 +2759,6 @@ function toggleLetterPin() {
   if(!longPressLetterTarget) return;
   longPressLetterTarget.pinned = !longPressLetterTarget.pinned;
   dbPut('letters', longPressLetterTarget, () => { refreshAllData(); showToast(longPressLetterTarget.pinned ? '已置顶' : '已取消置顶'); });
-}
-function changeLetterBg() {
-  closeLetterMenu({target:document.getElementById('letterMenu')});
-  if(!longPressLetterTarget) return;
-  document.getElementById('letterBgFile').onchange = function(e) {
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      longPressLetterTarget.bgImage = ev.target.result;
-      longPressLetterTarget.bgColor = '#FFFFFF';
-      dbPut('letters', longPressLetterTarget, () => { refreshAllData(); showToast("背景已更换"); });
-    };
-    reader.readAsDataURL(file);
-  };
-  document.getElementById('letterBgFile').click();
 }
 function deleteLetter() {
   closeLetterMenu({target:document.getElementById('letterMenu')});
@@ -2941,7 +2941,7 @@ function toggleMsgFav() {
     const newFav = {
       msgId: longPressMsgTarget.id, roomId: longPressMsgTarget.roomId,
       type: longPressMsgTarget.type, content: longPressMsgTarget.text,
-      collector: 'me', favTime: Date.now()
+      collector: 'me', sender: longPressMsgTarget.sender, favTime: Date.now()
     };
     dbAdd('favorites', newFav, () => { showToast("已收藏"); refreshAllData(); });
   }
@@ -3362,7 +3362,6 @@ setInterval(() => {
 }, 60000); 
 
 /* ================= 小便笺功能 ================= */
-let noteColors = ['#FFF8E7', '#E8F5E9', '#F3E5F5']; 
 
 function openWriteNote() {
   currentNoteBg = null;
@@ -3371,7 +3370,7 @@ function openWriteNote() {
   
   document.getElementById('noteWriteInput').value = '';
   document.getElementById('writeNoteBg').style.backgroundImage = 'none';
-  document.getElementById('writeNoteBg').style.background = noteColors[Math.floor(Math.random()*noteColors.length)];
+  document.getElementById('writeNoteBg').style.background = NOTE_COLORS[Math.floor(Math.random()*NOTE_COLORS.length)];
   document.getElementById('writeNoteMask').style.background = 'transparent';
   
   document.getElementById('btnToggleChat').classList.add('active');
@@ -3568,7 +3567,8 @@ function openNoteDetail(id) {
     contentDiv.appendChild(repDiv);
   }
 
-  if(note.sender === 'ta') {
+  // 核心修复4：只要有过回复，就不再显示输入框
+  if(note.sender === 'ta' && note.replies.length === 0) {
     document.getElementById('noteDetailFooter').style.display = 'flex';
   } else {
     document.getElementById('noteDetailFooter').style.display = 'none';
@@ -3601,21 +3601,6 @@ function toggleNotePin() {
   if(!longPressNoteTarget) return;
   longPressNoteTarget.pinned = !longPressNoteTarget.pinned;
   dbPut('notes', longPressNoteTarget, () => { refreshAllData(); showToast(longPressNoteTarget.pinned ? '已置顶' : '已取消置顶'); });
-}
-function changeNoteBg() {
-  closeNoteMenu({target:document.getElementById('noteMenu')});
-  if(!longPressNoteTarget) return;
-  document.getElementById('noteBgFile').onchange = function(e) {
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      longPressNoteTarget.bgImage = ev.target.result;
-      longPressNoteTarget.bgColor = '#FFFFFF';
-      dbPut('notes', longPressNoteTarget, () => { refreshAllData(); showToast("背景已更换"); });
-    };
-    reader.readAsDataURL(file);
-  };
-  document.getElementById('noteBgFile').click();
 }
 function deleteNote() {
   closeNoteMenu({target:document.getElementById('noteMenu')});
@@ -4335,7 +4320,14 @@ function renderFavorites() {
     div.className = 'fav-card';
     const date = new Date(f.favTime);
     const timeStr = `${date.getMonth()+1}-${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
-    const collectorStr = f.collector === 'me' ? `你 收藏了 ${taName} 的话` : `${taName} 收藏了你的话`;
+    
+    // 核心修复：准确显示是谁收藏了谁的话
+    let collectorStr = "";
+    if (f.collector === 'me') {
+      collectorStr = f.sender === 'ta' ? `你 收藏了 ${taName} 的话` : `你 收藏了 你自己的话`;
+    } else {
+      collectorStr = f.sender === 'ta' ? `${taName} 收藏了 他自己的话` : `${taName} 收藏了 你的话`;
+    }
     
     let contentHTML = '';
     if (f.type === 'text') contentHTML = `<div class="fav-content">“${f.content}”</div>`;
