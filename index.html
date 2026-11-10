@@ -194,6 +194,37 @@
   .msg-row.left .msg-bubble { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(184, 154, 246, 0.2); border-top-left-radius: 4px; }
   .msg-row.right .msg-bubble { background: rgba(184, 154, 246, 0.3); border: 1px solid rgba(184, 154, 246, 0.4); border-top-right-radius: 4px; }
 
+  /* 引用块 */
+  .msg-quote {
+    display: block; margin-bottom: 6px; padding: 6px 8px;
+    background: rgba(184, 154, 246, 0.10); border-left: 2px solid var(--taro);
+    border-radius: 8px; font-size: 12px; line-height: 1.4;
+    white-space: pre-wrap; word-break: break-all; cursor: pointer;
+  }
+  .msg-quote .quote-who { color: var(--purple-soft); font-weight: 500; }
+  .msg-quote .quote-text { color: var(--sub); }
+
+  /* 引用条 */
+  .quote-bar {
+    display: none; align-items: flex-start; gap: 8px;
+    margin: 0 16px 6px; padding: 8px 10px;
+    background: var(--taro-bg); border-left: 2px solid var(--taro);
+    border-radius: 10px; font-size: 12px; line-height: 1.4;
+  }
+  .quote-bar.active { display: flex; }
+  .quote-bar .qb-content { flex: 1; min-width: 0; }
+  .quote-bar .qb-who { color: var(--purple); font-weight: 500; }
+  .quote-bar .qb-text { color: var(--sub); white-space: pre-wrap; word-break: break-all; }
+  .quote-bar .qb-cancel { flex-shrink: 0; color: var(--purple-soft); font-size: 16px; line-height: 1; cursor: pointer; padding: 0 2px; }
+
+  /* 跳转高亮闪烁 */
+  @keyframes msgFlash {
+    0% { box-shadow: 0 0 0 0 rgba(184,154,246,0); }
+    30% { box-shadow: 0 0 0 3px var(--taro); }
+    100% { box-shadow: 0 0 0 0 rgba(184,154,246,0); }
+  }
+  .msg-flash { animation: msgFlash 1.2s ease-out; }
+
   .msg-img { max-width: 150px; max-height: 150px; border-radius: 10px; object-fit: contain; display: block;}
   .msg-video { max-width: 200px; max-height: 200px; border-radius: 10px; object-fit: cover; display: block;}
   
@@ -526,6 +557,14 @@
   .quiz-grid-item.dim { opacity: 0.5; }
   .quiz-option.highlight { background: var(--honey-bg); border-color: var(--honey); color: var(--honey); font-weight: 600; }
   .quiz-option.dim { opacity: 0.5; }
+
+  /* 投问折叠摘要 */
+  .quiz-collapsed {
+    background: #FFFFFF; border: 1px dashed var(--taro); border-radius: 14px;
+    padding: 10px 14px; font-size: 13px; color: var(--purple);
+    cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .quiz-collapsed .qc-hint { color: var(--sub); font-size: 12px; flex-shrink: 0; }
 
   /* 转圈圈等待符 */
   .typing-quiz-icon { display: inline-block; animation: spin 1.5s linear infinite; margin-right: 4px; font-weight: bold; font-size: 16px;}
@@ -1112,6 +1151,11 @@
       </label>
     </div>
 
+    <div class="speed-row" style="margin-bottom:12px;">
+      <span>引用概率：</span>
+      <input type="number" class="input-field" id="setQuoteProb" value="5" style="width:60px; text-align:center;" onchange="saveSetting('quoteProb', this.value)"> %
+    </div>
+
     <div class="speed-row">
       <span>桌面轮播间隔：</span>
       <input type="number" class="input-field" id="setCarouselMin" value="1" style="width:50px; text-align:center;" onchange="saveSetting('carouselMin', this.value)"> ~ 
@@ -1146,6 +1190,13 @@
     </div>
   </div>
   <div class="chat-content" id="chatContent"></div>
+  <div class="quote-bar" id="quoteBar">
+    <div class="qb-content">
+      <div class="qb-who" id="quoteBarWho"></div>
+      <div class="qb-text" id="quoteBarText"></div>
+    </div>
+    <div class="qb-cancel" onclick="clearQuote()">×</div>
+  </div>
   <div class="chat-footer">
     <input type="text" class="chat-input" id="chatInput" placeholder="想对 TA 说什么...">
     <div class="sticker-btn" onclick="openStickerPanel()">ʕ̯•͡ˑ͓•̯᷅ʔ</div>
@@ -1698,6 +1749,7 @@
 <div class="modal-overlay" id="chatMsgMenu" onclick="closeChatMenu(event)">
   <div class="small-modal" onclick="event.stopPropagation()">
     <div class="small-modal-item" id="msgFavBtn" onclick="toggleMsgFav()">收藏</div>
+    <div class="small-modal-item" id="msgQuoteBtn" onclick="quoteMsg()">引用</div>
     <div class="small-modal-item" onclick="deleteChatMsg()">删除</div>
   </div>
 </div>
@@ -1839,6 +1891,14 @@ let htImgBase64 = null;
 // 用于区分当前是便笺还是信件在选择收件人
 let currentTargetSelectionType = 'letter'; 
 
+// 聊天渲染分页与增量相关
+const CHAT_PAGE_SIZE = 15;
+let chatRenderedMsgIds = new Set(); // 当前已渲染消息 id
+let chatLoadedOldestId = null; // 已加载的最早消息 id（用于向上加载）
+let chatAllRoomMsgs = []; // 当前房间全部消息（按时间排序）
+let chatIsLoadingMore = false;
+let pendingQuote = null; // 当前待发送引用 {msgId, sender, type, text}
+
 let appSettings = { 
   stickerProb: 10, 
   actionProb: 7, 
@@ -1854,6 +1914,7 @@ let appSettings = {
   letterRepMin: 5,
   letterRepMax: 8,
   showLetterTime: true,
+  quoteProb: 5,
   carouselMin: 1, 
   carouselMax: 3, 
   globalBgImage: null,
@@ -1893,6 +1954,9 @@ function initSettings() {
     document.getElementById('setLetterRepMin').value = appSettings.letterRepMin;
     document.getElementById('setLetterRepMax').value = appSettings.letterRepMax;
     document.getElementById('setShowLetterTime').checked = appSettings.showLetterTime;
+
+    const quoteProbEl = document.getElementById('setQuoteProb');
+    if(quoteProbEl) quoteProbEl.value = appSettings.quoteProb;
 
     document.getElementById('setCarouselMin').value = appSettings.carouselMin;
     document.getElementById('setCarouselMax').value = appSettings.carouselMax;
@@ -2108,10 +2172,11 @@ function submitCreate() {
   }
 }
 
-/* ================= 聊天界面 ================= */
+/* ================= 聊天界面（分页 + 增量 + 引用） ================= */
 function openChatRoom(id) {
   currentRoom = allRooms.find(r=>r.id===id); if(!currentRoom) return;
-  
+  pendingQuote = null; hideQuoteBar();
+
   const displayName = currentRoom.taCall || currentRoom.taName;
   document.getElementById('chatHeaderName').textContent = displayName;
   document.getElementById('chatHeaderSign').textContent = currentRoom.taSign || '';
@@ -2120,42 +2185,111 @@ function openChatRoom(id) {
   if(currentRoom.bgImage) { bg.style.backgroundImage = `url("${currentRoom.bgImage}")`; } else { bg.style.background = `transparent`; }
   mask.style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`; 
   
-  // 核心修复：切房间瞬间先清空屏幕，防止串台
-  document.getElementById('chatContent').innerHTML = '';
+  const container = document.getElementById('chatContent');
+  container.innerHTML = '';
+  chatRenderedMsgIds = new Set();
+  chatLoadedOldestId = null;
   lastMsgMinute = null;
 
   dbGetAll('messages', msgs => {
-    const roomMsgs = msgs.filter(m => m.roomId === id).sort((a,b) => a.timestamp - b.timestamp);
-    renderMessages(roomMsgs);
+    chatAllRoomMsgs = msgs.filter(m => m.roomId === id).sort((a,b) => a.timestamp - b.timestamp);
+    renderInitialMessages();
   });
   goToPage('page-chat');
 }
 
 let lastMsgMinute = null;
-function appendMessageToUI(m) {
-  const container = document.getElementById('chatContent');
-  
-  // 核心修复1：防止同一条消息重复插入（解决一起听歌等并发情况）
-  if (document.querySelector(`.msg-row[data-id="${m.id}"]`) || document.querySelector(`.msg-action[data-id="${m.id}"]`)) return;
 
-  let tRow = document.getElementById('typingIndicator');
-  if(tRow) tRow.remove();
+/* 初次渲染最近 N 条 */
+function renderInitialMessages() {
+  const container = document.getElementById('chatContent');
+  container.innerHTML = '';
+  chatRenderedMsgIds = new Set();
+  lastMsgMinute = null;
+  const total = chatAllRoomMsgs.length;
+  const start = Math.max(0, total - CHAT_PAGE_SIZE);
+  const slice = chatAllRoomMsgs.slice(start);
+  chatLoadedOldestId = slice.length ? slice[0].id : null;
+  slice.forEach(m => appendMessageToUI(m, { collapsedQuiz: isOldQuiz(m, start) }));
+  scrollToBottom();
+}
+
+/* 判断是否属于“更早的投问”，需要折叠 */
+function isOldQuiz(msg, visibleStartIndex) {
+  if(msg.type !== 'quiz') return false;
+  const idx = chatAllRoomMsgs.findIndex(m => m.id === msg.id);
+  // 初次加载窗口内属于最近15条 -> 展开；更早加载上来的 -> 折叠
+  if(visibleStartIndex === undefined) {
+    return false;
+  }
+  return idx < visibleStartIndex;
+}
+
+/* 向上加载更早的 15 条 */
+function loadMoreMessages() {
+  if(chatIsLoadingMore) return;
+  const container = document.getElementById('chatContent');
+  if(!chatAllRoomMsgs.length) return;
+  const oldestIndex = chatAllRoomMsgs.findIndex(m => m.id === chatLoadedOldestId);
+  if(oldestIndex <= 0) return;
+  chatIsLoadingMore = true;
+  const start = Math.max(0, oldestIndex - CHAT_PAGE_SIZE);
+  const slice = chatAllRoomMsgs.slice(start, oldestIndex);
+  if(slice.length === 0) { chatIsLoadingMore = false; return; }
+  chatLoadedOldestId = slice[0].id;
+
+  const prevScrollHeight = container.scrollHeight;
+  const prevScrollTop = container.scrollTop;
+
+  // 用 fragment 前插
+  const frag = document.createDocumentFragment();
+  slice.forEach(m => {
+    const node = buildMessageNode(m, { collapsedQuiz: m.type === 'quiz' });
+    if(node) frag.appendChild(node);
+  });
+  container.insertBefore(frag, container.firstChild);
+
+  const newScrollHeight = container.scrollHeight;
+  container.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+  chatIsLoadingMore = false;
+}
+
+// 滚动到顶触发加载
+document.getElementById('chatContent').addEventListener('scroll', function() {
+  if(this.scrollTop <= 5) loadMoreMessages();
+});
+
+/* 构建单条消息 DOM（不直接插入），供首次渲染与前插复用 */
+function buildMessageNode(m, opts = {}) {
+  if(chatRenderedMsgIds.has(m.id)) return null;
+  chatRenderedMsgIds.add(m.id);
+
+  const container = document.getElementById('chatContent');
+  const frag = document.createDocumentFragment();
 
   const d = new Date(m.timestamp);
   const minKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
-  if (minKey !== lastMsgMinute) {
+
+  // 时间戳 (首次渲染时通过 lastMsgMinute 判断，前插时直接显示，避免错乱)
+  const isPrepend = !!opts.prepend;
+  if(isPrepend) {
     const timeDiv = document.createElement('div'); timeDiv.className = 'time-stamp'; timeDiv.textContent = formatTime(m.timestamp);
-    container.appendChild(timeDiv); lastMsgMinute = minKey;
+    frag.appendChild(timeDiv);
+  } else if (minKey !== lastMsgMinute) {
+    const timeDiv = document.createElement('div'); timeDiv.className = 'time-stamp'; timeDiv.textContent = formatTime(m.timestamp);
+    frag.appendChild(timeDiv);
+    lastMsgMinute = minKey;
   }
-  
+
   if (m.type === 'action') {
     const row = document.createElement('div'); row.className = 'msg-action'; row.textContent = m.text;
     row.dataset.id = m.id;
-    container.appendChild(row);
+    frag.appendChild(row);
   } else if (m.type === 'note') {
     const isMe = m.sender === 'me';
     const row = document.createElement('div'); row.className = `msg-row ${isMe ? 'right' : 'left'}`; row.dataset.id = m.id;
-    const noteData = JSON.parse(m.text);
+    let noteData = { content: m.text, bgColor: '#FFF8E7', bgImage: null };
+    try { noteData = JSON.parse(m.text); } catch(e) {}
     
     const avatarSrc = isMe ? currentRoom.myAvatar : currentRoom.taAvatar;
     const avHTML = avatarSrc ? `<img src="${avatarSrc}">` : `<span style="font-size:16px;color:var(--purple)">${isMe?'我':'梦'}</span>`;
@@ -2171,42 +2305,34 @@ function appendMessageToUI(m) {
     
     row.innerHTML = `<div class="msg-avatar">${avHTML}</div>`;
     row.appendChild(card);
-    container.appendChild(row);
+    frag.appendChild(row);
   } else if (m.type === 'quiz') {
-    const data = JSON.parse(m.text);
-    const card = document.createElement('div');
-    card.className = 'quiz-card';
-    card.dataset.id = m.id;
-    
-    let innerHTML = `<div class="quiz-question">${data.question}</div>`;
-    if(data.img) innerHTML += `<img src="${data.img}" class="quiz-image">`;
-    
-    if(data.mode === 'trace') {
-      innerHTML += `<div class="quiz-grid">`;
-      data.options.forEach((opt, i) => {
-        let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null ? 'dim' : '');
-        innerHTML += `<div class="quiz-grid-item ${hClass}"><img src="${opt}"></div>`;
-      });
-      innerHTML += `</div>`;
-    } else if (data.mode === 'heart') {
-      innerHTML += `<div class="quiz-options">`;
-      data.options.forEach((opt, i) => {
-        let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null ? 'dim' : '');
-        innerHTML += `<div class="quiz-option ${hClass}">${opt}</div>`;
-      });
-      innerHTML += `</div>`;
+    let data; try { data = JSON.parse(m.text); } catch(e) { data = null; }
+    if(!data) return frag;
+    if(opts.collapsedQuiz) {
+      // 更早的投问：默认折叠
+      const wrap = document.createElement('div');
+      wrap.className = 'quiz-collapsed';
+      wrap.dataset.id = m.id;
+      const status = (data.selected !== null && data.selected !== undefined) ? 'TA 已选择' : '等待选择';
+      wrap.innerHTML = `<span>${data.mode === 'trace' ? '星痕' : '心迹'}投问 · ${status}</span><span class="qc-hint">点击展开 ›</span>`;
+      wrap.onclick = () => expandCollapsedQuiz(m.id, wrap);
+      frag.appendChild(wrap);
+    } else {
+      const card = document.createElement('div');
+      card.className = 'quiz-card';
+      card.dataset.id = m.id;
+      card.innerHTML = renderQuizCardInner(data);
+      if(data.selected === null || data.selected === undefined) {
+        const tRow = document.createElement('div'); 
+        tRow.id = 'typingIndicator'; tRow.className = 'msg-row left';
+        const avHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="font-size:16px;color:var(--purple)">梦</span>`;
+        let msgText = data.mode === 'trace' ? '正在翻阅星痕' : '正在斟酌心迹';
+        tRow.innerHTML = `<div class="msg-avatar">${avHTML}</div><div class="typing-bubble"><div class="typing-quiz-icon">◌</div> ${msgText} <div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+        frag.appendChild(tRow);
+      }
+      frag.appendChild(card);
     }
-    card.innerHTML = innerHTML;
-    
-    if(data.selected === null) {
-      let tRow = document.createElement('div'); 
-      tRow.id = 'typingIndicator'; tRow.className = 'msg-row left';
-      const avHTML = currentRoom.taAvatar ? `<img src="${currentRoom.taAvatar}">` : `<span style="font-size:16px;color:var(--purple)">梦</span>`;
-      let msgText = data.mode === 'trace' ? '正在翻阅星痕' : '正在斟酌心迹';
-      tRow.innerHTML = `<div class="msg-avatar">${avHTML}</div><div class="typing-bubble"><div class="typing-quiz-icon">◌</div> ${msgText} <div class="typing-dots"><span></span><span></span><span></span></div></div>`;
-      container.appendChild(tRow);
-    }
-    container.appendChild(card);
   } else {
     const isMe = m.sender === 'me';
     const row = document.createElement('div'); row.className = `msg-row ${isMe ? 'right' : 'left'}`;
@@ -2215,51 +2341,213 @@ function appendMessageToUI(m) {
     const avatarFallback = isMe ? '我' : '梦';
     const avHTML = avatarSrc ? `<img src="${avatarSrc}">` : `<span style="font-size:16px;color:var(--purple)">${avatarFallback}</span>`;
     
+    let quoteHTML = '';
+    if(m.quote) {
+      quoteHTML = `<div class="msg-quote" data-target-msg="${m.quote.msgId}"><span class="quote-who">${m.quote.sender === 'me' ? '我' : (currentRoom.taCall||currentRoom.taName)}：</span><span class="quote-text">${formatQuoteText(m.quote)}</span></div>`;
+    }
+    
     let inner = '';
     if (m.type === 'sticker' || m.type === 'photo') {
-      inner = `<div class="msg-bubble" style="padding: 6px; background: transparent; border: none;"><img src="${m.text}" class="msg-img"></div>`;
+      inner = `<div class="msg-bubble" style="padding: 6px; background: transparent; border: none;">${quoteHTML}<img src="${m.text}" class="msg-img"></div>`;
     } else if (m.type === 'video') {
-      inner = `<div class="msg-bubble" style="padding: 6px; background: transparent; border: none;"><video src="${m.text}" class="msg-video" controls></video></div>`;
+      inner = `<div class="msg-bubble" style="padding: 6px; background: transparent; border: none;">${quoteHTML}<video src="${m.text}" class="msg-video" controls></video></div>`;
     } else {
-      inner = `<div class="msg-bubble">${m.text}</div>`;
+      inner = `<div class="msg-bubble">${quoteHTML}${m.text}</div>`;
     }
     row.innerHTML = `<div class="msg-avatar">${avHTML}</div>${inner}`;
     
-    let pressTimer;
-    row.addEventListener('touchstart', (e) => { 
-      pressTimer = setTimeout(() => { 
-        e.preventDefault(); 
-        longPressMsgTarget = m;
-        const isFav = allFavs.some(f => f.msgId === m.id);
-        const favBtn = document.getElementById('msgFavBtn');
-        if (m.sender === 'me') favBtn.style.display = 'none';
-        else { favBtn.style.display = 'block'; favBtn.textContent = isFav ? '已收藏' : '收藏'; }
-        document.getElementById('chatMsgMenu').classList.add('active');
-      }, 500); 
-    }, {passive: false});
-    row.addEventListener('touchend', () => clearTimeout(pressTimer));
-    row.addEventListener('touchmove', () => clearTimeout(pressTimer));
-
-    container.appendChild(row);
+    bindMsgLongPress(row, m);
+    frag.appendChild(row);
   }
-  
-  if(tRow) container.appendChild(tRow);
+  return frag;
+}
+
+/* 渲染投问卡片内部 */
+function renderQuizCardInner(data) {
+  let innerHTML = `<div class="quiz-question">${data.question}</div>`;
+  if(data.img) innerHTML += `<img src="${data.img}" class="quiz-image">`;
+  if(data.mode === 'trace') {
+    innerHTML += `<div class="quiz-grid">`;
+    data.options.forEach((opt, i) => {
+      let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null && data.selected !== undefined ? 'dim' : '');
+      innerHTML += `<div class="quiz-grid-item ${hClass}"><img src="${opt}"></div>`;
+    });
+    innerHTML += `</div>`;
+  } else if (data.mode === 'heart') {
+    innerHTML += `<div class="quiz-options">`;
+    data.options.forEach((opt, i) => {
+      let hClass = (data.selected === i) ? 'highlight' : (data.selected !== null && data.selected !== undefined ? 'dim' : '');
+      innerHTML += `<div class="quiz-option ${hClass}">${opt}</div>`;
+    });
+    innerHTML += `</div>`;
+  }
+  return innerHTML;
+}
+
+/* 展开折叠投问 */
+function expandCollapsedQuiz(msgId, wrapEl) {
+  const m = chatAllRoomMsgs.find(x => x.id === msgId);
+  if(!m) return;
+  let data; try { data = JSON.parse(m.text); } catch(e) { return; }
+  const card = document.createElement('div');
+  card.className = 'quiz-card';
+  card.dataset.id = m.id;
+  card.innerHTML = renderQuizCardInner(data);
+  wrapEl.replaceWith(card);
+}
+
+/* 局部更新投问结果 */
+function updateQuizMessageDom(msg) {
+  let data; try { data = JSON.parse(msg.text); } catch(e) { return; }
+  const container = document.getElementById('chatContent');
+  const existing = container.querySelector(`.quiz-card[data-id="${msg.id}"]`);
+  if(existing) {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.dataset.id = msg.id;
+    card.innerHTML = renderQuizCardInner(data);
+    existing.replaceWith(card);
+    // 移除等待气泡（若有）
+    const typing = container.querySelector('#typingIndicator');
+    if(typing && typing.classList.contains('msg-row') && !typing.querySelector('.typing-quiz-icon') === false) {
+      // 只在投问等待气泡时移除，避免误删正在输入
+    }
+    const qTyping = container.querySelector('.msg-row.left #typingIndicator, #typingIndicator');
+    // 简化：若选完，移除带 typing-quiz-icon 的等待气泡
+    container.querySelectorAll('#typingIndicator').forEach(t => {
+      if(t.querySelector('.typing-quiz-icon')) t.remove();
+    });
+    if(currentRoom) triggerReplyAfterQuizResolved(currentRoom, msg);
+  } else {
+    // 可能处于折叠状态，重新渲染折叠摘要
+    const collapsed = container.querySelector(`.quiz-collapsed[data-id="${msg.id}"]`);
+    if(collapsed) {
+      const status = (data.selected !== null && data.selected !== undefined) ? 'TA 已选择' : '等待选择';
+      collapsed.innerHTML = `<span>${data.mode === 'trace' ? '星痕' : '心迹'}投问 · ${status}</span><span class="qc-hint">点击展开 ›</span>`;
+    }
+  }
+}
+
+/* 投问选择后触发后续回复（保持原有行为：TA 可继续回复一句） */
+function triggerReplyAfterQuizResolved(room, quizMsg) {
+  // 原逻辑里投问选择后并未额外回复，这里保持不额外发消息，避免行为变化。
+  return;
+}
+
+/* 长按绑定 */
+function bindMsgLongPress(row, m) {
+  let pressTimer;
+  row.addEventListener('touchstart', (e) => { 
+    pressTimer = setTimeout(() => { 
+      e.preventDefault(); 
+      longPressMsgTarget = m;
+      const isFav = allFavs.some(f => f.msgId === m.id);
+      const favBtn = document.getElementById('msgFavBtn');
+      if (m.sender === 'me') favBtn.style.display = 'none';
+      else { favBtn.style.display = 'block'; favBtn.textContent = isFav ? '已收藏' : '收藏'; }
+      document.getElementById('chatMsgMenu').classList.add('active');
+    }, 500); 
+  }, {passive: false});
+  row.addEventListener('touchend', () => clearTimeout(pressTimer));
+  row.addEventListener('touchmove', () => clearTimeout(pressTimer));
+}
+
+/* 追加单条消息到 UI（增量） */
+function appendMessageToUI(m, opts = {}) {
+  if(chatRenderedMsgIds.has(m.id)) return;
+  const container = document.getElementById('chatContent');
+  const typing = document.getElementById('typingIndicator');
+  if(typing) typing.remove();
+
+  const frag = buildMessageNode(m, opts);
+  if(frag) container.appendChild(frag);
   scrollToBottom();
 }
+
 function renderMessages(msgs) {
-  const container = document.getElementById('chatContent');
-  container.innerHTML = ''; lastMsgMinute = null;
-  msgs.forEach(m => appendMessageToUI(m));
+  // 兼容旧调用：重设为初始分页
+  chatAllRoomMsgs = msgs.slice().sort((a,b) => a.timestamp - b.timestamp);
+  renderInitialMessages();
 }
 function scrollToBottom() { const c = document.getElementById('chatContent'); c.scrollTop = c.scrollHeight; }
+
+/* 引用辅助 */
+function formatQuoteText(q) {
+  if(q.type === 'text') return q.text;
+  if(q.type === 'action') return q.text;
+  if(q.type === 'sticker') return '[贴图]';
+  if(q.type === 'photo') return '[图片]';
+  if(q.type === 'video') return '[视频]';
+  if(q.type === 'note') return '[便笺]';
+  if(q.type === 'quiz') return '[投问]';
+  return q.text || '';
+}
+function quoteMsg() {
+  document.getElementById('chatMsgMenu').classList.remove('active');
+  if(!longPressMsgTarget) return;
+  const m = longPressMsgTarget;
+  let text = m.text;
+  if(m.type === 'note') { try { text = JSON.parse(m.text).content; } catch(e){} }
+  if(m.type === 'quiz') { try { text = JSON.parse(m.text).question; } catch(e){} }
+  pendingQuote = { msgId: m.id, sender: m.sender, type: m.type, text: text };
+  document.getElementById('quoteBarWho').textContent = (m.sender === 'me' ? '我' : (currentRoom.taCall||currentRoom.taName)) + '：';
+  document.getElementById('quoteBarText').textContent = formatQuoteText({type: m.type, text: text});
+  document.getElementById('quoteBar').classList.add('active');
+  document.getElementById('chatInput').focus();
+}
+function clearQuote() {
+  pendingQuote = null;
+  hideQuoteBar();
+}
+function hideQuoteBar() {
+  document.getElementById('quoteBar').classList.remove('active');
+  document.getElementById('quoteBarWho').textContent = '';
+  document.getElementById('quoteBarText').textContent = '';
+}
+
+/* 点击引用块跳转并高亮 */
+document.getElementById('chatContent').addEventListener('click', (e) => {
+  const q = e.target.closest('.msg-quote');
+  if(!q) return;
+  const targetId = Number(q.dataset.targetMsg);
+  if(!targetId) return;
+  jumpToMessage(targetId);
+});
+function jumpToMessage(msgId) {
+  const container = document.getElementById('chatContent');
+  let el = container.querySelector(`[data-id="${msgId}"]`);
+  if(!el) {
+    // 不在已渲染范围内，尝试加载到该消息
+    const idx = chatAllRoomMsgs.findIndex(m => m.id === msgId);
+    if(idx < 0) return showToast("原消息已被删除");
+    // 简单处理：重新按分页加载到包含该消息的位置
+    chatLoadedOldestId = chatAllRoomMsgs[Math.max(0, idx - CHAT_PAGE_SIZE)]?.id || chatAllRoomMsgs[0]?.id;
+    renderInitialMessages();
+    el = container.querySelector(`[data-id="${msgId}"]`);
+  }
+  if(!el) return showToast("原消息已被删除");
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  el.classList.remove('msg-flash');
+  void el.offsetWidth;
+  el.classList.add('msg-flash');
+  setTimeout(() => el.classList.remove('msg-flash'), 1300);
+}
 
 function sendMessage() {
   const input = document.getElementById('chatInput'); const text = input.value.trim(); if(!text) return;
   const msg = { roomId: currentRoom.id, sender: 'me', type: 'text', text: text, timestamp: Date.now() };
+  if(pendingQuote) msg.quote = pendingQuote;
   dbAdd('messages', msg, () => {
-    input.value = ''; currentRoom.lastMsg = text; currentRoom.updatedAt = Date.now();
+    input.value = ''; 
+    currentRoom.lastMsg = text; currentRoom.updatedAt = Date.now();
+    hideQuoteBar(); pendingQuote = null;
     dbPut('rooms', currentRoom, () => {
-      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+      dbGetAll('messages', allM => { 
+        const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+        chatAllRoomMsgs = roomMsgs;
+        const newM = roomMsgs[roomMsgs.length-1]; 
+        appendMessageToUI(newM); 
+      });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = text; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
       triggerReply(currentRoom); 
@@ -2269,10 +2557,17 @@ function sendMessage() {
 
 function sendSticker(src) {
   const msg = { roomId: currentRoom.id, sender: 'me', type: 'sticker', text: src, timestamp: Date.now() };
+  if(pendingQuote) msg.quote = pendingQuote;
   dbAdd('messages', msg, () => {
     currentRoom.lastMsg = '[贴图]'; currentRoom.updatedAt = Date.now();
+    hideQuoteBar(); pendingQuote = null;
     dbPut('rooms', currentRoom, () => {
-      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+      dbGetAll('messages', allM => { 
+        const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+        chatAllRoomMsgs = roomMsgs;
+        const newM = roomMsgs[roomMsgs.length-1]; 
+        appendMessageToUI(newM); 
+      });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = '[贴图]'; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
       triggerReply(currentRoom);
@@ -2282,10 +2577,17 @@ function sendSticker(src) {
 
 function sendAction(text) {
   const msg = { roomId: currentRoom.id, sender: 'me', type: 'action', text: text, timestamp: Date.now() };
+  if(pendingQuote) msg.quote = pendingQuote;
   dbAdd('messages', msg, () => {
     currentRoom.lastMsg = text; currentRoom.updatedAt = Date.now();
+    hideQuoteBar(); pendingQuote = null;
     dbPut('rooms', currentRoom, () => {
-      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+      dbGetAll('messages', allM => { 
+        const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+        chatAllRoomMsgs = roomMsgs;
+        const newM = roomMsgs[roomMsgs.length-1]; 
+        appendMessageToUI(newM); 
+      });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = text; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
       triggerReply(currentRoom);
@@ -2339,6 +2641,19 @@ function getLetterDateSuffix(ts) {
   else if(h >= 12 && h < 18) suffix = ' 午';
   else suffix = ' 晚';
   return `${d.getMonth()+1}月${d.getDate()}日${suffix}`;
+}
+
+/* 随机挑一条消息作为引用 */
+function pickRandomQuote(room) {
+  if(!chatAllRoomMsgs || chatAllRoomMsgs.length === 0) return null;
+  // 从最近 30 条里挑，避免引用太早
+  const recent = chatAllRoomMsgs.slice(Math.max(0, chatAllRoomMsgs.length - 30));
+  if(recent.length === 0) return null;
+  const m = recent[Math.floor(Math.random() * recent.length)];
+  let text = m.text;
+  if(m.type === 'note') { try { text = JSON.parse(m.text).content; } catch(e){} }
+  if(m.type === 'quiz') { try { text = JSON.parse(m.text).question; } catch(e){} }
+  return { msgId: m.id, sender: m.sender, type: m.type, text: text };
 }
 
 function triggerReply(room) {
@@ -2399,6 +2714,7 @@ function triggerReply(room) {
     const pSticker = (appSettings.stickerProb || 10) / 100;
     const pAction = (appSettings.actionProb || 7) / 100;
     const pListen = (appSettings.listenProb || 5) / 100;
+    const pQuote = (appSettings.quoteProb || 5) / 100;
 
     let doListen = allMusic.length > 0 && Math.random() < pListen;
     if(doListen) {
@@ -2407,7 +2723,12 @@ function triggerReply(room) {
       const listenMsg = { roomId: room.id, sender: 'ta', type: 'action', text: `♡ ${taName} 邀请你一起听《${randomMusic.name}》 ♡`, timestamp: Date.now() };
       dbAdd('messages', listenMsg, () => {
         if (document.getElementById('page-chat').classList.contains('active') && currentRoom.id === room.id) {
-          dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+          dbGetAll('messages', allM => { 
+            const roomMsgs = allM.filter(x => x.roomId === room.id).sort((a,b)=>a.timestamp-b.timestamp);
+            chatAllRoomMsgs = roomMsgs;
+            const newM = roomMsgs[roomMsgs.length-1]; 
+            appendMessageToUI(newM); 
+          });
         }
         playMusic(randomMusic.data);
       });
@@ -2416,22 +2737,31 @@ function triggerReply(room) {
     let replyQueue = [];
     for(let i=0; i<count; i++){
       const rand = Math.random();
+      let item = null;
       if(allStickers.length > 0 && rand < pSticker) {
         const st = allStickers[Math.floor(Math.random() * allStickers.length)];
-        replyQueue.push({ type: 'sticker', text: st.data });
+        item = { type: 'sticker', text: st.data };
       } else if(allActions.length > 0 && rand < pSticker + pAction) {
         const xidongList = allActions.filter(a => a.type === 'xidong');
         if(xidongList.length > 0) {
           const act = xidongList[Math.floor(Math.random() * xidongList.length)];
           const taName = room.taCall || room.taName;
-          replyQueue.push({ type: 'action', text: `♡ ${taName} ${act.text} ♡` });
+          item = { type: 'action', text: `♡ ${taName} ${act.text} ♡` };
         }
       } else {
         const pool = allCards.filter(c => c.type === 'xingyu' || (c.type === 'xiyan' && c.roomId === room.id));
         if(pool.length > 0) {
           const card = pool[Math.floor(Math.random() * pool.length)];
-          replyQueue.push({ type: 'text', text: card.text });
+          item = { type: 'text', text: card.text };
         }
+      }
+      if(item) {
+        // 每条回复按概率带引用
+        if(Math.random() < pQuote) {
+          const q = pickRandomQuote(room);
+          if(q) item.quote = q;
+        }
+        replyQueue.push(item);
       }
     }
     if(replyQueue.length === 0) return; 
@@ -2441,6 +2771,7 @@ function triggerReply(room) {
       delayAccumulator += (i === 0) ? 0 : (500 + Math.random() * 2000);
       setTimeout(() => {
         const msg = { roomId: room.id, sender: 'ta', type: reply.type, text: reply.text, timestamp: Date.now() };
+        if(reply.quote) msg.quote = reply.quote;
         dbAdd('messages', msg, () => {
           // 触发 TA 主动收藏 (3%)
           if (Math.random() * 100 < (appSettings.favProb || 3)) {
@@ -2452,7 +2783,12 @@ function triggerReply(room) {
           currentRoom.updatedAt = Date.now();
           dbPut('rooms', currentRoom, () => {
             if (document.getElementById('page-chat').classList.contains('active') && currentRoom.id === room.id) {
-              dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+              dbGetAll('messages', allM => { 
+                const roomMsgs = allM.filter(x => x.roomId === room.id).sort((a,b)=>a.timestamp-b.timestamp);
+                chatAllRoomMsgs = roomMsgs;
+                const newM = roomMsgs[roomMsgs.length-1]; 
+                appendMessageToUI(newM); 
+              });
             }
             const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
             if(listItem) { listItem.querySelector('.chat-msg').textContent = currentRoom.lastMsg; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
@@ -2680,7 +3016,6 @@ function openLetterDetail(id) {
   const taName = room ? (room.taCall || room.taName) : 'TA';
   const myName = room ? (room.myCall || room.myName) : '我';
   
-  // 核心修复3：每封信单独渲染为一张信纸
   const renderPaper = (sender, content, timestamp, bgColor, bgImage) => {
     let salutation = sender === 'me' ? `致 ${taName}：` : `致 ${myName}：`;
     let signName = sender === 'me' ? `你的 ${myName}` : `你的 ${taName}`;
@@ -2709,13 +3044,10 @@ function openLetterDetail(id) {
     return paperHTML;
   };
 
-  // 原信件
   let allPapersHTML = renderPaper(letter.sender, letter.content, letter.timestamp, letter.bgColor, letter.bgImage);
   
-  // 回复信件（独立信纸）
   if(letter.replies && letter.replies.length > 0) {
     letter.replies.forEach(r => {
-      // 回复的信件统一用对应的配色（如果是 TA 回信，随机给个底色，或者用默认的）
       let rBgColor = r.sender === 'ta' ? LETTER_COLORS[Math.floor(Math.random()*LETTER_COLORS.length)] : letter.bgColor;
       allPapersHTML += renderPaper(r.sender, r.text, r.timestamp, rBgColor, null);
     });
@@ -2723,7 +3055,6 @@ function openLetterDetail(id) {
 
   contentDiv.innerHTML = allPapersHTML;
 
-  // 核心修复4：只要有过回复，就不再显示输入框
   if(letter.sender === 'ta' && letter.replies.length === 0) {
     document.getElementById('letterDetailFooter').style.display = 'flex';
   } else {
@@ -2779,7 +3110,7 @@ function checkLetterReplies() {
         
         const replyContent = generateLetterBody(room);
         letter.replies.push({ sender: 'ta', text: replyContent, timestamp: Date.now() });
-        letter.isRead = false; // TA 回信，变成未读状态
+        letter.isRead = false;
         
         dbPut('letters', letter, () => {
           showToast("TA 回信了");
@@ -2898,7 +3229,9 @@ function sendQuizCard(data) {
     currentRoom.updatedAt = Date.now();
     dbPut('rooms', currentRoom, () => {
       dbGetAll('messages', allM => { 
-        const newM = allM[allM.length-1]; 
+        const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+        chatAllRoomMsgs = roomMsgs;
+        const newM = roomMsgs[roomMsgs.length-1]; 
         appendMessageToUI(newM); 
         triggerQuizReply(currentRoom, newM);
       });
@@ -2921,8 +3254,12 @@ function triggerQuizReply(room, quizMsg) {
     const store = tx.objectStore("messages");
     store.put({ id: quizMsg.id, roomId: quizMsg.roomId, sender: quizMsg.sender, type: 'quiz', text: JSON.stringify(data), timestamp: quizMsg.timestamp });
     tx.oncomplete = () => {
+      const updated = { id: quizMsg.id, roomId: quizMsg.roomId, sender: quizMsg.sender, type: 'quiz', text: JSON.stringify(data), timestamp: quizMsg.timestamp };
+      // 同步内存中的消息
+      const idx = chatAllRoomMsgs.findIndex(x => x.id === quizMsg.id);
+      if(idx >= 0) chatAllRoomMsgs[idx] = updated;
       if (document.getElementById('page-chat').classList.contains('active') && currentRoom.id === room.id) {
-        openChatRoom(currentRoom.id);
+        updateQuizMessageDom(updated);
       }
     };
   }, delay);
@@ -2951,7 +3288,11 @@ function deleteChatMsg() {
   if(!longPressMsgTarget) return;
   dbDelete('messages', [longPressMsgTarget.id], () => {
     showToast("已删除");
-    openChatRoom(currentRoom.id);
+    const idx = chatAllRoomMsgs.findIndex(x => x.id === longPressMsgTarget.id);
+    if(idx >= 0) chatAllRoomMsgs.splice(idx, 1);
+    chatRenderedMsgIds.delete(longPressMsgTarget.id);
+    const el = document.querySelector(`[data-id="${longPressMsgTarget.id}"]`);
+    if(el) el.remove();
   });
 }
 
@@ -2979,10 +3320,17 @@ function handleAlbum(e) {
 }
 function sendPhoto(base64) {
   const msg = { roomId: currentRoom.id, sender: 'me', type: 'photo', text: base64, timestamp: Date.now() };
+  if(pendingQuote) msg.quote = pendingQuote;
   dbAdd('messages', msg, () => {
     currentRoom.lastMsg = '[图片]'; currentRoom.updatedAt = Date.now();
+    hideQuoteBar(); pendingQuote = null;
     dbPut('rooms', currentRoom, () => {
-      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+      dbGetAll('messages', allM => { 
+        const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+        chatAllRoomMsgs = roomMsgs;
+        const newM = roomMsgs[roomMsgs.length-1]; 
+        appendMessageToUI(newM); 
+      });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = '[图片]'; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
       triggerReply(currentRoom);
@@ -3110,7 +3458,12 @@ function stopCompanion() {
   const sysMsg = { roomId: currentRoom.id, sender: 'ta', type: 'action', text: `陪伴已结束`, timestamp: Date.now() };
   dbAdd('messages', sysMsg, () => {
     if (document.getElementById('page-chat').classList.contains('active')) {
-      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+      dbGetAll('messages', allM => { 
+        const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+        chatAllRoomMsgs = roomMsgs;
+        const newM = roomMsgs[roomMsgs.length-1]; 
+        appendMessageToUI(newM); 
+      });
     }
   });
 }
@@ -3140,7 +3493,12 @@ setInterval(() => {
       const sysMsg = { roomId: currentRoom.id, sender: 'ta', type: 'action', text: `TA 去忙了，陪伴已结束`, timestamp: Date.now() };
       dbAdd('messages', sysMsg, () => {
         if (document.getElementById('page-chat').classList.contains('active')) {
-          dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+          dbGetAll('messages', allM => { 
+            const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+            chatAllRoomMsgs = roomMsgs;
+            const newM = roomMsgs[roomMsgs.length-1]; 
+            appendMessageToUI(newM); 
+          });
         }
       });
     }
@@ -3163,7 +3521,6 @@ function triggerIncomingCall(video) {
   openCallUI();
   document.getElementById('callStatusText').textContent = `${currentRoom.taCall || currentRoom.taName} 想${video ? '看看你' : '听听你的声音'}...`;
   
-  // 核心修复2：来电时，按钮分开显示
   const controls = document.getElementById('callControls');
   controls.classList.remove('active-call');
   controls.classList.add('incoming-call');
@@ -3311,7 +3668,12 @@ function hangupCall(isTimeout = false) {
   const sysMsg = { roomId: currentRoom.id, sender: 'me', type: 'action', text: msg, timestamp: Date.now() };
   dbAdd('messages', sysMsg, () => {
     if (document.getElementById('page-chat').classList.contains('active')) {
-      dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+      dbGetAll('messages', allM => { 
+        const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+        chatAllRoomMsgs = roomMsgs;
+        const newM = roomMsgs[roomMsgs.length-1]; 
+        appendMessageToUI(newM); 
+      });
     }
   });
 
@@ -3354,7 +3716,12 @@ setInterval(() => {
       const sysMsg = { roomId: currentRoom.id, sender: 'ta', type: 'action', text: `通话已中断`, timestamp: Date.now() };
       dbAdd('messages', sysMsg, () => {
         if (document.getElementById('page-chat').classList.contains('active')) {
-          dbGetAll('messages', allM => { const newM = allM[allM.length-1]; appendMessageToUI(newM); });
+          dbGetAll('messages', allM => { 
+            const roomMsgs = allM.filter(x => x.roomId === currentRoom.id).sort((a,b)=>a.timestamp-b.timestamp);
+            chatAllRoomMsgs = roomMsgs;
+            const newM = roomMsgs[roomMsgs.length-1]; 
+            appendMessageToUI(newM); 
+          });
         }
       });
     }
@@ -3527,28 +3894,23 @@ function openNoteDetail(id) {
   if(!note) return;
   currentNoteDetailId = id;
   
-  // 设置全局背景 (如果有)
   if(appSettings.globalBgImage) {
     document.getElementById('noteDetailBgGlobal').style.backgroundImage = `url("${appSettings.globalBgImage}")`;
   } else {
     document.getElementById('noteDetailBgGlobal').style.background = 'transparent';
   }
   
-  // 设置专属背景 (此处全屏层隐藏，改用卡片承载)
   document.getElementById('noteDetailBg').style.backgroundImage = 'none';
   document.getElementById('noteDetailBg').style.background = 'transparent';
   
-  // 30% 全局白纱遮罩
   document.getElementById('noteDetailMask').style.background = `rgba(255,255,255, ${(appSettings.globalBgBlur || 30) / 100 * 0.9})`;
 
   const contentDiv = document.getElementById('noteDetailContent');
   
-  // 构建便笺正文卡片
   let cardHTML = `<div class="note-main-text">`;
   if(note.bgImage) {
     cardHTML += `<div class="nmt-bg" style="background-image:url('${note.bgImage}')"></div><div class="nmt-mask"></div>`;
   } else {
-    // 如果没有背景图，则直接用 bgColor 作为背景
     cardHTML = `<div class="note-main-text" style="background:${note.bgColor};">`;
   }
   cardHTML += `<div class="nmt-inner">${note.content}</div></div>`;
@@ -3567,7 +3929,6 @@ function openNoteDetail(id) {
     contentDiv.appendChild(repDiv);
   }
 
-  // 核心修复4：只要有过回复，就不再显示输入框
   if(note.sender === 'ta' && note.replies.length === 0) {
     document.getElementById('noteDetailFooter').style.display = 'flex';
   } else {
@@ -4321,7 +4682,6 @@ function renderFavorites() {
     const date = new Date(f.favTime);
     const timeStr = `${date.getMonth()+1}-${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
     
-    // 核心修复：准确显示是谁收藏了谁的话
     let collectorStr = "";
     if (f.collector === 'me') {
       collectorStr = f.sender === 'ta' ? `你 收藏了 ${taName} 的话` : `你 收藏了 你自己的话`;
@@ -4833,6 +5193,8 @@ function openSettings() {
   document.getElementById('setLetterRepMin').value = appSettings.letterRepMin;
   document.getElementById('setLetterRepMax').value = appSettings.letterRepMax;
   document.getElementById('setShowLetterTime').checked = appSettings.showLetterTime;
+
+  document.getElementById('setQuoteProb').value = appSettings.quoteProb;
 
   document.getElementById('setCarouselMin').value = appSettings.carouselMin;
   document.getElementById('setCarouselMax').value = appSettings.carouselMax;
