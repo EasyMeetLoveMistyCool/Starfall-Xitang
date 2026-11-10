@@ -1899,6 +1899,9 @@ let chatAllRoomMsgs = []; // 当前房间全部消息（按时间排序）
 let chatIsLoadingMore = false;
 let pendingQuote = null; // 当前待发送引用 {msgId, sender, type, text}
 
+// 正在输入状态
+let isWaitingReply = false;
+
 let appSettings = { 
   stickerProb: 10, 
   actionProb: 7, 
@@ -2407,19 +2410,12 @@ function updateQuizMessageDom(msg) {
     card.dataset.id = msg.id;
     card.innerHTML = renderQuizCardInner(data);
     existing.replaceWith(card);
-    // 移除等待气泡（若有）
-    const typing = container.querySelector('#typingIndicator');
-    if(typing && typing.classList.contains('msg-row') && !typing.querySelector('.typing-quiz-icon') === false) {
-      // 只在投问等待气泡时移除，避免误删正在输入
-    }
     const qTyping = container.querySelector('.msg-row.left #typingIndicator, #typingIndicator');
-    // 简化：若选完，移除带 typing-quiz-icon 的等待气泡
     container.querySelectorAll('#typingIndicator').forEach(t => {
       if(t.querySelector('.typing-quiz-icon')) t.remove();
     });
     if(currentRoom) triggerReplyAfterQuizResolved(currentRoom, msg);
   } else {
-    // 可能处于折叠状态，重新渲染折叠摘要
     const collapsed = container.querySelector(`.quiz-collapsed[data-id="${msg.id}"]`);
     if(collapsed) {
       const status = (data.selected !== null && data.selected !== undefined) ? 'TA 已选择' : '等待选择';
@@ -2430,7 +2426,6 @@ function updateQuizMessageDom(msg) {
 
 /* 投问选择后触发后续回复（保持原有行为：TA 可继续回复一句） */
 function triggerReplyAfterQuizResolved(room, quizMsg) {
-  // 原逻辑里投问选择后并未额外回复，这里保持不额外发消息，避免行为变化。
   return;
 }
 
@@ -2462,10 +2457,14 @@ function appendMessageToUI(m, opts = {}) {
   const frag = buildMessageNode(m, opts);
   if(frag) container.appendChild(frag);
   scrollToBottom();
+
+  // 如果当前处于等待回复状态，新消息渲染后补回“正在输入”
+  if(isWaitingReply) {
+    showTypingIndicator(true);
+  }
 }
 
 function renderMessages(msgs) {
-  // 兼容旧调用：重设为初始分页
   chatAllRoomMsgs = msgs.slice().sort((a,b) => a.timestamp - b.timestamp);
   renderInitialMessages();
 }
@@ -2517,10 +2516,8 @@ function jumpToMessage(msgId) {
   const container = document.getElementById('chatContent');
   let el = container.querySelector(`[data-id="${msgId}"]`);
   if(!el) {
-    // 不在已渲染范围内，尝试加载到该消息
     const idx = chatAllRoomMsgs.findIndex(m => m.id === msgId);
     if(idx < 0) return showToast("原消息已被删除");
-    // 简单处理：重新按分页加载到包含该消息的位置
     chatLoadedOldestId = chatAllRoomMsgs[Math.max(0, idx - CHAT_PAGE_SIZE)]?.id || chatAllRoomMsgs[0]?.id;
     renderInitialMessages();
     el = container.querySelector(`[data-id="${msgId}"]`);
@@ -2547,6 +2544,7 @@ function sendMessage() {
         chatAllRoomMsgs = roomMsgs;
         const newM = roomMsgs[roomMsgs.length-1]; 
         appendMessageToUI(newM); 
+        showTypingIndicator(true);
       });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = text; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
@@ -2567,6 +2565,7 @@ function sendSticker(src) {
         chatAllRoomMsgs = roomMsgs;
         const newM = roomMsgs[roomMsgs.length-1]; 
         appendMessageToUI(newM); 
+        showTypingIndicator(true);
       });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = '[贴图]'; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
@@ -2587,6 +2586,7 @@ function sendAction(text) {
         chatAllRoomMsgs = roomMsgs;
         const newM = roomMsgs[roomMsgs.length-1]; 
         appendMessageToUI(newM); 
+        showTypingIndicator(true);
       });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = text; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
@@ -2646,7 +2646,6 @@ function getLetterDateSuffix(ts) {
 /* 随机挑一条消息作为引用 */
 function pickRandomQuote(room) {
   if(!chatAllRoomMsgs || chatAllRoomMsgs.length === 0) return null;
-  // 从最近 30 条里挑，避免引用太早
   const recent = chatAllRoomMsgs.slice(Math.max(0, chatAllRoomMsgs.length - 30));
   if(recent.length === 0) return null;
   const m = recent[Math.floor(Math.random() * recent.length)];
@@ -2658,6 +2657,7 @@ function pickRandomQuote(room) {
 
 function triggerReply(room) {
   clearTimeout(currentReplyTimer); 
+  isWaitingReply = true;
   showTypingIndicator(true);
   
   const minDelay = (room.speedMin || 8) * 1000;
@@ -2665,6 +2665,7 @@ function triggerReply(room) {
   const delay = Math.floor(minDelay + Math.random() * (maxDelay - minDelay));
   
   currentReplyTimer = setTimeout(() => {
+    isWaitingReply = false;
     showTypingIndicator(false);
     
     // 聊天触发：TA主动写便笺
@@ -2756,7 +2757,6 @@ function triggerReply(room) {
         }
       }
       if(item) {
-        // 每条回复按概率带引用
         if(Math.random() < pQuote) {
           const q = pickRandomQuote(room);
           if(q) item.quote = q;
@@ -2773,7 +2773,6 @@ function triggerReply(room) {
         const msg = { roomId: room.id, sender: 'ta', type: reply.type, text: reply.text, timestamp: Date.now() };
         if(reply.quote) msg.quote = reply.quote;
         dbAdd('messages', msg, () => {
-          // 触发 TA 主动收藏 (3%)
           if (Math.random() * 100 < (appSettings.favProb || 3)) {
             const fav = { msgId: msg.id, roomId: room.id, type: msg.type, content: msg.text, collector: 'ta', sender: msg.sender, favTime: Date.now() };
             dbAdd('favorites', fav, () => { refreshAllData(); });
@@ -3255,7 +3254,6 @@ function triggerQuizReply(room, quizMsg) {
     store.put({ id: quizMsg.id, roomId: quizMsg.roomId, sender: quizMsg.sender, type: 'quiz', text: JSON.stringify(data), timestamp: quizMsg.timestamp });
     tx.oncomplete = () => {
       const updated = { id: quizMsg.id, roomId: quizMsg.roomId, sender: quizMsg.sender, type: 'quiz', text: JSON.stringify(data), timestamp: quizMsg.timestamp };
-      // 同步内存中的消息
       const idx = chatAllRoomMsgs.findIndex(x => x.id === quizMsg.id);
       if(idx >= 0) chatAllRoomMsgs[idx] = updated;
       if (document.getElementById('page-chat').classList.contains('active') && currentRoom.id === room.id) {
@@ -3330,6 +3328,7 @@ function sendPhoto(base64) {
         chatAllRoomMsgs = roomMsgs;
         const newM = roomMsgs[roomMsgs.length-1]; 
         appendMessageToUI(newM); 
+        showTypingIndicator(true);
       });
       const listItem = document.querySelector(`.chat-item[data-id="${currentRoom.id}"]`);
       if(listItem) { listItem.querySelector('.chat-msg').textContent = '[图片]'; listItem.querySelector('.chat-time').textContent = formatTime(currentRoom.updatedAt); }
